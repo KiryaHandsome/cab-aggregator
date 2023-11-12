@@ -1,12 +1,15 @@
 package com.modsen.passenger.exception;
 
 import com.modsen.passenger.dto.ErrorResponse;
+import com.modsen.passenger.dto.ValidationErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import java.util.List;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -20,15 +23,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ValidationErrorResponse> handleValidationException(MethodArgumentNotValidException ex) {
         BindingResult bindingResult = ex.getBindingResult();
-        StringBuilder errorMessage = new StringBuilder("Validation error(s): ");
-        bindingResult.getAllErrors()
-                .forEach(error -> errorMessage
-                        .append(error.getDefaultMessage())
-                        .append(", ")
-                );
-        ErrorResponse response = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), errorMessage.toString());
+        List<String> errorsMessages = bindingResult.getAllErrors()
+                .stream()
+                .map(e -> e.getDefaultMessage())
+                .toList();
+        ValidationErrorResponse response = new ValidationErrorResponse(HttpStatus.BAD_REQUEST.value(), errorsMessages);
         return ResponseEntity
                 .badRequest()
                 .body(response);
