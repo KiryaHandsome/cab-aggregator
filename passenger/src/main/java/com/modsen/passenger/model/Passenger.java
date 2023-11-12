@@ -23,6 +23,7 @@ public class Passenger {
     private String name;
     private String surname;
     private String email;
+    private Float rating;
 
     @Column(name = "phone_number")
     private String phoneNumber;
