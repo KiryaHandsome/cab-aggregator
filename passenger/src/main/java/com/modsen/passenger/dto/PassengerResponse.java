@@ -5,7 +5,6 @@ public record PassengerResponse(
         String name,
         String surname,
         String email,
-        Float rating,
         String phoneNumber
 ) {
 

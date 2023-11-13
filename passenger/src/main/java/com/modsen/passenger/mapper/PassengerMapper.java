@@ -12,9 +12,8 @@ import org.mapstruct.ReportingPolicy;
 )
 public interface PassengerMapper {
 
-    PassengerResponse toResponse(Passenger passenger);
 
-    Passenger toModel(PassengerResponse dto);
+    PassengerResponse toResponse(Passenger passenger);
 
     Passenger toModel(PassengerCreate dto);
 }

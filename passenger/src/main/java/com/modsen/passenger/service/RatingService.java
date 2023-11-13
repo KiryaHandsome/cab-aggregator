@@ -1,8 +1,10 @@
 package com.modsen.passenger.service;
 
+import com.modsen.passenger.dto.RatingResponse;
+
 public interface RatingService {
 
-    Float getRating(Integer passengerId);
+    RatingResponse getRating(Integer passengerId);
 
-    Float addScore(Float newScore);
+    RatingResponse addScore(Integer passengerId, Integer newScore);
 }
