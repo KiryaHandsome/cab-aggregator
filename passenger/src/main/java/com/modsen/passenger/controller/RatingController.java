@@ -1,8 +1,10 @@
 package com.modsen.passenger.controller;
 
+import com.modsen.passenger.controller.openapi.RatingControllerOpenApi;
 import com.modsen.passenger.dto.RatingResponse;
 import com.modsen.passenger.dto.ScoreRequest;
 import com.modsen.passenger.service.RatingService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -15,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/api/v1/ratings")
 @RequiredArgsConstructor
-public class RatingController {
+public class RatingController implements RatingControllerOpenApi {
 
     private final RatingService ratingService;
 
@@ -26,7 +28,7 @@ public class RatingController {
     }
 
     @PostMapping("/{passengerId}")
-    public ResponseEntity<RatingResponse> addScore(@PathVariable Integer passengerId, @RequestBody ScoreRequest request) {
+    public ResponseEntity<RatingResponse> addScore(@PathVariable Integer passengerId, @Valid @RequestBody ScoreRequest request) {
         RatingResponse response = ratingService.addScore(passengerId, request.getScore());
         return ResponseEntity.ok(response);
     }

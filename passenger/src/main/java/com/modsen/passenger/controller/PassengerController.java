@@ -1,5 +1,6 @@
 package com.modsen.passenger.controller;
 
+import com.modsen.passenger.controller.openapi.PassengerControllerOpenApi;
 import com.modsen.passenger.dto.PassengerCreate;
 import com.modsen.passenger.dto.PassengerResponse;
 import com.modsen.passenger.dto.PassengerUpdate;
@@ -23,7 +24,7 @@ import java.net.URI;
 @Controller
 @RequestMapping("/api/v1/passengers")
 @RequiredArgsConstructor
-public class PassengerController {
+public class PassengerController implements PassengerControllerOpenApi {
 
     private final PassengerService passengerService;
 
