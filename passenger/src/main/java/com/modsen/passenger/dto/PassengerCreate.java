@@ -22,7 +22,7 @@ public class PassengerCreate {
 
     @NotNull(message = "Email must not be null")
     @NotBlank(message = "Email must not be blank")
-    @Email(message = "Invalid email format")
+    @Email(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+\\.[A-Za-z]{2,}$", message = "Invalid email format")
     private String email;
 
     @NotNull(message = "Phone number must not be null")
