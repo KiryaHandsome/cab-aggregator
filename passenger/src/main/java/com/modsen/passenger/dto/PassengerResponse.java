@@ -1,11 +1,17 @@
 package com.modsen.passenger.dto;
 
-public record PassengerResponse(
-        Integer id,
-        String name,
-        String surname,
-        String email,
-        String phoneNumber
-) {
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class PassengerResponse {
+
+    private Integer id;
+    private String name;
+    private String surname;
+    private String email;
+    private String phoneNumber;
 }

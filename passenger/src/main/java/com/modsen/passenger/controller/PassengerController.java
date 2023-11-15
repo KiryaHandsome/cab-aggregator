@@ -53,7 +53,7 @@ public class PassengerController implements PassengerControllerOpenApi {
     public ResponseEntity<PassengerResponse> createPassenger(@Valid @RequestBody PassengerCreate request) {
         PassengerResponse response = passengerService.create(request);
         return ResponseEntity
-                .created(URI.create("/api/v1/passengers/" + response.id()))
+                .created(URI.create("/api/v1/passengers/" + response.getId()))
                 .body(response);
     }
 

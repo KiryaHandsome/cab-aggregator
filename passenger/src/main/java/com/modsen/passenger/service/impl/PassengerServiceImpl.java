@@ -46,7 +46,7 @@ public class PassengerServiceImpl implements PassengerService {
     public PassengerResponse update(Integer id, PassengerUpdate request) {
         Passenger passenger = passengerRepository.findById(id)
                 .orElseThrow(() -> new PassengerNotFoundException("Passenger with such not found. id=" + id));
-        throwIfEmailOrPhoneAlreadyExist(request.email(), request.phoneNumber());
+        throwIfEmailOrPhoneAlreadyExist(request.getEmail(), request.getPhoneNumber());
         updateIfNotNull(request, passenger);
         passengerRepository.save(passenger);
         return mapper.toResponse(passenger);
@@ -80,13 +80,13 @@ public class PassengerServiceImpl implements PassengerService {
     }
 
     private void updateIfNotNull(PassengerUpdate request, Passenger passenger) {
-        if (request.name() != null)
-            passenger.setName(request.name());
-        if (request.surname() != null)
-            passenger.setSurname(request.surname());
-        if (request.email() != null)
-            passenger.setEmail(request.email());
-        if (request.phoneNumber() != null)
-            passenger.setPhoneNumber(request.phoneNumber());
+        if (request.getName() != null)
+            passenger.setName(request.getName());
+        if (request.getSurname() != null)
+            passenger.setSurname(request.getSurname());
+        if (request.getEmail() != null)
+            passenger.setEmail(request.getEmail());
+        if (request.getPhoneNumber() != null)
+            passenger.setPhoneNumber(request.getPhoneNumber());
     }
 }

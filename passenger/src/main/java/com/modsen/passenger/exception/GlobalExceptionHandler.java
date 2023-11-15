@@ -2,6 +2,7 @@ package com.modsen.passenger.exception;
 
 import com.modsen.passenger.dto.ErrorResponse;
 import com.modsen.passenger.dto.ValidationErrorResponse;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -18,7 +19,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleBase(BaseException ex) {
         ErrorResponse response = new ErrorResponse(ex.getResponseCode(), ex.getMessage());
         return ResponseEntity
-                .status(response.statusCode())
+                .status(response.getStatusCode())
                 .body(response);
     }
 
@@ -27,7 +28,7 @@ public class GlobalExceptionHandler {
         BindingResult bindingResult = ex.getBindingResult();
         List<String> errorsMessages = bindingResult.getAllErrors()
                 .stream()
-                .map(e -> e.getDefaultMessage())
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .toList();
         ValidationErrorResponse response = new ValidationErrorResponse(HttpStatus.BAD_REQUEST.value(), errorsMessages);
         return ResponseEntity
