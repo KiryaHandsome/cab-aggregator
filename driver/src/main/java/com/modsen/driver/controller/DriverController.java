@@ -53,7 +53,7 @@ public class DriverController implements DriverControllerOpenApi {
     public ResponseEntity<DriverResponse> createDriver(@Valid @RequestBody DriverCreate request) {
         DriverResponse response = driverService.create(request);
         return ResponseEntity
-                .created(URI.create("/api/v1/drivers/" + response.id()))
+                .created(URI.create("/api/v1/drivers/" + response.getId()))
                 .body(response);
     }
 

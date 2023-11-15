@@ -47,7 +47,7 @@ public class DriverServiceImpl implements DriverService {
     public DriverResponse update(Integer id, DriverUpdate request) {
         Driver driver = driverRepository.findById(id)
                 .orElseThrow(() -> new DriverNotFoundException("Driver with such not found. id=" + id));
-        throwIfEmailOrPhoneAlreadyExist(request.email(), request.phoneNumber());
+        throwIfEmailOrPhoneAlreadyExist(request.getEmail(), request.getPhoneNumber());
         updateIfNotNull(request, driver);
         driverRepository.save(driver);
         return mapper.toResponse(driver);
@@ -81,15 +81,15 @@ public class DriverServiceImpl implements DriverService {
     }
 
     private void updateIfNotNull(DriverUpdate request, Driver driver) {
-        if (request.name() != null)
-            driver.setName(request.name());
-        if (request.surname() != null)
-            driver.setSurname(request.surname());
-        if (request.email() != null)
-            driver.setEmail(request.email());
-        if (request.phoneNumber() != null)
-            driver.setPhoneNumber(request.phoneNumber());
-        if (request.status() != null)
-            driver.setStatus(request.status());
+        if (request.getName() != null)
+            driver.setName(request.getName());
+        if (request.getSurname() != null)
+            driver.setSurname(request.getSurname());
+        if (request.getEmail() != null)
+            driver.setEmail(request.getEmail());
+        if (request.getPhoneNumber() != null)
+            driver.setPhoneNumber(request.getPhoneNumber());
+        if (request.getStatus() != null)
+            driver.setStatus(request.getStatus());
     }
 }

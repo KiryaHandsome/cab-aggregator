@@ -1,5 +1,6 @@
 package com.modsen.driver.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,7 +22,11 @@ public class Rating {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @Column(name = "total_ratings")
     private Integer totalRatings;
+
+    @Column(name = "average_rating")
     private Float averageRating;
 
     @OneToOne

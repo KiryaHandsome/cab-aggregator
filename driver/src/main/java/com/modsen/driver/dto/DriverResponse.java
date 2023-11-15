@@ -1,14 +1,19 @@
 package com.modsen.driver.dto;
 
 import com.modsen.driver.model.Status;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-public record DriverResponse(
-        Integer id,
-        String name,
-        String surname,
-        String email,
-        String phoneNumber,
-        Status status
-) {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class DriverResponse {
 
+    private Integer id;
+    private String name;
+    private String surname;
+    private String email;
+    private String phoneNumber;
+    private Status status;
 }
