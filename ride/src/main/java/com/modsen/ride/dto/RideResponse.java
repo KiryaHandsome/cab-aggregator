@@ -1,21 +1,17 @@
-package com.modsen.ride.model;
+package com.modsen.ride.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "rides")
-public class Ride {
+public class RideResponse {
 
-    @Id
-    private String id;
+    private Integer id;
     private Integer driverId;
     private Integer passengerId;
     private String from;
