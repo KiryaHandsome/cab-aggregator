@@ -21,9 +21,6 @@ public class Ride {
     private Integer passengerId;
     private String from;
     private String to;
-
-    @Version
-    private Integer version;
     private LocalDateTime startTime;
     private LocalDateTime finishTime;
 }
