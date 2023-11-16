@@ -2,10 +2,11 @@ package com.modsen.ride.service.impl;
 
 import com.modsen.ride.dto.RideRequest;
 import com.modsen.ride.dto.RideResponse;
+import com.modsen.ride.dto.WaitingRideResponse;
 import com.modsen.ride.mapper.RideMapper;
-import com.modsen.ride.model.Ride;
 import com.modsen.ride.model.WaitingRide;
 import com.modsen.ride.repository.RideRepository;
+import com.modsen.ride.repository.WaitingRideRepository;
 import com.modsen.ride.service.RideService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,11 +19,12 @@ public class RideServiceImpl implements RideService {
 
     private final RideMapper mapper;
     private final RideRepository rideRepository;
+    private final WaitingRideRepository waitingRideRepository;
 
     @Override
     public void bookRide(RideRequest rideRequest) {
         WaitingRide waitingRide = mapper.toWaitingRide(rideRequest);
-        //rideRepository.save(waitingRide);
+        waitingRideRepository.save(waitingRide);
     }
 
     @Override
@@ -35,5 +37,11 @@ public class RideServiceImpl implements RideService {
     public Page<RideResponse> findByDriverId(Integer driverId, Pageable pageable) {
         return rideRepository.findByDriverId(driverId, pageable)
                 .map(mapper::toResponse);
+    }
+
+    @Override
+    public Page<WaitingRideResponse> findWaitingRides(Pageable pageable) {
+        return waitingRideRepository.findAll(pageable)
+                .map(mapper::toWaitingResponse);
     }
 }

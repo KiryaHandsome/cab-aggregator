@@ -1,8 +1,8 @@
 package com.modsen.driver.service.impl;
 
-import com.modsen.driver.dto.DriverCreate;
-import com.modsen.driver.dto.DriverResponse;
-import com.modsen.driver.dto.DriverUpdate;
+import com.modsen.driver.dto.request.DriverCreate;
+import com.modsen.driver.dto.request.DriverUpdate;
+import com.modsen.driver.dto.response.DriverResponse;
 import com.modsen.driver.exception.DriverNotFoundException;
 import com.modsen.driver.exception.EmailAlreadyExistsException;
 import com.modsen.driver.exception.PhoneNumberAlreadyExistsException;

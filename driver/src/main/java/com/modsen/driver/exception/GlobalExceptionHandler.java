@@ -1,7 +1,7 @@
 package com.modsen.driver.exception;
 
-import com.modsen.driver.dto.ErrorResponse;
-import com.modsen.driver.dto.ValidationErrorResponse;
+import com.modsen.driver.dto.response.ErrorResponse;
+import com.modsen.driver.dto.response.ValidationErrorResponse;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

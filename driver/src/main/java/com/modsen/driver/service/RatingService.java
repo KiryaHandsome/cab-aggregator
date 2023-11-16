@@ -1,6 +1,6 @@
 package com.modsen.driver.service;
 
-import com.modsen.driver.dto.RatingResponse;
+import com.modsen.driver.dto.response.RatingResponse;
 
 public interface RatingService {
 

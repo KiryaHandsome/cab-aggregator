@@ -21,4 +21,11 @@ public class KafkaConfig {
                 .name("ride-ended")
                 .build();
     }
+
+    @Bean
+    public NewTopic rideOrderedTopic() {
+        return TopicBuilder
+                .name("ride-ordered")
+                .build();
+    }
 }

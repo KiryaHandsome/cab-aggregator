@@ -3,7 +3,9 @@ package com.modsen.ride.controller;
 import com.modsen.ride.controller.openapi.RideControllerOpenApi;
 import com.modsen.ride.dto.RideRequest;
 import com.modsen.ride.dto.RideResponse;
+import com.modsen.ride.dto.WaitingRideResponse;
 import com.modsen.ride.service.RideService;
+import com.modsen.ride.service.impl.KafkaProducer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,12 +23,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class RideController implements RideControllerOpenApi {
 
     private final RideService rideService;
+    private final KafkaProducer kafkaProducer;
 
     @PostMapping
     public ResponseEntity<?> bookRide(@RequestBody RideRequest rideRequest) {
         rideService.bookRide(rideRequest);
+        kafkaProducer.sendMessage("ride-ordered", rideRequest);
         return ResponseEntity.ok()
                 .build();
+    }
+
+    @GetMapping("/waiting")
+    public ResponseEntity<Page<WaitingRideResponse>> getWaitingRides(Pageable pageable) {
+        Page<WaitingRideResponse> response = rideService.findWaitingRides(pageable);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/passengers/{passengerId}")

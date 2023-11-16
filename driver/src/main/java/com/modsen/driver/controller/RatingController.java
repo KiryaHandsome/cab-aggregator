@@ -1,8 +1,8 @@
 package com.modsen.driver.controller;
 
 import com.modsen.driver.controller.openapi.RatingControllerOpenApi;
-import com.modsen.driver.dto.RatingResponse;
-import com.modsen.driver.dto.ScoreRequest;
+import com.modsen.driver.dto.request.ScoreRequest;
+import com.modsen.driver.dto.response.RatingResponse;
 import com.modsen.driver.service.RatingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

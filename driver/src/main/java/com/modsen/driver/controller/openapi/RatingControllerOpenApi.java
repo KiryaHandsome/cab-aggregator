@@ -1,10 +1,10 @@
 package com.modsen.driver.controller.openapi;
 
-import com.modsen.driver.dto.DriverResponse;
-import com.modsen.driver.dto.ErrorResponse;
-import com.modsen.driver.dto.RatingResponse;
-import com.modsen.driver.dto.ScoreRequest;
-import com.modsen.driver.dto.ValidationErrorResponse;
+import com.modsen.driver.dto.request.ScoreRequest;
+import com.modsen.driver.dto.response.DriverResponse;
+import com.modsen.driver.dto.response.ErrorResponse;
+import com.modsen.driver.dto.response.RatingResponse;
+import com.modsen.driver.dto.response.ValidationErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;

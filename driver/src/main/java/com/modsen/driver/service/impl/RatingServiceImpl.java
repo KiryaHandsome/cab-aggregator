@@ -1,6 +1,6 @@
 package com.modsen.driver.service.impl;
 
-import com.modsen.driver.dto.RatingResponse;
+import com.modsen.driver.dto.response.RatingResponse;
 import com.modsen.driver.exception.DriverNotFoundException;
 import com.modsen.driver.exception.RatingNotFoundException;
 import com.modsen.driver.mapper.RatingMapper;

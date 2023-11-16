@@ -1,9 +1,9 @@
 package com.modsen.driver.controller;
 
 import com.modsen.driver.controller.openapi.DriverControllerOpenApi;
-import com.modsen.driver.dto.DriverCreate;
-import com.modsen.driver.dto.DriverResponse;
-import com.modsen.driver.dto.DriverUpdate;
+import com.modsen.driver.dto.request.DriverCreate;
+import com.modsen.driver.dto.request.DriverUpdate;
+import com.modsen.driver.dto.response.DriverResponse;
 import com.modsen.driver.service.DriverService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
