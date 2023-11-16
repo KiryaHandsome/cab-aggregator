@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.modsen</groupId>
     <artifactId>passenger</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0</version>
     <name>passenger</name>
     <description>passenger</description>
     <properties>
