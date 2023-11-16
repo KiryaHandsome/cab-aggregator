@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# will be removed later
+**/src/test/**

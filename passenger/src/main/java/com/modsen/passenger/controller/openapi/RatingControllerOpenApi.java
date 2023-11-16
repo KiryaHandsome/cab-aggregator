@@ -1,9 +1,9 @@
 package com.modsen.passenger.controller.openapi;
 
+import com.modsen.passenger.dto.request.ScoreRequest;
 import com.modsen.passenger.dto.response.ErrorResponse;
 import com.modsen.passenger.dto.response.PassengerResponse;
 import com.modsen.passenger.dto.response.RatingResponse;
-import com.modsen.passenger.dto.request.ScoreRequest;
 import com.modsen.passenger.dto.response.ValidationErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

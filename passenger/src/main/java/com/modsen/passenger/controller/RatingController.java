@@ -1,8 +1,8 @@
 package com.modsen.passenger.controller;
 
 import com.modsen.passenger.controller.openapi.RatingControllerOpenApi;
-import com.modsen.passenger.dto.response.RatingResponse;
 import com.modsen.passenger.dto.request.ScoreRequest;
+import com.modsen.passenger.dto.response.RatingResponse;
 import com.modsen.passenger.service.RatingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

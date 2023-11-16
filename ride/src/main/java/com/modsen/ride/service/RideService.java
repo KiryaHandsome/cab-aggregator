@@ -1,5 +1,6 @@
 package com.modsen.ride.service;
 
+import com.modsen.ride.dto.RideEvent;
 import com.modsen.ride.dto.RideRequest;
 import com.modsen.ride.dto.RideResponse;
 import com.modsen.ride.dto.WaitingRideResponse;
@@ -16,4 +17,7 @@ public interface RideService {
 
     Page<WaitingRideResponse> findWaitingRides(Pageable pageable);
 
+    void startRide(RideEvent event);
+
+    void endRide(RideEvent event);
 }

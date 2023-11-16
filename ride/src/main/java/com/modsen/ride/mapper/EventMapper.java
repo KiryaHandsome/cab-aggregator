@@ -1,7 +1,7 @@
-package com.modsen.driver.mapper;
+package com.modsen.ride.mapper;
 
-import com.modsen.driver.dto.response.RatingResponse;
-import com.modsen.driver.model.Rating;
+import com.modsen.ride.dto.RideEvent;
+import com.modsen.ride.model.Ride;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.ReportingPolicy;
@@ -10,7 +10,7 @@ import org.mapstruct.ReportingPolicy;
         componentModel = MappingConstants.ComponentModel.SPRING,
         unmappedTargetPolicy = ReportingPolicy.IGNORE
 )
-public interface RatingMapper {
+public interface EventMapper {
 
-    RatingResponse toResponse(Rating rating);
+    Ride toModel(RideEvent event);
 }
