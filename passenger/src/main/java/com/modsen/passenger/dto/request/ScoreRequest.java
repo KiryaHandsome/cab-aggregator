@@ -1,4 +1,4 @@
-package com.modsen.passenger.dto;
+package com.modsen.passenger.dto.request;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

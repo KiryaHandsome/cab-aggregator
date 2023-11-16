@@ -1,8 +1,8 @@
 package com.modsen.passenger.service.impl;
 
-import com.modsen.passenger.dto.PassengerCreate;
-import com.modsen.passenger.dto.PassengerResponse;
-import com.modsen.passenger.dto.PassengerUpdate;
+import com.modsen.passenger.dto.request.PassengerCreate;
+import com.modsen.passenger.dto.response.PassengerResponse;
+import com.modsen.passenger.dto.request.PassengerUpdate;
 import com.modsen.passenger.exception.EmailAlreadyExistsException;
 import com.modsen.passenger.exception.PassengerNotFoundException;
 import com.modsen.passenger.exception.PhoneNumberAlreadyExistsException;

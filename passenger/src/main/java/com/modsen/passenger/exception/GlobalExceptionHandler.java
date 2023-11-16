@@ -1,7 +1,7 @@
 package com.modsen.passenger.exception;
 
-import com.modsen.passenger.dto.ErrorResponse;
-import com.modsen.passenger.dto.ValidationErrorResponse;
+import com.modsen.passenger.dto.response.ErrorResponse;
+import com.modsen.passenger.dto.response.ValidationErrorResponse;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

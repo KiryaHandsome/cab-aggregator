@@ -1,6 +1,6 @@
 package com.modsen.passenger.mapper;
 
-import com.modsen.passenger.dto.RatingResponse;
+import com.modsen.passenger.dto.response.RatingResponse;
 import com.modsen.passenger.model.Rating;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;

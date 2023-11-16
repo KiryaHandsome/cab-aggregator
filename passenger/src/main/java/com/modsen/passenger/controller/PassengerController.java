@@ -1,9 +1,9 @@
 package com.modsen.passenger.controller;
 
 import com.modsen.passenger.controller.openapi.PassengerControllerOpenApi;
-import com.modsen.passenger.dto.PassengerCreate;
-import com.modsen.passenger.dto.PassengerResponse;
-import com.modsen.passenger.dto.PassengerUpdate;
+import com.modsen.passenger.dto.request.PassengerCreate;
+import com.modsen.passenger.dto.response.PassengerResponse;
+import com.modsen.passenger.dto.request.PassengerUpdate;
 import com.modsen.passenger.service.PassengerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
