@@ -1,14 +1,16 @@
-package com.modsen.driver.dto;
+package com.modsen.driver.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ErrorResponse {
+public class ValidationErrorResponse {
 
     private Integer statusCode;
-    private String errorMessage;
+    private List<String> errors;
 }

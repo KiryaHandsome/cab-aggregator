@@ -1,4 +1,4 @@
-package com.modsen.driver.dto;
+package com.modsen.driver.dto.request;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
