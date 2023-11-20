@@ -36,7 +36,7 @@ public class RatingServiceImpl implements RatingService {
     @Override
     public RatingResponse addScore(Integer passengerId, Integer newScore) {
         Rating rating = ratingRepository.findByPassengerId(passengerId)
-                .orElseThrow(() -> new PassengerNotFoundException(
+                .orElseThrow(() -> new RatingNotFoundException(
                         "Rating with such passengerId not found, passengerId=" + passengerId
                 ));
         Float averageRating = calculateNewAvgRating(rating, newScore);

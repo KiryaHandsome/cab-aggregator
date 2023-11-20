@@ -47,7 +47,7 @@ public class PassengerServiceImpl implements PassengerService {
         Passenger passenger = passengerRepository.findById(id)
                 .orElseThrow(() -> new PassengerNotFoundException("Passenger with such not found. id=" + id));
         throwIfEmailOrPhoneAlreadyExist(request.getEmail(), request.getPhoneNumber());
-        updateIfNotNull(request, passenger);
+        mapper.updateIfNotNull(request, passenger);
         passengerRepository.save(passenger);
         return mapper.toResponse(passenger);
     }
@@ -77,16 +77,5 @@ public class PassengerServiceImpl implements PassengerService {
                 .ifPresent(ignored -> {
                     throw new PhoneNumberAlreadyExistsException("Phone number already exists. number=" + phoneNumber);
                 });
-    }
-
-    private void updateIfNotNull(PassengerUpdate request, Passenger passenger) {
-        if (request.getName() != null)
-            passenger.setName(request.getName());
-        if (request.getSurname() != null)
-            passenger.setSurname(request.getSurname());
-        if (request.getEmail() != null)
-            passenger.setEmail(request.getEmail());
-        if (request.getPhoneNumber() != null)
-            passenger.setPhoneNumber(request.getPhoneNumber());
     }
 }
