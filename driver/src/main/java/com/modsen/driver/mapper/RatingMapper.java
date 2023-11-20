@@ -13,4 +13,5 @@ import org.mapstruct.ReportingPolicy;
 public interface RatingMapper {
 
     RatingResponse toResponse(Rating rating);
+
 }

@@ -13,5 +13,5 @@ import org.mapstruct.ReportingPolicy;
 )
 public interface EventMapper {
 
-    RideEvent toRideStarted(RideOrdered rideOrdered);
+    RideEvent toRideEvent(RideOrdered rideOrdered);
 }

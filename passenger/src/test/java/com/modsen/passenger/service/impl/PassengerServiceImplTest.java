@@ -203,7 +203,6 @@ class PassengerServiceImplTest {
         verify(ratingRepository).save(eq(TestData.initialRating()));
     }
 
-
     @Test
     void create_shouldThrowEmailAlreadyExistsException() {
         doReturn(Optional.of(TestData.defaultPassenger()))
