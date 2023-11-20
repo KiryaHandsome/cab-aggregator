@@ -1,6 +1,8 @@
 spring:
   data:
     mongodb:
-      uri: mongodb://ride_db:27017/ride
+      host: ride_db
+      port: 27017
+      database: ride
   kafka:
     bootstrap-servers: kafka:9092

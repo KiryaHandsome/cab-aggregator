@@ -66,7 +66,7 @@ class DriverServiceImplTest {
         verify(driverRepository).findAll(eq(pageable));
         verify(driverMapper, times(2)).toResponse(TestData.defaultDriver());
     }
-    
+
 
     @Test
     void findById_shouldReturnExpectedDriver() {

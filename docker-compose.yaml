@@ -85,7 +85,7 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
 
   ride_db:
-    image: mongo:6.0
+    image: mongo:7.0
     container_name: ride_db
     ports:
       - 27017:27017

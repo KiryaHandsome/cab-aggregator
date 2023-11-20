@@ -1,7 +1,6 @@
 package com.modsen.passenger.service.impl;
 
 import com.modsen.passenger.dto.response.RatingResponse;
-import com.modsen.passenger.exception.PassengerNotFoundException;
 import com.modsen.passenger.exception.RatingNotFoundException;
 import com.modsen.passenger.mapper.RatingMapper;
 import com.modsen.passenger.model.Rating;

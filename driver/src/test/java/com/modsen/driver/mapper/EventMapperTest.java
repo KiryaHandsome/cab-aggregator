@@ -3,7 +3,6 @@ package com.modsen.driver.mapper;
 import com.modsen.driver.dto.event.RideEvent;
 import com.modsen.driver.dto.event.RideOrdered;
 import com.modsen.driver.util.TestData;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
