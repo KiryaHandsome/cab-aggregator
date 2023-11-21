@@ -27,7 +27,7 @@ public class KafkaListeners {
     public void rideOrderedListener(String message) {
         log.info("Receive message from topic <ride-ordered>: {}", message);
         RideOrdered event = JsonUtil.fromJson(message, RideOrdered.class);
-        DriverResponse driver = driverPicker.pickAvailable();
+        DriverResponse driver = driverPicker.pickAvailable(event);
         RideEvent rideEvent = eventMapper.toRideStarted(event);
         rideEvent.setDriverId(driver.getId());
         kafkaProducer.sendMessage("ride-started", rideEvent);

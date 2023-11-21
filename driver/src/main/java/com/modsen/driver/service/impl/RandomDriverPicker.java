@@ -1,5 +1,6 @@
 package com.modsen.driver.service.impl;
 
+import com.modsen.driver.dto.event.RideOrdered;
 import com.modsen.driver.dto.response.DriverResponse;
 import com.modsen.driver.exception.NoAvailableDriversException;
 import com.modsen.driver.mapper.DriverMapper;
@@ -26,9 +27,10 @@ public class RandomDriverPicker implements DriverPicker {
             backoff = @Backoff(delay = 3),
             retryFor = NoAvailableDriversException.class
     )
-    public DriverResponse pickAvailable() {
+    public DriverResponse pickAvailable(RideOrdered rideOrdered) {
         Driver driver = driverRepository.findAll(Pageable.ofSize(1))
                 .stream()
+                .filter(d -> Status.AVAILABLE.equals(d.getStatus()))
                 .findFirst()
                 .orElseThrow(() -> new NoAvailableDriversException("Driver not found"));
         driver.setStatus(Status.BUSY);
