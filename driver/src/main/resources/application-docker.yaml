@@ -1,0 +1,7 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://driver_db:5432/driver
+    username: postgres
+    password: postgres
+  kafka:
+    bootstrap-servers: kafka:9092

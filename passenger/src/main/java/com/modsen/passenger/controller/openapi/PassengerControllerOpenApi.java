@@ -1,9 +1,9 @@
 package com.modsen.passenger.controller.openapi;
 
-import com.modsen.passenger.dto.ErrorResponse;
-import com.modsen.passenger.dto.PassengerCreate;
-import com.modsen.passenger.dto.PassengerResponse;
-import com.modsen.passenger.dto.PassengerUpdate;
+import com.modsen.passenger.dto.request.PassengerCreate;
+import com.modsen.passenger.dto.request.PassengerUpdate;
+import com.modsen.passenger.dto.response.ErrorResponse;
+import com.modsen.passenger.dto.response.PassengerResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

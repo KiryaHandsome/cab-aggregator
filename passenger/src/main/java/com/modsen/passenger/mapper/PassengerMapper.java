@@ -1,13 +1,14 @@
 package com.modsen.passenger.mapper;
 
-import com.modsen.passenger.dto.PassengerCreate;
-import com.modsen.passenger.dto.PassengerResponse;
+import com.modsen.passenger.dto.request.PassengerCreate;
+import com.modsen.passenger.dto.response.PassengerResponse;
 import com.modsen.passenger.model.Passenger;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(
-        componentModel = "spring",
+        componentModel = MappingConstants.ComponentModel.SPRING,
         unmappedTargetPolicy = ReportingPolicy.IGNORE
 )
 public interface PassengerMapper {

@@ -1,0 +1,120 @@
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.1
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - kafka
+    ports:
+      - 22181:2181
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.1
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - 9092:9092
+    networks:
+      - kafka
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  passenger_db:
+    image: postgres:15-alpine
+    container_name: passenger_db
+    restart: always
+    networks:
+      - passenger
+    ports:
+      - 5433:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=passenger
+
+  passenger:
+    build:
+      context: passenger
+      dockerfile: Dockerfile
+    container_name: passenger
+    depends_on:
+      - passenger_db
+      - kafka
+    networks:
+      - passenger
+      - kafka
+    ports:
+      - 8080:8080
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+  driver_db:
+    image: postgres:15-alpine
+    container_name: driver_db
+    restart: always
+    networks:
+      - driver
+    ports:
+      - 5434:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=driver
+
+  driver:
+    build:
+      context: driver
+      dockerfile: Dockerfile
+    container_name: driver
+    depends_on:
+      - driver_db
+    networks:
+      - driver
+      - kafka
+    ports:
+      - 8081:8081
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+  ride_db:
+    image: mongo:6.0
+    container_name: ride_db
+    ports:
+      - 27018:27017
+    networks:
+      - ride
+    environment:
+      - MONGO_INITDB_DATABASE=ride
+
+  ride:
+    build:
+      context: ride
+      dockerfile: Dockerfile
+    container_name: ride
+    depends_on:
+      - ride_db
+      - kafka
+    networks:
+      - ride
+      - kafka
+    ports:
+      - 8082:8082
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+networks:
+  ride:
+  kafka:
+  driver:
+  passenger:
+
+
+

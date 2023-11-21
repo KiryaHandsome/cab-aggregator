@@ -1,0 +1,7 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://passenger_db:5432/passenger
+    username: postgres
+    password: postgres
+  kafka:
+    bootstrap-servers: kafka:9092
