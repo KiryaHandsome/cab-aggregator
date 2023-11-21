@@ -4,6 +4,7 @@ import com.modsen.ride.dto.RideEvent;
 import com.modsen.ride.dto.RideRequest;
 import com.modsen.ride.dto.RideResponse;
 import com.modsen.ride.dto.WaitingRideResponse;
+import com.modsen.ride.exception.RideNotFoundException;
 import com.modsen.ride.mapper.EventMapper;
 import com.modsen.ride.mapper.RideMapper;
 import com.modsen.ride.model.Ride;
@@ -63,7 +64,10 @@ public class RideServiceImpl implements RideService {
     public void endRide(RideEvent event) {
         Ride ride = rideRepository
                 .findByPassengerIdAndDriverIdAndFinishTimeIsNull(event.getPassengerId(), event.getDriverId())
-                .orElseThrow();
+                .orElseThrow(() -> new RideNotFoundException(
+                        String.format("Ride with passenger id=%s and driver id=%s not found.",
+                                event.getPassengerId(), event.getDriverId())
+                ));
         ride.setFinishTime(LocalDateTime.now());
         rideRepository.save(ride);
     }
