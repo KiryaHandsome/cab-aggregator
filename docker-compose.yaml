@@ -88,7 +88,7 @@ services:
     image: mongo:6.0
     container_name: ride_db
     ports:
-      - 27017:27017
+      - 27018:27017
     networks:
       - ride
     environment:
