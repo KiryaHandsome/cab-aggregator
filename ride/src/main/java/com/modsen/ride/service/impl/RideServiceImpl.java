@@ -1,16 +1,17 @@
 package com.modsen.ride.service.impl;
 
-import com.modsen.ride.dto.RideEvent;
 import com.modsen.ride.dto.RideRequest;
 import com.modsen.ride.dto.RideResponse;
+import com.modsen.ride.dto.RideStart;
 import com.modsen.ride.dto.WaitingRideResponse;
 import com.modsen.ride.exception.RideNotFoundException;
-import com.modsen.ride.mapper.EventMapper;
+import com.modsen.ride.exception.WaitingRideNotFoundException;
 import com.modsen.ride.mapper.RideMapper;
 import com.modsen.ride.model.Ride;
 import com.modsen.ride.model.WaitingRide;
 import com.modsen.ride.repository.RideRepository;
 import com.modsen.ride.repository.WaitingRideRepository;
+import com.modsen.ride.service.CostCalculator;
 import com.modsen.ride.service.RideService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,14 +25,15 @@ import java.time.LocalDateTime;
 public class RideServiceImpl implements RideService {
 
     private final RideMapper rideMapper;
-    private final EventMapper eventMapper;
     private final RideRepository rideRepository;
+    private final CostCalculator costCalculator;
     private final WaitingRideRepository waitingRideRepository;
 
     @Override
-    public void bookRide(RideRequest rideRequest) {
+    public WaitingRideResponse bookRide(RideRequest rideRequest) {
         WaitingRide waitingRide = rideMapper.toWaitingRide(rideRequest);
         waitingRideRepository.save(waitingRide);
+        return rideMapper.toWaitingResponse(waitingRide);
     }
 
     @Override
@@ -53,22 +55,28 @@ public class RideServiceImpl implements RideService {
     }
 
     @Override
-    public void startRide(RideEvent event) {
-        waitingRideRepository.deleteByPassengerId(event.getPassengerId());
-        Ride ride = eventMapper.toModel(event);
+    public RideResponse startRide(String waitingRideId, RideStart event) {
+        WaitingRide waitingRide = waitingRideRepository.findById(waitingRideId)
+                .orElseThrow(() -> new WaitingRideNotFoundException(
+                        String.format("WaitingRide with id=%s not found", waitingRideId))
+                );
+        Ride ride = rideMapper.toRide(waitingRide);
+        ride.setDriverId(event.getDriverId());
         ride.setStartTime(LocalDateTime.now());
+        ride.setCost(costCalculator.calculate(ride.getFrom(), ride.getTo()));
         rideRepository.save(ride);
+        waitingRideRepository.deleteById(waitingRideId);
+        return rideMapper.toResponse(ride);
     }
 
     @Override
-    public void endRide(RideEvent event) {
-        Ride ride = rideRepository
-                .findByPassengerIdAndDriverIdAndFinishTimeIsNull(event.getPassengerId(), event.getDriverId())
+    public RideResponse endRide(String rideId) {
+        Ride ride = rideRepository.findById(rideId)
                 .orElseThrow(() -> new RideNotFoundException(
-                        String.format("Ride with passenger id=%s and driver id=%s not found.",
-                                event.getPassengerId(), event.getDriverId())
+                        String.format("Ride with id=%s not found.", rideId)
                 ));
         ride.setFinishTime(LocalDateTime.now());
         rideRepository.save(ride);
+        return rideMapper.toResponse(ride);
     }
 }

@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RideEvent {
+public class RideDto {
 
     private Integer passengerId;
     private Integer driverId;

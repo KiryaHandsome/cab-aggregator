@@ -2,6 +2,7 @@ package com.modsen.ride.controller.openapi;
 
 import com.modsen.ride.dto.RideRequest;
 import com.modsen.ride.dto.RideResponse;
+import com.modsen.ride.dto.RideStart;
 import com.modsen.ride.dto.WaitingRideResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -201,4 +202,103 @@ public interface RideControllerOpenApi {
             )
     )
     ResponseEntity<Page<RideResponse>> getDriverRides(Integer driverId, Pageable pageable);
+
+    @Operation(
+            tags = "Ride",
+            summary = "Start a ride",
+            description = "Start a ride for passenger",
+            requestBody = @RequestBody(
+                    required = true,
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                                "driverId" : 2
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = @ExampleObject(
+                                            value = """
+                                                    {
+                                                        "id": "655c9a57a9c41e0a6d8e6005",
+                                                        "driverId": 2,
+                                                        "passengerId": 9,
+                                                        "from": "Nemiga",
+                                                        "to": "Smolyachkova",
+                                                        "cost": 127.49305,
+                                                        "startTime": "2023-11-21T14:54:17.751881231",
+                                                        "finishTime": null
+                                                    }
+                                                    """
+                                    )
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = @ExampleObject(
+                                            value = """
+                                                    {
+                                                         "statusCode": 404,
+                                                         "errorMessage": "WaitingRide with id=655c9a57a9c41e0a6d8e600 not found"
+                                                    }
+                                                    """
+                                    )
+                            )
+                    )
+            }
+    )
+    ResponseEntity<RideResponse> startRide(String waitingRideId, RideStart rideDto);
+
+    @Operation(
+            tags = "Ride",
+            summary = "End a ride",
+            description = "End a ride for passenger",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = @ExampleObject(
+                                            value = """
+                                                    {
+                                                        "id": "655c9df0c43d7f04b0bae9ae",
+                                                        "driverId": 2,
+                                                        "passengerId": 9,
+                                                        "from": "Nemiga",
+                                                        "to": "Smolyachkova",
+                                                        "cost": 141.69,
+                                                        "startTime": "2023-11-21T15:15:42.385",
+                                                        "finishTime": "2023-11-21T15:15:49.324321137"
+                                                    }
+                                                    """
+                                    )
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = @ExampleObject(
+                                            value = """
+                                                    {
+                                                        "statusCode": 404,
+                                                        "errorMessage": "Ride with id=asafs not found."
+                                                    }
+                                                    """
+                                    )
+                            )
+                    )
+            }
+    )
+    ResponseEntity<RideResponse> endRide(String rideId);
 }

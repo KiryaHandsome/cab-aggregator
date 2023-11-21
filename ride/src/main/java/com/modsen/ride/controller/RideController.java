@@ -3,6 +3,7 @@ package com.modsen.ride.controller;
 import com.modsen.ride.controller.openapi.RideControllerOpenApi;
 import com.modsen.ride.dto.RideRequest;
 import com.modsen.ride.dto.RideResponse;
+import com.modsen.ride.dto.RideStart;
 import com.modsen.ride.dto.WaitingRideResponse;
 import com.modsen.ride.service.RideService;
 import com.modsen.ride.service.impl.KafkaProducer;
@@ -26,12 +27,11 @@ public class RideController implements RideControllerOpenApi {
     private final RideService rideService;
     private final KafkaProducer kafkaProducer;
 
-    @PostMapping
+    @PostMapping("/book")
     public ResponseEntity<?> bookRide(@RequestBody @Valid RideRequest rideRequest) {
-        rideService.bookRide(rideRequest);
+        WaitingRideResponse response = rideService.bookRide(rideRequest);
         kafkaProducer.sendMessage("ride-ordered", rideRequest);
-        return ResponseEntity.ok()
-                .build();
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/waiting")
@@ -50,5 +50,17 @@ public class RideController implements RideControllerOpenApi {
     public ResponseEntity<Page<RideResponse>> getDriverRides(@PathVariable Integer driverId, Pageable pageable) {
         Page<RideResponse> response = rideService.findByDriverId(driverId, pageable);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/start/{waitingRideId}")
+    public ResponseEntity<RideResponse> startRide(@PathVariable String waitingRideId, @RequestBody RideStart request) {
+        RideResponse rideResponse = rideService.startRide(waitingRideId, request);
+        return ResponseEntity.ok(rideResponse);
+    }
+
+    @PostMapping("/end/{rideId}")
+    public ResponseEntity<RideResponse> endRide(@PathVariable String rideId) {
+        RideResponse rideResponse = rideService.endRide(rideId);
+        return ResponseEntity.ok(rideResponse);
     }
 }

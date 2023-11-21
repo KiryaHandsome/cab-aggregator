@@ -20,6 +20,7 @@ public class Ride {
     private Integer passengerId;
     private String from;
     private String to;
+    private Float cost;
     private LocalDateTime startTime;
     private LocalDateTime finishTime;
 }

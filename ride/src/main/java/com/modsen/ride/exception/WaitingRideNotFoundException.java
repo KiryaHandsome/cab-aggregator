@@ -2,9 +2,9 @@ package com.modsen.ride.exception;
 
 import org.springframework.http.HttpStatus;
 
-public class RideNotFoundException extends BaseException {
+public class WaitingRideNotFoundException extends BaseException {
 
-    public RideNotFoundException(String message) {
+    public WaitingRideNotFoundException(String message) {
         super(HttpStatus.NOT_FOUND.value(), message);
     }
 }
