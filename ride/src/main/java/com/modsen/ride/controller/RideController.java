@@ -6,6 +6,7 @@ import com.modsen.ride.dto.RideResponse;
 import com.modsen.ride.dto.WaitingRideResponse;
 import com.modsen.ride.service.RideService;
 import com.modsen.ride.service.impl.KafkaProducer;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,7 +27,7 @@ public class RideController implements RideControllerOpenApi {
     private final KafkaProducer kafkaProducer;
 
     @PostMapping
-    public ResponseEntity<?> bookRide(@RequestBody RideRequest rideRequest) {
+    public ResponseEntity<?> bookRide(@RequestBody @Valid RideRequest rideRequest) {
         rideService.bookRide(rideRequest);
         kafkaProducer.sendMessage("ride-ordered", rideRequest);
         return ResponseEntity.ok()
