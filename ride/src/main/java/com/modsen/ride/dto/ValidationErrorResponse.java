@@ -4,13 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RideEvent {
+public class ValidationErrorResponse {
 
-    private Integer passengerId;
-    private Integer driverId;
-    private String from;
-    private String to;
+    private Integer statusCode;
+    private List<String> errors;
 }

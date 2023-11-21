@@ -21,4 +21,6 @@ public interface RideMapper {
     WaitingRide toWaitingRide(RideRequest request);
 
     WaitingRideResponse toWaitingResponse(WaitingRide ride);
+
+    Ride toRide(WaitingRide ride);
 }
