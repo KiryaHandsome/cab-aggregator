@@ -35,7 +35,7 @@ public interface RideControllerOpenApi {
             ),
             responses = {
                     @ApiResponse(
-                        responseCode = "200"
+                            responseCode = "200"
                     )
             }
     )
