@@ -17,8 +17,15 @@ CREATE TABLE IF NOT EXISTS ratings
 );
 
 INSERT INTO passengers ("name", surname, email, phone_number)
-VALUES ('John', 'Doe', 'john.doe@example.com', '+123456789');
+VALUES ('John', 'Doe', 'john.doe@example.com', '+375441112222');
 INSERT INTO passengers ("name", surname, email, phone_number)
-VALUES ('Alice', 'Smith', 'alice.smith@example.com', '+987654321');
+VALUES ('Alice', 'Smith', 'alice.smith@example.com', '+375442223344');
 INSERT INTO passengers ("name", surname, email, phone_number)
-VALUES ('Bob', 'Johnson', 'bob.johnson@example.com', '+111223344');
+VALUES ('Bob', 'Johnson', 'bob.johnson@example.com', '+375336661122');
+
+INSERT INTO ratings(total_ratings, average_rating, passenger_id)
+VALUES (5, 4.0, 1);
+INSERT INTO ratings(total_ratings, average_rating, passenger_id)
+VALUES (1, 1.2, 2);
+INSERT INTO ratings(total_ratings, average_rating, passenger_id)
+VALUES (6, 2.3, 3);

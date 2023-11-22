@@ -7,11 +7,11 @@ import com.modsen.passenger.dto.response.ErrorResponse;
 import com.modsen.passenger.integration.BaseIntegrationTest;
 import com.modsen.passenger.model.Passenger;
 import com.modsen.passenger.repository.PassengerRepository;
+import com.modsen.passenger.util.HostUtil;
 import com.modsen.passenger.util.TestData;
 import com.modsen.passenger.util.TestEntities;
 import io.restassured.http.ContentType;
 import lombok.SneakyThrows;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -31,213 +31,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 
+@Sql(
+        scripts = {"classpath:sql/delete-all.sql", "classpath:sql/create-data.sql"},
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+)
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 class PassengerControllerIntegrationTest extends BaseIntegrationTest {
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
     @LocalServerPort
     private Integer port;
-
     @Autowired
     private PassengerRepository passengerRepository;
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
-    public static String getHost() {
-        return "http://localhost:";
-    }
-
-    @Test
-    @Sql(scripts = {"classpath:sql/delete-all.sql", "classpath:sql/create-data.sql"})
-    void getById_shouldReturnExpectedPassenger() {
-        Passenger expected = TestEntities.johnDoe();
-
-        when()
-                .get(getHost() + port + "/api/v1/passengers/{id}", expected.getId())
-                .then()
-                .assertThat()
-                .contentType(ContentType.JSON)
-                .body("id", is(expected.getId()))
-                .body("name", is(expected.getName()))
-                .body("surname", is(expected.getSurname()))
-                .body("email", is(expected.getEmail()))
-                .body("phoneNumber", is(expected.getPhoneNumber()))
-                .statusCode(HttpStatus.OK.value());
-    }
-
-    @Test
-    @Sql(scripts = {"classpath:sql/delete-all.sql", "classpath:sql/create-data.sql"})
-    void getPassengerById_shouldReturnStatusNotFoundAndNotEmptyMessage() {
-        Passenger expected = TestEntities.johnDoe();
-
-        when()
-                .get(getHost() + port + "/api/v1/passengers/{id}", Integer.MAX_VALUE)
-                .then()
-                .assertThat()
-                .contentType(ContentType.JSON)
-                .body(notNullValue(ErrorResponse.class))
-                .statusCode(HttpStatus.NOT_FOUND.value());
-    }
-
-    @Test
-    @Sql(scripts = {"classpath:sql/delete-all.sql", "classpath:sql/create-data.sql"})
-    void getAllPassengers_shouldReturnPageWithExpectedSize() {
-        Integer pageNumber = 0;
-        Integer pageSize = 2;
-        Integer totalElement = 3;
-
-        given()
-                .queryParam("page", pageNumber)
-                .queryParam("size", pageSize)
-                .when()
-                .get(getHost() + port + "/api/v1/passengers")
-                .then()
-                .log().all()
-                .assertThat()
-                .contentType(ContentType.JSON)
-                .body("totalElements", is(totalElement))
-                .body("numberOfElements", is(pageSize))
-                .statusCode(HttpStatus.OK.value());
-    }
-
-    @Test
-    @SneakyThrows
-    @Sql(scripts = {"classpath:sql/delete-all.sql", "classpath:sql/create-data.sql"})
-    void updatePassenger_shouldReturnUpdatedNameAndEmail() {
-        PassengerUpdate request = new PassengerUpdate(
-                TestData.NEW_NAME,
-                null,
-                TestData.NEW_EMAIL,
-                null
-        );
-        Integer passengerId = TestEntities.JOHN_ID;
-
-        given()
-                .contentType(ContentType.JSON)
-                .body(objectMapper.writeValueAsString(request))
-                .when()
-                .patch(getHost() + port + "/api/v1/passengers/{id}", passengerId)
-                .then()
-                .log().all()
-                .assertThat()
-                .contentType(ContentType.JSON)
-                .body("id", is(passengerId))
-                .body("name", is(TestData.NEW_NAME))
-                .body("surname", is(TestEntities.JOHN_SURNAME))
-                .body("email", is(TestData.NEW_EMAIL))
-                .body("phoneNumber", is(TestEntities.JOHN_PHONE_NUMBER))
-                .statusCode(HttpStatus.OK.value());
-    }
-
-    @Test
-    @SneakyThrows
-    @Sql(scripts = {"classpath:sql/delete-all.sql", "classpath:sql/create-data.sql"})
-    void updatePassenger_shouldReturnUpdatedSurnameAndPhoneNumber() {
-        PassengerUpdate request = new PassengerUpdate(
-                null,
-                TestData.NEW_SURNAME,
-                null,
-                TestData.NEW_PHONE_NUMBER
-        );
-        Integer passengerId = TestEntities.JOHN_ID;
-
-        given()
-                .contentType(ContentType.JSON)
-                .body(objectMapper.writeValueAsString(request))
-                .when()
-                .patch(getHost() + port + "/api/v1/passengers/{id}", passengerId)
-                .then()
-                .log().all()
-                .assertThat()
-                .contentType(ContentType.JSON)
-                .body("id", is(passengerId))
-                .body("name", is(TestEntities.JOHN_NAME))
-                .body("surname", is(TestData.NEW_SURNAME))
-                .body("email", is(TestEntities.JOHN_EMAIL))
-                .body("phoneNumber", is(TestData.NEW_PHONE_NUMBER))
-                .statusCode(HttpStatus.OK.value());
-    }
-
-    @ParameterizedTest
-    @SneakyThrows
-    @MethodSource("invalidPassengerUpdates")
-    @Sql(scripts = {"classpath:sql/delete-all.sql", "classpath:sql/create-data.sql"})
-    void updatePassenger_shouldReturnBadRequest(PassengerUpdate request) {
-        Integer passengerId = TestEntities.JOHN_ID;
-
-        given()
-                .contentType(ContentType.JSON)
-                .body(objectMapper.writeValueAsString(request))
-                .when()
-                .patch(getHost() + port + "/api/v1/passengers/{id}", passengerId)
-                .then()
-                .log().all()
-                .assertThat()
-                .contentType(ContentType.JSON)
-                .body("statusCode", is(HttpStatus.BAD_REQUEST.value()))
-                .statusCode(HttpStatus.BAD_REQUEST.value());
-    }
-
-    @Test
-    @SneakyThrows
-    @Sql(scripts = {"classpath:sql/delete-all.sql", "classpath:sql/create-data.sql"})
-    void createPassenger_shouldReturnCreatedPassenger() {
-        PassengerCreate request = TestData.defaultPassengerCreate();
-        Integer expectedId = 4;
-
-        given()
-                .contentType(ContentType.JSON)
-                .body(objectMapper.writeValueAsString(request))
-                .when()
-                .post(getHost() + port + "/api/v1/passengers")
-                .then()
-                .log().all()
-                .assertThat()
-                .contentType(ContentType.JSON)
-                .body("id", is(expectedId))
-                .body("name", is(request.getName()))
-                .body("surname", is(request.getSurname()))
-                .body("email", is(request.getEmail()))
-                .body("phoneNumber", is(request.getPhoneNumber()))
-                .header(HttpHeaders.LOCATION, is("/api/v1/passengers/" + expectedId))
-                .statusCode(HttpStatus.CREATED.value());
-    }
-
-    @ParameterizedTest
-    @SneakyThrows
-    @MethodSource("invalidPassengerCreatesForBadRequest")
-    @Sql(scripts = {"classpath:sql/delete-all.sql", "classpath:sql/create-data.sql"})
-    void createPassenger_shouldReturnBadRequest(PassengerCreate request) {
-        given()
-                .contentType(ContentType.JSON)
-                .body(objectMapper.writeValueAsString(request))
-                .when()
-                .post(getHost() + port + "/api/v1/passengers")
-                .then()
-                .log().all()
-                .assertThat()
-                .contentType(ContentType.JSON)
-                .body("statusCode", is(HttpStatus.BAD_REQUEST.value()))
-                .statusCode(HttpStatus.BAD_REQUEST.value());
-    }
-
-    @Test
-    @Sql(scripts = {"classpath:sql/delete-all.sql", "classpath:sql/create-data.sql"})
-    void deletePassenger_shouldReturnNoContent() {
-        Integer id = 1;
-
-        given()
-                .when()
-                .delete(getHost() + port + "/api/v1/passengers/{id}", id)
-                .then()
-                .log().all()
-                .assertThat()
-                .statusCode(HttpStatus.NO_CONTENT.value());
-
-        assertThat(passengerRepository.findById(id)).isNotPresent();
-    }
-
 
     public static Stream<PassengerCreate> invalidPassengerCreatesForBadRequest() {
         return Stream.of(
@@ -273,6 +80,267 @@ class PassengerControllerIntegrationTest extends BaseIntegrationTest {
                 new PassengerUpdate(null, null, " ", null), // invalid email
                 new PassengerUpdate(null, null, "email@com", null) // invalid email
         );
+    }
+
+    @Test
+    void getById_shouldReturnExpectedPassenger() {
+        Passenger expected = TestEntities.johnDoe();
+
+        when()
+                .get(HostUtil.getHost() + port + "/api/v1/passengers/{id}", expected.getId())
+                .then()
+                .log().all()
+                .assertThat()
+                .contentType(ContentType.JSON)
+                .body("id", is(expected.getId()))
+                .body("name", is(expected.getName()))
+                .body("surname", is(expected.getSurname()))
+                .body("email", is(expected.getEmail()))
+                .body("phoneNumber", is(expected.getPhoneNumber()))
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    @Test
+    void getPassengerById_shouldReturnStatusNotFoundAndNotEmptyMessage() {
+        Passenger expected = TestEntities.johnDoe();
+
+        when()
+                .get(HostUtil.getHost() + port + "/api/v1/passengers/{id}", Integer.MAX_VALUE)
+                .then()
+                .log().all()
+                .assertThat()
+                .contentType(ContentType.JSON)
+                .body(notNullValue(ErrorResponse.class))
+                .statusCode(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    void getAllPassengers_shouldReturnPageWithExpectedSize() {
+        Integer pageNumber = 0;
+        Integer pageSize = 2;
+        Integer totalElement = 3;
+
+        given()
+                .queryParam("page", pageNumber)
+                .queryParam("size", pageSize)
+                .when()
+                .get(HostUtil.getHost() + port + "/api/v1/passengers")
+                .then()
+                .log().all()
+                .assertThat()
+                .contentType(ContentType.JSON)
+                .body("totalElements", is(totalElement))
+                .body("numberOfElements", is(pageSize))
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    @Test
+    @SneakyThrows
+    void updatePassenger_shouldReturnUpdatedNameAndEmail() {
+        PassengerUpdate request = new PassengerUpdate(
+                TestData.NEW_NAME,
+                null,
+                TestData.NEW_EMAIL,
+                null
+        );
+        Integer passengerId = TestEntities.JOHN_ID;
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(objectMapper.writeValueAsString(request))
+                .when()
+                .patch(HostUtil.getHost() + port + "/api/v1/passengers/{id}", passengerId)
+                .then()
+                .log().all()
+                .assertThat()
+                .contentType(ContentType.JSON)
+                .body("id", is(passengerId))
+                .body("name", is(TestData.NEW_NAME))
+                .body("surname", is(TestEntities.JOHN_SURNAME))
+                .body("email", is(TestData.NEW_EMAIL))
+                .body("phoneNumber", is(TestEntities.JOHN_PHONE_NUMBER))
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    @Test
+    @SneakyThrows
+    void updatePassenger_shouldReturnUpdatedSurnameAndPhoneNumber() {
+        PassengerUpdate request = new PassengerUpdate(
+                null,
+                TestData.NEW_SURNAME,
+                null,
+                TestData.NEW_PHONE_NUMBER
+        );
+        Integer passengerId = TestEntities.JOHN_ID;
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(objectMapper.writeValueAsString(request))
+                .when()
+                .patch(HostUtil.getHost() + port + "/api/v1/passengers/{id}", passengerId)
+                .then()
+                .log().all()
+                .assertThat()
+                .contentType(ContentType.JSON)
+                .body("id", is(passengerId))
+                .body("name", is(TestEntities.JOHN_NAME))
+                .body("surname", is(TestData.NEW_SURNAME))
+                .body("email", is(TestEntities.JOHN_EMAIL))
+                .body("phoneNumber", is(TestData.NEW_PHONE_NUMBER))
+                .statusCode(HttpStatus.OK.value());
+    }
+
+    @ParameterizedTest
+    @SneakyThrows
+    @MethodSource("invalidPassengerUpdates")
+    void updatePassenger_shouldReturnBadRequest(PassengerUpdate request) {
+        Integer passengerId = TestEntities.JOHN_ID;
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(objectMapper.writeValueAsString(request))
+                .when()
+                .patch(HostUtil.getHost() + port + "/api/v1/passengers/{id}", passengerId)
+                .then()
+                .log().all()
+                .assertThat()
+                .contentType(ContentType.JSON)
+                .body("statusCode", is(HttpStatus.BAD_REQUEST.value()))
+                .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @SneakyThrows
+    void updatePassenger_withExistingEmail_shouldReturnConflict() {
+        PassengerCreate request = TestData.newPassengerCreate();
+        request.setEmail(TestEntities.JOHN_EMAIL);
+        Integer id = 2;
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(objectMapper.writeValueAsString(request))
+                .when()
+                .patch(HostUtil.getHost() + port + "/api/v1/passengers/{id}", id)
+                .then()
+                .log().all()
+                .assertThat()
+                .contentType(ContentType.JSON)
+                .body("statusCode", is(HttpStatus.CONFLICT.value()))
+                .statusCode(HttpStatus.CONFLICT.value());
+    }
+
+    @Test
+    @SneakyThrows
+    void updatePassenger_withExistingPhoneNumber_shouldReturnConflict() {
+        PassengerUpdate request = TestData.newPassengerUpdate();
+        request.setPhoneNumber(TestEntities.JOHN_PHONE_NUMBER);
+        Integer id = 2;
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(objectMapper.writeValueAsString(request))
+                .when()
+                .patch(HostUtil.getHost() + port + "/api/v1/passengers/{id}", id)
+                .then()
+                .log().all()
+                .assertThat()
+                .contentType(ContentType.JSON)
+                .body("statusCode", is(HttpStatus.CONFLICT.value()))
+                .statusCode(HttpStatus.CONFLICT.value());
+    }
+
+    @Test
+    @SneakyThrows
+    void createPassenger_shouldReturnCreatedPassenger() {
+        PassengerCreate request = TestData.defaultPassengerCreate();
+        Integer expectedId = 4;
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(objectMapper.writeValueAsString(request))
+                .when()
+                .post(HostUtil.getHost() + port + "/api/v1/passengers")
+                .then()
+                .log().all()
+                .assertThat()
+                .contentType(ContentType.JSON)
+                .body("id", is(expectedId))
+                .body("name", is(request.getName()))
+                .body("surname", is(request.getSurname()))
+                .body("email", is(request.getEmail()))
+                .body("phoneNumber", is(request.getPhoneNumber()))
+                .header(HttpHeaders.LOCATION, is("/api/v1/passengers/" + expectedId))
+                .statusCode(HttpStatus.CREATED.value());
+    }
+
+    @ParameterizedTest
+    @SneakyThrows
+    @MethodSource("invalidPassengerCreatesForBadRequest")
+    void createPassenger_shouldReturnBadRequest(PassengerCreate request) {
+        given()
+                .contentType(ContentType.JSON)
+                .body(objectMapper.writeValueAsString(request))
+                .when()
+                .post(HostUtil.getHost() + port + "/api/v1/passengers")
+                .then()
+                .log().all()
+                .assertThat()
+                .contentType(ContentType.JSON)
+                .body("statusCode", is(HttpStatus.BAD_REQUEST.value()))
+                .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @SneakyThrows
+    void createPassenger_withExistingEmail_shouldReturnConflict() {
+        PassengerCreate request = TestData.newPassengerCreate();
+        request.setEmail(TestEntities.JOHN_EMAIL);
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(objectMapper.writeValueAsString(request))
+                .when()
+                .post(HostUtil.getHost() + port + "/api/v1/passengers")
+                .then()
+                .log().all()
+                .assertThat()
+                .contentType(ContentType.JSON)
+                .body("statusCode", is(HttpStatus.CONFLICT.value()))
+                .statusCode(HttpStatus.CONFLICT.value());
+    }
+
+    @Test
+    @SneakyThrows
+    void createPassenger_withExistingPhoneNumber_shouldReturnConflict() {
+        PassengerCreate request = TestData.newPassengerCreate();
+        request.setPhoneNumber(TestEntities.JOHN_PHONE_NUMBER);
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(objectMapper.writeValueAsString(request))
+                .when()
+                .post(HostUtil.getHost() + port + "/api/v1/passengers")
+                .then()
+                .log().all()
+                .assertThat()
+                .contentType(ContentType.JSON)
+                .body("statusCode", is(HttpStatus.CONFLICT.value()))
+                .statusCode(HttpStatus.CONFLICT.value());
+    }
+
+    @Test
+    void deletePassenger_shouldReturnNoContent() {
+        Integer id = 1;
+
+        given()
+                .when()
+                .delete(HostUtil.getHost() + port + "/api/v1/passengers/{id}", id)
+                .then()
+                .log().all()
+                .assertThat()
+                .statusCode(HttpStatus.NO_CONTENT.value());
+
+        assertThat(passengerRepository.findById(id)).isNotPresent();
     }
 
 }

@@ -42,6 +42,15 @@ public class TestData {
         );
     }
 
+    public static PassengerCreate newPassengerCreate() {
+        return new PassengerCreate(
+                NEW_NAME,
+                NEW_SURNAME,
+                NEW_EMAIL,
+                NEW_PHONE_NUMBER
+        );
+    }
+
     public static Rating defaultRating() {
         return new Rating(
                 TestData.RATING_ID,
