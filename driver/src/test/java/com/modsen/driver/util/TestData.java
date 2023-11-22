@@ -5,6 +5,7 @@ import com.modsen.driver.dto.event.RideOrdered;
 import com.modsen.driver.dto.request.DriverCreate;
 import com.modsen.driver.dto.request.DriverUpdate;
 import com.modsen.driver.dto.response.DriverResponse;
+import com.modsen.driver.dto.response.RatingResponse;
 import com.modsen.driver.model.Driver;
 import com.modsen.driver.model.Rating;
 import com.modsen.driver.model.Status;
@@ -99,5 +100,9 @@ public class TestData {
 
     public static Rating defaultRating() {
         return new Rating(RATING_ID, TOTAL_RATINGS, AVERAGE_RATING, defaultDriver());
+    }
+
+    public static RatingResponse defaultRatingResponse() {
+        return new RatingResponse(AVERAGE_RATING, TOTAL_RATINGS);
     }
 }

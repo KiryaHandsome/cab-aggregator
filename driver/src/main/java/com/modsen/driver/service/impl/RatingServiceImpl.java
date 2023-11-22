@@ -37,7 +37,7 @@ public class RatingServiceImpl implements RatingService {
     @Retryable
     public RatingResponse addScore(Integer driverId, Integer newScore) {
         Rating rating = ratingRepository.findByDriverId(driverId)
-                .orElseThrow(() -> new DriverNotFoundException(
+                .orElseThrow(() -> new RatingNotFoundException(
                         "Rating with such driverId not found, driverId=" + driverId
                 ));
         Float averageRating = calculateNewAvgRating(rating, newScore);
