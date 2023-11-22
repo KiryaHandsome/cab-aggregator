@@ -22,6 +22,6 @@ public class PassengerUpdate {
     private String email;
 
     @Size(min = 10, max = 15, message = "Phone number must be between 10 and 15 characters")
-    @Pattern(regexp = "\\d+", message = "Phone number must contain only digits")
+    @Pattern(regexp = "^\\+\\d{12}$", message = "Phone number must be in format +123456789012 (exactly 12 digits)")
     private String phoneNumber;
 }

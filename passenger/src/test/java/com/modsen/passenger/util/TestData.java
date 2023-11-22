@@ -13,7 +13,7 @@ public class TestData {
     public static final String NAME = "Some name";
     public static final String SURNAME = "Surname";
     public static final String EMAIL = "email@test.com";
-    public static final String PHONE_NUMBER = "80294443322";
+    public static final String PHONE_NUMBER = "+375445556677";
     public static final Float AVERAGE_RATING = 4.7f;
     public static final Integer TOTAL_RATINGS = 50;
     public static final Integer RATING_ID = 2;
@@ -21,7 +21,7 @@ public class TestData {
     public static final String NEW_NAME = "Some new name";
     public static final String NEW_SURNAME = "NEW Surname";
     public static final String NEW_EMAIL = "new_email@test.com";
-    public static final String NEW_PHONE_NUMBER = "80294447788";
+    public static final String NEW_PHONE_NUMBER = "+375294447788";
 
     public static Passenger defaultPassenger() {
         return new Passenger(

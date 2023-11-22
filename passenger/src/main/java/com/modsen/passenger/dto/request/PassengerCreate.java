@@ -12,10 +12,12 @@ import lombok.Data;
 @AllArgsConstructor
 public class PassengerCreate {
 
+    @NotBlank(message = "Name must not be blank")
     @NotNull(message = "Name must not be null")
     @Size(min = 2, max = 255, message = "Name size must be between 2 and 255")
     private String name;
 
+    @NotBlank(message = "Surname must not be blank")
     @NotNull(message = "Surname must not be null")
     @Size(min = 2, max = 255, message = "Surname size must be between 2 and 255")
     private String surname;
@@ -27,7 +29,6 @@ public class PassengerCreate {
 
     @NotNull(message = "Phone number must not be null")
     @NotBlank(message = "Phone number must not be blank")
-    @Size(min = 10, max = 15, message = "Phone number must be between 10 and 15 characters")
-    @Pattern(regexp = "\\d+", message = "Phone number must contain only digits")
+    @Pattern(regexp = "^\\+\\d{12}$", message = "Phone number must be in format +123456789012 (exactly 12 digits)")
     private String phoneNumber;
 }
