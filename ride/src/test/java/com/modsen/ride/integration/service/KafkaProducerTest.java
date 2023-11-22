@@ -1,7 +1,7 @@
 package com.modsen.ride.integration.service;
 
 
-import com.modsen.ride.dto.RideEvent;
+import com.modsen.ride.dto.RideDto;
 import com.modsen.ride.integration.BaseIntegrationTest;
 import com.modsen.ride.service.impl.KafkaProducer;
 import com.modsen.ride.util.JsonUtil;
@@ -54,7 +54,7 @@ class KafkaProducerTest extends BaseIntegrationTest {
 
     @Test
     void check_sendMessage_should_deliverMessageToTopic() {
-        var message = TestData.rideEvent();
+        var message = TestData.rideDto();
 
         kafkaProducer.sendMessage(TOPIC_NAME, message);
 
@@ -67,7 +67,7 @@ class KafkaProducerTest extends BaseIntegrationTest {
                         return false;
                     }
 
-                    RideEvent actual = JsonUtil.fromJson(records.iterator().next().value(), RideEvent.class);
+                    RideDto actual = JsonUtil.fromJson(records.iterator().next().value(), RideDto.class);
 
                     assertThat(records.count()).isEqualTo(1);
                     assertThat(actual).isEqualTo(message);

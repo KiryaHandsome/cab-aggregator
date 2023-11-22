@@ -1,8 +1,9 @@
 package com.modsen.ride.util;
 
-import com.modsen.ride.dto.RideEvent;
+import com.modsen.ride.dto.RideDto;
 import com.modsen.ride.dto.RideRequest;
 import com.modsen.ride.dto.RideResponse;
+import com.modsen.ride.dto.RideStart;
 import com.modsen.ride.dto.WaitingRideResponse;
 import com.modsen.ride.model.Ride;
 import com.modsen.ride.model.WaitingRide;
@@ -19,6 +20,7 @@ public class TestData {
     public static final Integer DRIVER_ID = 52;
     public static final LocalDateTime START_TIME = LocalDateTime.now();
     public static final LocalDateTime FINISH_TIME = START_TIME.plusHours(1);
+    public static final Float COST = 718.56f;
 
     public static RideRequest rideRequest() {
         return new RideRequest(PASSENGER_ID, START_LOCATION, FINISH_LOCATION);
@@ -40,6 +42,7 @@ public class TestData {
                 PASSENGER_ID,
                 START_LOCATION,
                 FINISH_LOCATION,
+                COST,
                 START_TIME,
                 FINISH_TIME
         );
@@ -52,6 +55,7 @@ public class TestData {
                 PASSENGER_ID,
                 START_LOCATION,
                 FINISH_LOCATION,
+                COST,
                 START_TIME,
                 FINISH_TIME
         );
@@ -66,7 +70,11 @@ public class TestData {
         );
     }
 
-    public static RideEvent rideEvent() {
-        return new RideEvent(PASSENGER_ID, DRIVER_ID, START_LOCATION, FINISH_LOCATION);
+    public static RideDto rideDto() {
+        return new RideDto(PASSENGER_ID, DRIVER_ID, START_LOCATION, FINISH_LOCATION);
+    }
+
+    public static RideStart rideStart() {
+        return new RideStart(DRIVER_ID);
     }
 }

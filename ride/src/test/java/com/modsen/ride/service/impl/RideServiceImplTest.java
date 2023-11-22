@@ -2,11 +2,11 @@ package com.modsen.ride.service.impl;
 
 import com.modsen.ride.dto.RideResponse;
 import com.modsen.ride.dto.WaitingRideResponse;
-import com.modsen.ride.mapper.EventMapper;
 import com.modsen.ride.mapper.RideMapper;
 import com.modsen.ride.model.Ride;
 import com.modsen.ride.repository.RideRepository;
 import com.modsen.ride.repository.WaitingRideRepository;
+import com.modsen.ride.service.CostCalculator;
 import com.modsen.ride.util.TestData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,9 +32,6 @@ import static org.mockito.Mockito.verify;
 class RideServiceImplTest {
 
     @Mock
-    private EventMapper eventMapper;
-
-    @Mock
     private RideMapper rideMapper;
 
     @Mock
@@ -42,6 +39,9 @@ class RideServiceImplTest {
 
     @Mock
     private WaitingRideRepository waitingRideRepository;
+
+    @Mock
+    private CostCalculator costCalculator;
 
     @InjectMocks
     private RideServiceImpl rideService;
@@ -132,45 +132,46 @@ class RideServiceImplTest {
 
     @Test
     void startRide_shouldCallDeleteFromWaitingRidesAndSaveToRideCollection() {
+        doReturn(Optional.of(TestData.defaultWaitingRide()))
+                .when(waitingRideRepository)
+                .findById(TestData.WAITING_RIDE_ID);
         doReturn(TestData.defaultRide())
-                .when(eventMapper)
-                .toModel(TestData.rideEvent());
+                .when(rideMapper)
+                .toRide(TestData.defaultWaitingRide());
+        doReturn(TestData.COST)
+                .when(costCalculator)
+                .calculate(TestData.START_LOCATION, TestData.FINISH_LOCATION);
 
-        rideService.startRide(TestData.rideEvent());
+        rideService.startRide(TestData.WAITING_RIDE_ID, TestData.rideStart());
 
-        verify(waitingRideRepository).deleteByPassengerId(eq(TestData.PASSENGER_ID));
+        verify(rideMapper).toRide(eq(TestData.defaultWaitingRide()));
+        verify(costCalculator).calculate(eq(TestData.START_LOCATION), eq(TestData.FINISH_LOCATION));
         verify(rideRepository).save(any());
+        verify(waitingRideRepository).deleteById(eq(TestData.WAITING_RIDE_ID));
     }
 
     @Test
     void endRide_shouldThrowRuntimeException() {
         doReturn(Optional.empty())
                 .when(rideRepository)
-                .findByPassengerIdAndDriverIdAndFinishTimeIsNull(TestData.PASSENGER_ID, TestData.DRIVER_ID);
+                .findById(TestData.RIDE_ID);
 
         assertThrows(RuntimeException.class,
-                () -> rideService.endRide(TestData.rideEvent()));
+                () -> rideService.endRide(TestData.RIDE_ID));
 
         verify(rideRepository)
-                .findByPassengerIdAndDriverIdAndFinishTimeIsNull(
-                        eq(TestData.PASSENGER_ID),
-                        eq(TestData.DRIVER_ID)
-                );
+                .findById(eq(TestData.RIDE_ID));
     }
 
     @Test
     void endRide_shouldSaveUpdatedRide() {
         doReturn(Optional.of(TestData.defaultRide()))
                 .when(rideRepository)
-                .findByPassengerIdAndDriverIdAndFinishTimeIsNull(TestData.PASSENGER_ID, TestData.DRIVER_ID);
+                .findById(TestData.RIDE_ID);
 
-        rideService.endRide(TestData.rideEvent());
+        rideService.endRide(TestData.RIDE_ID);
 
-        verify(rideRepository)
-                .findByPassengerIdAndDriverIdAndFinishTimeIsNull(
-                        eq(TestData.PASSENGER_ID),
-                        eq(TestData.DRIVER_ID)
-                );
+        verify(rideRepository).findById(eq(TestData.RIDE_ID));
         verify(rideRepository).save(any());
     }
 }
