@@ -1,14 +1,17 @@
 package com.modsen.driver.integration.controller;
 
+import com.modsen.driver.dto.request.DriverCreate;
 import com.modsen.driver.dto.request.DriverUpdate;
 import com.modsen.driver.dto.response.ErrorResponse;
 import com.modsen.driver.integration.BaseIntegrationTest;
 import com.modsen.driver.model.Driver;
+import com.modsen.driver.model.Status;
 import com.modsen.driver.util.HostUtil;
 import com.modsen.driver.util.TestData;
 import com.modsen.driver.util.TestEntities;
 import io.restassured.http.ContentType;
 import lombok.SneakyThrows;
+import org.apache.http.HttpHeaders;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -158,6 +161,30 @@ class DriverControllerIntegrationTest extends BaseIntegrationTest {
     @ParameterizedTest
     @MethodSource("invalidDriverUpdatesForBadRequest")
     void updateDriver_shouldReturnBadRequestStatus(DriverUpdate request) {
+        Integer id = 2;
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(objectMapper.writeValueAsString(request))
+                .when()
+                .patch(HostUtil.getHost() + port + "/api/v1/drivers/{id}", 2)
+                .then()
+                .log().all()
+                .assertThat()
+                .contentType(ContentType.JSON)
+                .body("statusCode", is(HttpStatus.BAD_REQUEST.value()))
+                .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    @SneakyThrows
+    void createDriver_withExistingEmail_shouldReturnConflictStatus() {
+        DriverCreate request = new DriverCreate(
+                TestData.NAME,
+                TestData.SURNAME,
+                TestEntities.JOHN_EMAIL,
+                TestData.NEW_PHONE_NUMBER
+        );
 
         given()
                 .contentType(ContentType.JSON)
@@ -168,22 +195,68 @@ class DriverControllerIntegrationTest extends BaseIntegrationTest {
                 .log().all()
                 .assertThat()
                 .contentType(ContentType.JSON)
-                .body("statusCode", is(HttpStatus.BAD_REQUEST.value()))
-                .statusCode(HttpStatus.BAD_REQUEST.value());
+                .body("statusCode", is(HttpStatus.CONFLICT.value()))
+                .statusCode(HttpStatus.CONFLICT.value());
     }
 
     @Test
-    void createDriver_withExistingEmail_shouldReturnConflictStatus() {
-
-    }
-
-    @Test
+    @SneakyThrows
     void createDriver_withExistingPhoneNumber_shouldReturnConflictStatus() {
+        DriverCreate request = new DriverCreate(
+                TestData.NAME,
+                TestData.SURNAME,
+                TestData.NEW_EMAIL,
+                TestEntities.JOHN_PHONE_NUMBER
+        );
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(objectMapper.writeValueAsString(request))
+                .when()
+                .post(HostUtil.getHost() + port + "/api/v1/drivers")
+                .then()
+                .log().all()
+                .assertThat()
+                .contentType(ContentType.JSON)
+                .body("statusCode", is(HttpStatus.CONFLICT.value()))
+                .statusCode(HttpStatus.CONFLICT.value());
+    }
+
+    @SneakyThrows
+    @Test
+    void createDriver_shouldReturnCreatedDriver() {
+        DriverCreate request = TestData.newDriverCreate();
+        Integer expectedId = 4;
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(objectMapper.writeValueAsString(request))
+                .when()
+                .post(HostUtil.getHost() + port + "/api/v1/drivers")
+                .then()
+                .log().all()
+                .assertThat()
+                .contentType(ContentType.JSON)
+                .body("id", is(expectedId))
+                .body("name", is(request.getName()))
+                .body("surname", is(request.getSurname()))
+                .body("email", is(request.getEmail()))
+                .body("phoneNumber", is(request.getPhoneNumber()))
+                .body("status", is(Status.OFFLINE.toString()))
+                .statusCode(HttpStatus.CREATED.value())
+                .header(HttpHeaders.LOCATION, "/api/v1/drivers/" + expectedId);
 
     }
 
     @Test
     void deleteDriver_shouldReturnNoContentStatus() {
+        Integer id = 1;
+
+        when()
+                .delete(HostUtil.getHost() + port + "/api/v1/drivers/{id}", id)
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.NO_CONTENT.value());
     }
 
     private static Stream<DriverUpdate> invalidDriverUpdatesForBadRequest() {

@@ -94,6 +94,15 @@ public class TestData {
         );
     }
 
+    public static DriverCreate newDriverCreate() {
+        return new DriverCreate(
+                NEW_NAME,
+                NEW_SURNAME,
+                NEW_EMAIL,
+                NEW_PHONE_NUMBER
+        );
+    }
+
     public static RideOrdered defaultRideOrdered() {
         return new RideOrdered(PASSENGER_ID, START_LOCATION, FINISH_LOCATION);
     }

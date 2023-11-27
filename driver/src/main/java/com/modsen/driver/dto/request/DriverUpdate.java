@@ -24,7 +24,7 @@ public class DriverUpdate {
     @Email(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+\\.[A-Za-z]{2,}$", message = "Invalid email format")
     private String email;
 
-    @Pattern(regexp = "^\\+\\d{12}$", message = "Phone number must be in format +123456789012 (exactly 12 digits)")
+    @Pattern(regexp = "^\\+\\d{12}$", message = "Phone number must be in format +375446789012 (exactly 12 digits)")
     private String phoneNumber;
     private Status status;
 }
