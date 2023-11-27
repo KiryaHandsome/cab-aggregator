@@ -41,46 +41,12 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 class PassengerControllerIntegrationTest extends BaseIntegrationTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+
     @LocalServerPort
     private Integer port;
+
     @Autowired
     private PassengerRepository passengerRepository;
-
-    public static Stream<PassengerCreate> invalidPassengerCreatesForBadRequest() {
-        return Stream.of(
-                new PassengerCreate("", TestData.NEW_SURNAME, TestData.NEW_EMAIL, TestData.NEW_PHONE_NUMBER), // invalid name
-                new PassengerCreate("   ", TestData.NEW_SURNAME, TestData.NEW_EMAIL, TestData.NEW_PHONE_NUMBER), // invalid name
-                new PassengerCreate("a", TestData.NEW_SURNAME, TestData.NEW_EMAIL, TestData.NEW_PHONE_NUMBER), // invalid name
-                new PassengerCreate(TestData.NEW_NAME, "", TestData.NEW_EMAIL, TestData.NEW_PHONE_NUMBER), // invalid surname
-                new PassengerCreate(TestData.NEW_NAME, "    ", TestData.NEW_EMAIL, TestData.NEW_PHONE_NUMBER), // invalid surname
-                new PassengerCreate(TestData.NEW_NAME, "b", TestData.NEW_EMAIL, TestData.NEW_PHONE_NUMBER), // invalid surname
-                new PassengerCreate(TestData.NEW_NAME, TestData.NEW_SURNAME, "email", TestData.NEW_PHONE_NUMBER), // invalid email
-                new PassengerCreate(TestData.NEW_NAME, TestData.NEW_SURNAME, "email@", TestData.NEW_PHONE_NUMBER), // invalid email
-                new PassengerCreate(TestData.NEW_NAME, TestData.NEW_SURNAME, "email@com", TestData.NEW_PHONE_NUMBER), // invalid email
-                new PassengerCreate(TestData.NEW_NAME, TestData.NEW_SURNAME, TestData.NEW_EMAIL, "asfd"), // invalid phone
-                new PassengerCreate(TestData.NEW_NAME, TestData.NEW_SURNAME, TestData.NEW_EMAIL, "123asf"), // invalid phone
-                new PassengerCreate(TestData.NEW_NAME, TestData.NEW_SURNAME, TestData.NEW_EMAIL, "+123asf"), // invalid phone
-                new PassengerCreate(TestData.NEW_NAME, TestData.NEW_SURNAME, TestData.NEW_EMAIL, " ") // invalid phone
-        );
-    }
-
-    private static Stream<PassengerUpdate> invalidPassengerUpdates() {
-        return Stream.of(
-                new PassengerUpdate(null, null, null, ""), // invalid number
-                new PassengerUpdate(null, null, null, "123456"), // invalid number
-                new PassengerUpdate(null, null, null, "abc"), // invalid number
-                new PassengerUpdate("", null, null, null), // invalid name
-                new PassengerUpdate(" ", null, null, null), // invalid name
-                new PassengerUpdate("a", null, null, null), // invalid name
-                new PassengerUpdate(null, "", null, null), // invalid surname
-                new PassengerUpdate(null, " ", null, null), // invalid surname
-                new PassengerUpdate(null, "a", null, null), // invalid surname
-                new PassengerUpdate(null, null, "email", null), // invalid email
-                new PassengerUpdate(null, null, "email@", null), // invalid email
-                new PassengerUpdate(null, null, " ", null), // invalid email
-                new PassengerUpdate(null, null, "email@com", null) // invalid email
-        );
-    }
 
     @Test
     void getById_shouldReturnExpectedPassenger() {
@@ -341,6 +307,42 @@ class PassengerControllerIntegrationTest extends BaseIntegrationTest {
                 .statusCode(HttpStatus.NO_CONTENT.value());
 
         assertThat(passengerRepository.findById(id)).isNotPresent();
+    }
+
+    private static Stream<PassengerCreate> invalidPassengerCreatesForBadRequest() {
+        return Stream.of(
+                new PassengerCreate("", TestData.NEW_SURNAME, TestData.NEW_EMAIL, TestData.NEW_PHONE_NUMBER), // invalid name
+                new PassengerCreate("   ", TestData.NEW_SURNAME, TestData.NEW_EMAIL, TestData.NEW_PHONE_NUMBER), // invalid name
+                new PassengerCreate("a", TestData.NEW_SURNAME, TestData.NEW_EMAIL, TestData.NEW_PHONE_NUMBER), // invalid name
+                new PassengerCreate(TestData.NEW_NAME, "", TestData.NEW_EMAIL, TestData.NEW_PHONE_NUMBER), // invalid surname
+                new PassengerCreate(TestData.NEW_NAME, "    ", TestData.NEW_EMAIL, TestData.NEW_PHONE_NUMBER), // invalid surname
+                new PassengerCreate(TestData.NEW_NAME, "b", TestData.NEW_EMAIL, TestData.NEW_PHONE_NUMBER), // invalid surname
+                new PassengerCreate(TestData.NEW_NAME, TestData.NEW_SURNAME, "email", TestData.NEW_PHONE_NUMBER), // invalid email
+                new PassengerCreate(TestData.NEW_NAME, TestData.NEW_SURNAME, "email@", TestData.NEW_PHONE_NUMBER), // invalid email
+                new PassengerCreate(TestData.NEW_NAME, TestData.NEW_SURNAME, "email@com", TestData.NEW_PHONE_NUMBER), // invalid email
+                new PassengerCreate(TestData.NEW_NAME, TestData.NEW_SURNAME, TestData.NEW_EMAIL, "asfd"), // invalid phone
+                new PassengerCreate(TestData.NEW_NAME, TestData.NEW_SURNAME, TestData.NEW_EMAIL, "123asf"), // invalid phone
+                new PassengerCreate(TestData.NEW_NAME, TestData.NEW_SURNAME, TestData.NEW_EMAIL, "+123asf"), // invalid phone
+                new PassengerCreate(TestData.NEW_NAME, TestData.NEW_SURNAME, TestData.NEW_EMAIL, " ") // invalid phone
+        );
+    }
+
+    private static Stream<PassengerUpdate> invalidPassengerUpdates() {
+        return Stream.of(
+                new PassengerUpdate(null, null, null, ""), // invalid number
+                new PassengerUpdate(null, null, null, "123456"), // invalid number
+                new PassengerUpdate(null, null, null, "abc"), // invalid number
+                new PassengerUpdate("", null, null, null), // invalid name
+                new PassengerUpdate(" ", null, null, null), // invalid name
+                new PassengerUpdate("a", null, null, null), // invalid name
+                new PassengerUpdate(null, "", null, null), // invalid surname
+                new PassengerUpdate(null, " ", null, null), // invalid surname
+                new PassengerUpdate(null, "a", null, null), // invalid surname
+                new PassengerUpdate(null, null, "email", null), // invalid email
+                new PassengerUpdate(null, null, "email@", null), // invalid email
+                new PassengerUpdate(null, null, " ", null), // invalid email
+                new PassengerUpdate(null, null, "email@com", null) // invalid email
+        );
     }
 
 }

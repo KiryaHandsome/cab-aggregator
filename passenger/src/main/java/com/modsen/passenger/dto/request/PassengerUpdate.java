@@ -21,7 +21,6 @@ public class PassengerUpdate {
     @Email(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+\\.[A-Za-z]{2,}$", message = "Invalid email format")
     private String email;
 
-    @Size(min = 10, max = 15, message = "Phone number must be between 10 and 15 characters")
     @Pattern(regexp = "^\\+\\d{12}$", message = "Phone number must be in format +123456789012 (exactly 12 digits)")
     private String phoneNumber;
 }

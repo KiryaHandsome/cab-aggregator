@@ -35,8 +35,10 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 class RatingControllerTest extends BaseIntegrationTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+
     @LocalServerPort
     private Integer port;
+
     @Autowired
     private RatingRepository ratingRepository;
 

@@ -20,7 +20,7 @@ public class TestData {
     public static final String NEW_NAME = "new name";
     public static final String NEW_SURNAME = "new surname";
     public static final String NEW_EMAIL = "newemail@email.com";
-    public static final String NEW_PHONE_NUMBER = "778899001122";
+    public static final String NEW_PHONE_NUMBER = "+375447771122";
     public static final Integer PASSENGER_ID = 13;
     public static final String START_LOCATION = "Minsk";
     public static final String FINISH_LOCATION = "Volkovysk";
