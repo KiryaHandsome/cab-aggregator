@@ -1,7 +1,7 @@
 package com.modsen.ride.exception;
 
-import com.modsen.ride.dto.ErrorResponse;
-import com.modsen.ride.dto.ValidationErrorResponse;
+import com.modsen.ride.dto.response.ErrorResponse;
+import com.modsen.ride.dto.response.ValidationErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<?> handleRuntime(RuntimeException ex) {
-        log.warn("Caught runtime exception: {}", ex.getMessage());
+        log.warn("Caught {}: {}", ex.getClass().getName(), ex.getMessage());
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage()
         );
