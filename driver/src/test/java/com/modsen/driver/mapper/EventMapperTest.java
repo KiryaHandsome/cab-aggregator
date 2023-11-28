@@ -13,7 +13,6 @@ class EventMapperTest {
 
     private EventMapper mapper;
 
-
     @BeforeEach
     void setUp() {
         mapper = Mappers.getMapper(EventMapper.class);

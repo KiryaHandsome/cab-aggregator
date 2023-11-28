@@ -12,13 +12,13 @@ import lombok.Data;
 @AllArgsConstructor
 public class PassengerCreate {
 
-    @NotBlank(message = "Name must not be blank")
     @NotNull(message = "Name must not be null")
+    @NotBlank(message = "Name must not be blank")
     @Size(min = 2, max = 255, message = "Name size must be between 2 and 255")
     private String name;
 
-    @NotBlank(message = "Surname must not be blank")
     @NotNull(message = "Surname must not be null")
+    @NotBlank(message = "Surname must not be blank")
     @Size(min = 2, max = 255, message = "Surname size must be between 2 and 255")
     private String surname;
 

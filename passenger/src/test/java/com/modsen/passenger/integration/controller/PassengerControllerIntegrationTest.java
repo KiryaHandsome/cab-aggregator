@@ -48,13 +48,14 @@ class PassengerControllerIntegrationTest extends BaseIntegrationTest {
     @Autowired
     private PassengerRepository passengerRepository;
 
+    //@formatter:off
     @Test
     void getById_shouldReturnExpectedPassenger() {
         Passenger expected = TestEntities.johnDoe();
 
         when()
                 .get(HostUtil.getHost() + port + "/api/v1/passengers/{id}", expected.getId())
-                .then()
+        .then()
                 .log().all()
                 .assertThat()
                 .contentType(ContentType.JSON)
@@ -68,11 +69,9 @@ class PassengerControllerIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void getPassengerById_shouldReturnStatusNotFoundAndNotEmptyMessage() {
-        Passenger expected = TestEntities.johnDoe();
-
         when()
                 .get(HostUtil.getHost() + port + "/api/v1/passengers/{id}", Integer.MAX_VALUE)
-                .then()
+        .then()
                 .log().all()
                 .assertThat()
                 .contentType(ContentType.JSON)
@@ -89,9 +88,9 @@ class PassengerControllerIntegrationTest extends BaseIntegrationTest {
         given()
                 .queryParam("page", pageNumber)
                 .queryParam("size", pageSize)
-                .when()
+        .when()
                 .get(HostUtil.getHost() + port + "/api/v1/passengers")
-                .then()
+        .then()
                 .log().all()
                 .assertThat()
                 .contentType(ContentType.JSON)
@@ -114,9 +113,9 @@ class PassengerControllerIntegrationTest extends BaseIntegrationTest {
         given()
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(request))
-                .when()
+        .when()
                 .patch(HostUtil.getHost() + port + "/api/v1/passengers/{id}", passengerId)
-                .then()
+        .then()
                 .log().all()
                 .assertThat()
                 .contentType(ContentType.JSON)
@@ -142,9 +141,9 @@ class PassengerControllerIntegrationTest extends BaseIntegrationTest {
         given()
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(request))
-                .when()
+        .when()
                 .patch(HostUtil.getHost() + port + "/api/v1/passengers/{id}", passengerId)
-                .then()
+        .then()
                 .log().all()
                 .assertThat()
                 .contentType(ContentType.JSON)
@@ -165,7 +164,7 @@ class PassengerControllerIntegrationTest extends BaseIntegrationTest {
         given()
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(request))
-                .when()
+        .when()
                 .patch(HostUtil.getHost() + port + "/api/v1/passengers/{id}", passengerId)
                 .then()
                 .log().all()
@@ -185,9 +184,9 @@ class PassengerControllerIntegrationTest extends BaseIntegrationTest {
         given()
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(request))
-                .when()
+        .when()
                 .patch(HostUtil.getHost() + port + "/api/v1/passengers/{id}", id)
-                .then()
+        .then()
                 .log().all()
                 .assertThat()
                 .contentType(ContentType.JSON)
@@ -205,9 +204,9 @@ class PassengerControllerIntegrationTest extends BaseIntegrationTest {
         given()
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(request))
-                .when()
+        .when()
                 .patch(HostUtil.getHost() + port + "/api/v1/passengers/{id}", id)
-                .then()
+        .then()
                 .log().all()
                 .assertThat()
                 .contentType(ContentType.JSON)
@@ -224,9 +223,9 @@ class PassengerControllerIntegrationTest extends BaseIntegrationTest {
         given()
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(request))
-                .when()
+        .when()
                 .post(HostUtil.getHost() + port + "/api/v1/passengers")
-                .then()
+        .then()
                 .log().all()
                 .assertThat()
                 .contentType(ContentType.JSON)
@@ -246,9 +245,9 @@ class PassengerControllerIntegrationTest extends BaseIntegrationTest {
         given()
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(request))
-                .when()
+        .when()
                 .post(HostUtil.getHost() + port + "/api/v1/passengers")
-                .then()
+        .then()
                 .log().all()
                 .assertThat()
                 .contentType(ContentType.JSON)
@@ -265,9 +264,9 @@ class PassengerControllerIntegrationTest extends BaseIntegrationTest {
         given()
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(request))
-                .when()
+        .when()
                 .post(HostUtil.getHost() + port + "/api/v1/passengers")
-                .then()
+        .then()
                 .log().all()
                 .assertThat()
                 .contentType(ContentType.JSON)
@@ -284,9 +283,9 @@ class PassengerControllerIntegrationTest extends BaseIntegrationTest {
         given()
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(request))
-                .when()
+        .when()
                 .post(HostUtil.getHost() + port + "/api/v1/passengers")
-                .then()
+        .then()
                 .log().all()
                 .assertThat()
                 .contentType(ContentType.JSON)
@@ -298,10 +297,9 @@ class PassengerControllerIntegrationTest extends BaseIntegrationTest {
     void deletePassenger_shouldReturnNoContent() {
         Integer id = 1;
 
-        given()
-                .when()
+        when()
                 .delete(HostUtil.getHost() + port + "/api/v1/passengers/{id}", id)
-                .then()
+        .then()
                 .log().all()
                 .assertThat()
                 .statusCode(HttpStatus.NO_CONTENT.value());
@@ -344,5 +342,4 @@ class PassengerControllerIntegrationTest extends BaseIntegrationTest {
                 new PassengerUpdate(null, null, "email@com", null) // invalid email
         );
     }
-
 }

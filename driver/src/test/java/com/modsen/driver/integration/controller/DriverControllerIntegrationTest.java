@@ -6,6 +6,7 @@ import com.modsen.driver.dto.response.ErrorResponse;
 import com.modsen.driver.integration.BaseIntegrationTest;
 import com.modsen.driver.model.Driver;
 import com.modsen.driver.model.Status;
+import com.modsen.driver.repository.DriverRepository;
 import com.modsen.driver.util.HostUtil;
 import com.modsen.driver.util.TestData;
 import com.modsen.driver.util.TestEntities;
@@ -15,6 +16,7 @@ import org.apache.http.HttpHeaders;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -25,6 +27,7 @@ import java.util.stream.Stream;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 
@@ -42,13 +45,17 @@ class DriverControllerIntegrationTest extends BaseIntegrationTest {
     @LocalServerPort
     private Integer port;
 
+    @Autowired
+    private DriverRepository driverRepository;
+
+    //@formatter:off
     @Test
     void getDriver_shouldReturnExpectedDriver() {
         Driver expected = TestEntities.johnDoe();
 
         when()
                 .get(HostUtil.getHost() + port + "/api/v1/drivers/{id}", expected.getId())
-                .then()
+        .then()
                 .log().all()
                 .assertThat()
                 .contentType(ContentType.JSON)
@@ -67,7 +74,7 @@ class DriverControllerIntegrationTest extends BaseIntegrationTest {
 
         when()
                 .get(HostUtil.getHost() + port + "/api/v1/drivers/{id}", driverId)
-                .then()
+        .then()
                 .assertThat()
                 .contentType(ContentType.JSON)
                 .body(notNullValue(ErrorResponse.class))
@@ -83,9 +90,9 @@ class DriverControllerIntegrationTest extends BaseIntegrationTest {
         given()
                 .queryParam("page", pageNumber)
                 .queryParam("size", pageSize)
-                .when()
+        .when()
                 .get(HostUtil.getHost() + port + "/api/v1/drivers")
-                .then()
+        .then()
                 .log().all()
                 .assertThat()
                 .contentType(ContentType.JSON)
@@ -109,9 +116,9 @@ class DriverControllerIntegrationTest extends BaseIntegrationTest {
         given()
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(request))
-                .when()
+        .when()
                 .patch(HostUtil.getHost() + port + "/api/v1/drivers/{id}", driverId)
-                .then()
+        .then()
                 .log().all()
                 .contentType(ContentType.JSON)
                 .body("id", is(driverId))
@@ -121,8 +128,6 @@ class DriverControllerIntegrationTest extends BaseIntegrationTest {
                 .body("phoneNumber", is(TestEntities.JOHN_PHONE_NUMBER))
                 .body("status", is(TestEntities.JOHN_STATUS.toString()))
                 .statusCode(HttpStatus.OK.value());
-
-
     }
 
     @Test
@@ -131,7 +136,7 @@ class DriverControllerIntegrationTest extends BaseIntegrationTest {
 
         when()
                 .get(HostUtil.getHost() + port + "/api/v1/drivers/{id}", driverId)
-                .then()
+        .then()
                 .log().all()
                 .assertThat()
                 .contentType(ContentType.JSON)
@@ -148,10 +153,10 @@ class DriverControllerIntegrationTest extends BaseIntegrationTest {
         given()
                 .body(objectMapper.writeValueAsString(request))
                 .contentType(ContentType.JSON)
-                .when()
+        .when()
                 .contentType(ContentType.JSON)
                 .patch(HostUtil.getHost() + port + "/api/v1/drivers/{id}", id)
-                .then()
+        .then()
                 .assertThat()
                 .statusCode(HttpStatus.CONFLICT.value())
                 .body(notNullValue(ErrorResponse.class));
@@ -166,9 +171,9 @@ class DriverControllerIntegrationTest extends BaseIntegrationTest {
         given()
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(request))
-                .when()
-                .patch(HostUtil.getHost() + port + "/api/v1/drivers/{id}", 2)
-                .then()
+        .when()
+                .patch(HostUtil.getHost() + port + "/api/v1/drivers/{id}", id)
+        .then()
                 .log().all()
                 .assertThat()
                 .contentType(ContentType.JSON)
@@ -189,9 +194,9 @@ class DriverControllerIntegrationTest extends BaseIntegrationTest {
         given()
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(request))
-                .when()
+        .when()
                 .post(HostUtil.getHost() + port + "/api/v1/drivers")
-                .then()
+        .then()
                 .log().all()
                 .assertThat()
                 .contentType(ContentType.JSON)
@@ -212,9 +217,9 @@ class DriverControllerIntegrationTest extends BaseIntegrationTest {
         given()
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(request))
-                .when()
+        .when()
                 .post(HostUtil.getHost() + port + "/api/v1/drivers")
-                .then()
+        .then()
                 .log().all()
                 .assertThat()
                 .contentType(ContentType.JSON)
@@ -231,9 +236,9 @@ class DriverControllerIntegrationTest extends BaseIntegrationTest {
         given()
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(request))
-                .when()
+        .when()
                 .post(HostUtil.getHost() + port + "/api/v1/drivers")
-                .then()
+        .then()
                 .log().all()
                 .assertThat()
                 .contentType(ContentType.JSON)
@@ -245,7 +250,6 @@ class DriverControllerIntegrationTest extends BaseIntegrationTest {
                 .body("status", is(Status.OFFLINE.toString()))
                 .statusCode(HttpStatus.CREATED.value())
                 .header(HttpHeaders.LOCATION, "/api/v1/drivers/" + expectedId);
-
     }
 
     @Test
@@ -254,9 +258,11 @@ class DriverControllerIntegrationTest extends BaseIntegrationTest {
 
         when()
                 .delete(HostUtil.getHost() + port + "/api/v1/drivers/{id}", id)
-                .then()
+        .then()
                 .assertThat()
                 .statusCode(HttpStatus.NO_CONTENT.value());
+
+        assertThat(driverRepository.findById(id)).isNotPresent();
     }
 
     private static Stream<DriverUpdate> invalidDriverUpdatesForBadRequest() {

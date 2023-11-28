@@ -28,7 +28,6 @@ public class TestData {
     public static final Integer TOTAL_RATINGS = 100;
     public static final Float AVERAGE_RATING = 3.7f;
 
-
     public static Driver defaultDriver() {
         return new Driver(
                 DRIVER_ID,

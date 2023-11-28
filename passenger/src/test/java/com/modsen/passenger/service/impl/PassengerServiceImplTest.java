@@ -44,7 +44,6 @@ class PassengerServiceImplTest {
     @InjectMocks
     private PassengerServiceImpl passengerService;
 
-
     @Test
     void findById_shouldThrowPassengerNotFoundException() {
         doReturn(Optional.empty())

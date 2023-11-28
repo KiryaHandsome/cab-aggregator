@@ -38,7 +38,6 @@ class RatingServiceImplTest {
     @InjectMocks
     private RatingServiceImpl ratingService;
 
-
     @Test
     void getRating_shouldThrowNotFoundException() {
         doReturn(Optional.empty())
@@ -116,14 +115,6 @@ class RatingServiceImplTest {
     @Nested
     class CalculateNewAvgRating {
 
-        private static Stream<RatingParams> ratingParams() {
-            return Stream.of(
-                    new RatingParams(1, 4.4f),
-                    new RatingParams(5, 1.2f),
-                    new RatingParams(10, 3.5f)
-            );
-        }
-
         @Test
         void withNullParams_shouldReturnCloseResult() {
             Rating rating = new Rating(null, 0, 0f, null);
@@ -145,6 +136,14 @@ class RatingServiceImplTest {
 
             assertThat(actual).isNotNull();
             assertThat(actual).isCloseTo(expected, Offset.offset(0.001f));
+        }
+
+        private static Stream<RatingParams> ratingParams() {
+            return Stream.of(
+                    new RatingParams(1, 4.4f),
+                    new RatingParams(5, 1.2f),
+                    new RatingParams(10, 3.5f)
+            );
         }
 
         record RatingParams(

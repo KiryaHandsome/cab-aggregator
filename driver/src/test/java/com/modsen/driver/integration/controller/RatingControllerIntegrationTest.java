@@ -32,7 +32,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
-class RatingControllerTest extends BaseIntegrationTest {
+class RatingControllerIntegrationTest extends BaseIntegrationTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -42,13 +42,14 @@ class RatingControllerTest extends BaseIntegrationTest {
     @Autowired
     private RatingRepository ratingRepository;
 
+    //@formatter:off
     @Test
     void getRating_shouldReturnExpectedRating() {
         Integer driverId = 1;
 
         when()
                 .get(HostUtil.getHost() + port + "/api/v1/ratings/{driverId}", driverId)
-                .then()
+        .then()
                 .log().all()
                 .assertThat()
                 .contentType(ContentType.JSON)
@@ -71,9 +72,9 @@ class RatingControllerTest extends BaseIntegrationTest {
         given()
                 .contentType(ContentType.JSON)
                 .body(requestBody)
-                .when()
+        .when()
                 .post(HostUtil.getHost() + port + "/api/v1/ratings/{driverId}", driverId)
-                .then()
+        .then()
                 .log().all()
                 .assertThat()
                 .contentType(ContentType.JSON)
@@ -99,9 +100,9 @@ class RatingControllerTest extends BaseIntegrationTest {
         given()
                 .contentType(ContentType.JSON)
                 .body(requestBody)
-                .when()
+        .when()
                 .post(HostUtil.getHost() + port + "/api/v1/ratings/{driverId}", driverId)
-                .then()
+        .then()
                 .log().all()
                 .assertThat()
                 .contentType(ContentType.JSON)
