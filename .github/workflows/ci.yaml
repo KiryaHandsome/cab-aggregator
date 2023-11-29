@@ -17,5 +17,5 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Build project with Maven
-        run: ./mvnw package
+      - name: Build and test project with Maven
+        run: ./mvnw verify
