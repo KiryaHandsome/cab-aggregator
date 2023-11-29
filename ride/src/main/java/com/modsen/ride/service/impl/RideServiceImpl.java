@@ -81,6 +81,7 @@ public class RideServiceImpl implements RideService {
         ride.setStartTime(LocalDateTime.now());
         Float cost = costCalculator.calculate(ride.getFrom(), ride.getTo());
         ride.setCost(cost);
+        ride.setPaymentStatus("waiting");
     }
 
     @Override
