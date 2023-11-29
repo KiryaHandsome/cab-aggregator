@@ -1,8 +1,0 @@
-spring:
-  data:
-    mongodb:
-      host: ride_db
-      port: 27017
-      database: ride
-  kafka:
-    bootstrap-servers: kafka:9092
