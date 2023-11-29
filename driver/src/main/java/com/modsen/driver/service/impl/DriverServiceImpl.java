@@ -48,7 +48,7 @@ public class DriverServiceImpl implements DriverService {
         Driver driver = driverRepository.findById(id)
                 .orElseThrow(() -> new DriverNotFoundException("Driver with such not found. id=" + id));
         throwIfEmailOrPhoneAlreadyExist(request.getEmail(), request.getPhoneNumber());
-        mapper.updateIfNotNull(request, driver);
+        mapper.mapIfNotNull(request, driver);
         driverRepository.save(driver);
         return mapper.toResponse(driver);
     }

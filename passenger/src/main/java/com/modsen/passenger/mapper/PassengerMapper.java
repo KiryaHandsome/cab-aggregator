@@ -25,5 +25,5 @@ public interface PassengerMapper {
     @Mapping(source = "surname", target = "surname", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(source = "email", target = "email", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(source = "phoneNumber", target = "phoneNumber", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateIfNotNull(PassengerUpdate source, @MappingTarget Passenger target);
+    void mapIfNotNull(PassengerUpdate source, @MappingTarget Passenger target);
 }

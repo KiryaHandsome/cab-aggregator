@@ -3,6 +3,7 @@ package com.modsen.passenger.mapper;
 import com.modsen.passenger.dto.response.RatingResponse;
 import com.modsen.passenger.model.Rating;
 import com.modsen.passenger.util.TestData;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -11,10 +12,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class RatingMapperTest {
 
-    private RatingMapper mapper;
+    private static RatingMapper mapper;
 
-    @BeforeEach
-    public void setUp() {
+    @BeforeAll
+    static void setUp() {
         mapper = Mappers.getMapper(RatingMapper.class);
     }
 

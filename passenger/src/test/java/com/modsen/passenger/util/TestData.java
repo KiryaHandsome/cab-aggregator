@@ -73,6 +73,16 @@ public class TestData {
         );
     }
 
+    public static Passenger newPassengerWithDefaultId() {
+        return new Passenger(
+                PASSENGER_ID,
+                NEW_NAME,
+                NEW_SURNAME,
+                NEW_EMAIL,
+                NEW_PHONE_NUMBER
+        );
+    }
+
     public static PassengerUpdate defaultPassengerUpdate() {
         return new PassengerUpdate(
                 NAME,

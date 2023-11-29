@@ -26,5 +26,5 @@ public interface DriverMapper {
     @Mapping(source = "email", target = "email", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(source = "phoneNumber", target = "phoneNumber", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(source = "status", target = "status", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateIfNotNull(DriverUpdate source, @MappingTarget Driver target);
+    void mapIfNotNull(DriverUpdate source, @MappingTarget Driver target);
 }

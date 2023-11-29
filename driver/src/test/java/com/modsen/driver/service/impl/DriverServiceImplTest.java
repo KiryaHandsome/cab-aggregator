@@ -111,7 +111,7 @@ class DriverServiceImplTest {
         assertThat(actual).isEqualTo(TestData.defaultDriverResponse());
 
         verify(driverRepository).findById(eq(TestData.DRIVER_ID));
-        verify(driverMapper).updateIfNotNull(eq(TestData.defaultDriverUpdate()), eq(TestData.defaultDriver()));
+        verify(driverMapper).mapIfNotNull(eq(TestData.defaultDriverUpdate()), eq(TestData.defaultDriver()));
         verify(driverRepository).save(eq(TestData.defaultDriver()));
     }
 

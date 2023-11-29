@@ -47,7 +47,7 @@ public class PassengerServiceImpl implements PassengerService {
         Passenger passenger = passengerRepository.findById(id)
                 .orElseThrow(() -> new PassengerNotFoundException("Passenger with such not found. id=" + id));
         throwIfEmailOrPhoneAlreadyExist(request.getEmail(), request.getPhoneNumber());
-        mapper.updateIfNotNull(request, passenger);
+        mapper.mapIfNotNull(request, passenger);
         passengerRepository.save(passenger);
         return mapper.toResponse(passenger);
     }

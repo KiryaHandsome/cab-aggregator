@@ -17,10 +17,12 @@ public class TestData {
     public static final String SURNAME = "surname";
     public static final String EMAIL = "email@gmail.com";
     public static final String PHONE_NUMBER = "80294443322";
+    public static final Status STATUS = Status.OFFLINE;
     public static final String NEW_NAME = "new name";
     public static final String NEW_SURNAME = "new surname";
     public static final String NEW_EMAIL = "newemail@email.com";
     public static final String NEW_PHONE_NUMBER = "+375447771122";
+    public static final Status NEW_STATUS = Status.BUSY;
     public static final Integer PASSENGER_ID = 13;
     public static final String START_LOCATION = "Minsk";
     public static final String FINISH_LOCATION = "Volkovysk";
@@ -35,7 +37,7 @@ public class TestData {
                 SURNAME,
                 EMAIL,
                 PHONE_NUMBER,
-                Status.OFFLINE
+                STATUS
         );
     }
 
@@ -46,7 +48,7 @@ public class TestData {
                 SURNAME,
                 EMAIL,
                 PHONE_NUMBER,
-                Status.OFFLINE
+                STATUS
         );
     }
 
@@ -56,7 +58,7 @@ public class TestData {
                 SURNAME,
                 EMAIL,
                 PHONE_NUMBER,
-                Status.AVAILABLE
+                STATUS
         );
     }
 
@@ -89,7 +91,7 @@ public class TestData {
                 NEW_SURNAME,
                 NEW_EMAIL,
                 NEW_PHONE_NUMBER,
-                Status.BUSY
+                NEW_STATUS
         );
     }
 

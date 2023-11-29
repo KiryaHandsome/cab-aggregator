@@ -161,7 +161,7 @@ class PassengerServiceImplTest {
         verify(passengerRepository).findById(eq(TestData.PASSENGER_ID));
         verify(passengerRepository).findByPhoneNumber(eq(TestData.PHONE_NUMBER));
         verify(passengerRepository).findByEmail(eq(TestData.EMAIL));
-        verify(passengerMapper).updateIfNotNull(eq(TestData.defaultPassengerUpdate()), eq(TestData.defaultPassenger()));
+        verify(passengerMapper).mapIfNotNull(eq(TestData.defaultPassengerUpdate()), eq(TestData.defaultPassenger()));
         verify(passengerRepository).save(eq(TestData.defaultPassenger()));
     }
 
