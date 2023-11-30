@@ -6,3 +6,5 @@ spring:
     url: jdbc:postgresql://localhost:5432/payment
     username: postgres
     password: postgres
+  kafka:
+    bootstrap-servers: localhost:9092

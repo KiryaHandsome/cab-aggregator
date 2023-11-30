@@ -1,7 +1,7 @@
-package com.modsen.payment.config;
+package com.modsen.ride.config;
 
 import com.fasterxml.jackson.databind.ser.std.StringSerializer;
-import com.modsen.payment.dto.PaymentEvent;
+import com.modsen.ride.dto.PaymentEvent;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

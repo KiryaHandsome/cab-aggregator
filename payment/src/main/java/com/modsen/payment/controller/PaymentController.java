@@ -1,6 +1,6 @@
 package com.modsen.payment.controller;
 
-import com.modsen.payment.dto.PaymentInfo;
+import com.modsen.payment.dto.PaymentEvent;
 import com.modsen.payment.dto.RideInfo;
 import com.modsen.payment.service.PaymentService;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +18,8 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @PostMapping("/ride")
-    public ResponseEntity<PaymentInfo> payForRide(@RequestBody RideInfo rideInfo) {
-        PaymentInfo response = paymentService.payForRide(rideInfo);
+    public ResponseEntity<PaymentEvent> payForRide(@RequestBody RideInfo rideInfo) {
+        PaymentEvent response = paymentService.payForRide(rideInfo);
         return ResponseEntity.ok(response);
     }
 }

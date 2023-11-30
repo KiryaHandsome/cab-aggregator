@@ -1,6 +1,6 @@
 package com.modsen.payment.integration.controller;
 
-import com.modsen.payment.dto.PaymentInfo;
+import com.modsen.payment.dto.PaymentEvent;
 import com.modsen.payment.dto.RideInfo;
 import com.modsen.payment.integration.BaseIntegrationTest;
 import com.modsen.payment.model.Balance;
@@ -57,7 +57,7 @@ public class PaymentControllerIT extends BaseIntegrationTest {
                 .log().all()
                 .assertThat()
                 .contentType(ContentType.JSON)
-                .body(notNullValue(PaymentInfo.class))
+                .body(notNullValue(PaymentEvent.class))
                 .statusCode(HttpStatus.NOT_FOUND.value());
     }
 
@@ -78,7 +78,7 @@ public class PaymentControllerIT extends BaseIntegrationTest {
                 .log().all()
                 .assertThat()
                 .contentType(ContentType.JSON)
-                .body(notNullValue(PaymentInfo.class))
+                .body(notNullValue(PaymentEvent.class))
                 .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -99,7 +99,7 @@ public class PaymentControllerIT extends BaseIntegrationTest {
                 .log().all()
                 .assertThat()
                 .contentType(ContentType.JSON)
-                .body(notNullValue(PaymentInfo.class))
+                .body(notNullValue(PaymentEvent.class))
                 .statusCode(HttpStatus.OK.value());
 
         Balance actual = balanceRepository.findByPassengerId(passengerId)

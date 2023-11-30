@@ -25,7 +25,8 @@ public class KafkaConsumerConfig {
     @Bean
     public IntegrationFlow flow(ConsumerFactory<String, String> cf) {
         return IntegrationFlow.from(
-                        Kafka.inboundChannelAdapter(cf, new ConsumerProperties("ride-payment")))
+                        Kafka.inboundChannelAdapter(cf, new ConsumerProperties("ride-payment"))
+                )
                 .handle(System.out::println)
                 .get();
     }
@@ -40,9 +41,8 @@ public class KafkaConsumerConfig {
         return Map.of(
                 ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers,
                 ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class,
-                ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class,
-//                ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class,
-//                JsonDeserializer.TYPE_MAPPINGS, "paymentEvent:" + PaymentEvent.class.getName(),
+                ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class,
+                JsonDeserializer.TYPE_MAPPINGS, "paymentEvent:" + PaymentEvent.class.getName(),
                 ConsumerConfig.GROUP_ID_CONFIG, "ride-service"
         );
     }

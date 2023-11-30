@@ -1,6 +1,6 @@
 package com.modsen.payment.service.impl;
 
-import com.modsen.payment.dto.PaymentInfo;
+import com.modsen.payment.dto.PaymentEvent;
 import com.modsen.payment.dto.RideInfo;
 import com.modsen.payment.exception.BalanceNotFoundException;
 import com.modsen.payment.exception.LowBalanceException;
@@ -19,7 +19,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final BalanceRepository balanceRepository;
 
     @Override
-    public PaymentInfo payForRide(RideInfo ride) {
+    public PaymentEvent payForRide(RideInfo ride) {
         Balance balance = balanceRepository.findByPassengerId(ride.getPassengerId())
                 .orElseThrow(() -> new BalanceNotFoundException(
                         String.format("Balance of passenger with id=%d doesn't exist.", ride.getPassengerId())
@@ -30,7 +30,7 @@ public class PaymentServiceImpl implements PaymentService {
         Float resultAmount = balance.getAmount() - ride.getCost();
         balance.setAmount(resultAmount);
         balanceRepository.save(balance);
-        return new PaymentInfo(
+        return new PaymentEvent(
                 String.format("Ride with id=%s successfully paid", ride.getId())
         );
     }
