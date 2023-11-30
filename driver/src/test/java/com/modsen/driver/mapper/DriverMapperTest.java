@@ -4,7 +4,6 @@ import com.modsen.driver.dto.request.DriverCreate;
 import com.modsen.driver.dto.request.DriverUpdate;
 import com.modsen.driver.dto.response.DriverResponse;
 import com.modsen.driver.model.Driver;
-import com.modsen.driver.model.Status;
 import com.modsen.driver.util.TestData;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

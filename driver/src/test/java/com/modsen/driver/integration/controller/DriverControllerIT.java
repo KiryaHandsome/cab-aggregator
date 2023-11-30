@@ -5,7 +5,6 @@ import com.modsen.driver.dto.request.DriverUpdate;
 import com.modsen.driver.dto.response.DriverResponse;
 import com.modsen.driver.dto.response.ErrorResponse;
 import com.modsen.driver.dto.response.ValidationErrorResponse;
-import com.modsen.driver.dto.response.ValidationErrorResponse;
 import com.modsen.driver.integration.BaseIntegrationTest;
 import com.modsen.driver.integration.testclient.DriverTestClient;
 import com.modsen.driver.mapper.DriverMapper;
@@ -49,6 +48,27 @@ class DriverControllerIT extends BaseIntegrationTest {
     @Autowired
     private DriverRepository driverRepository;
     private DriverTestClient driverTestClient;
+
+    private static Stream<DriverUpdate> invalidDriverUpdatesForBadRequest() {
+        return Stream.of(
+                new DriverUpdate("", null, null, null, null), // invalid name
+                new DriverUpdate(" ", null, null, null, null),// invalid name
+                new DriverUpdate("a", null, null, null, null),// invalid name
+                new DriverUpdate(null, "", null, null, null), // invalid surname
+                new DriverUpdate(null, " ", null, null, null), // invalid surname
+                new DriverUpdate(null, "a", null, null, null), // invalid surname
+                new DriverUpdate(null, null, "", null, null), // invalid email
+                new DriverUpdate(null, null, " ", null, null), // invalid email
+                new DriverUpdate(null, null, "email", null, null), // invalid email
+                new DriverUpdate(null, null, "email@", null, null), // invalid email
+                new DriverUpdate(null, null, "email@com", null, null), // invalid email
+                new DriverUpdate(null, null, null, "aaa", null), // invalid phone
+                new DriverUpdate(null, null, null, "", null), // invalid phone
+                new DriverUpdate(null, null, null, " ", null), // invalid phone
+                new DriverUpdate(null, null, null, "21381914", null), // invalid phone
+                new DriverUpdate(null, null, null, "+1234567890123", null) // invalid phone
+        );
+    }
 
     // before all but after beans are injected
     @PostConstruct
@@ -246,26 +266,5 @@ class DriverControllerIT extends BaseIntegrationTest {
                 .statusCode(HttpStatus.NO_CONTENT.value());
 
         assertThat(driverRepository.findById(driverId)).isNotPresent();
-    }
-
-    private static Stream<DriverUpdate> invalidDriverUpdatesForBadRequest() {
-        return Stream.of(
-                new DriverUpdate("", null, null, null, null), // invalid name
-                new DriverUpdate(" ", null, null, null, null),// invalid name
-                new DriverUpdate("a", null, null, null, null),// invalid name
-                new DriverUpdate(null, "", null, null, null), // invalid surname
-                new DriverUpdate(null, " ", null, null, null), // invalid surname
-                new DriverUpdate(null, "a", null, null, null), // invalid surname
-                new DriverUpdate(null, null, "", null, null), // invalid email
-                new DriverUpdate(null, null, " ", null, null), // invalid email
-                new DriverUpdate(null, null, "email", null, null), // invalid email
-                new DriverUpdate(null, null, "email@", null, null), // invalid email
-                new DriverUpdate(null, null, "email@com", null, null), // invalid email
-                new DriverUpdate(null, null, null, "aaa", null), // invalid phone
-                new DriverUpdate(null, null, null, "", null), // invalid phone
-                new DriverUpdate(null, null, null, " ", null), // invalid phone
-                new DriverUpdate(null, null, null, "21381914", null), // invalid phone
-                new DriverUpdate(null, null, null, "+1234567890123", null) // invalid phone
-        );
     }
 }

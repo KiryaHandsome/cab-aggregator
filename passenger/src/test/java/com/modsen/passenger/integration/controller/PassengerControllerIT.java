@@ -2,8 +2,8 @@ package com.modsen.passenger.integration.controller;
 
 import com.modsen.passenger.dto.request.PassengerCreate;
 import com.modsen.passenger.dto.request.PassengerUpdate;
-import com.modsen.passenger.dto.response.PassengerResponse;
 import com.modsen.passenger.dto.response.ErrorResponse;
+import com.modsen.passenger.dto.response.PassengerResponse;
 import com.modsen.passenger.dto.response.ValidationErrorResponse;
 import com.modsen.passenger.integration.BaseIntegrationTest;
 import com.modsen.passenger.integration.testclient.PassengerTestClient;
@@ -48,6 +48,27 @@ class PassengerControllerIT extends BaseIntegrationTest {
     @Autowired
     private PassengerRepository passengerRepository;
     private PassengerTestClient passengerTestClient;
+
+    private static Stream<PassengerUpdate> invalidPassengerUpdatesForBadRequest() {
+        return Stream.of(
+                new PassengerUpdate("", null, null, null), // invalid name
+                new PassengerUpdate(" ", null, null, null),// invalid name
+                new PassengerUpdate("a", null, null, null),// invalid name
+                new PassengerUpdate(null, "", null, null), // invalid surname
+                new PassengerUpdate(null, " ", null, null), // invalid surname
+                new PassengerUpdate(null, "a", null, null), // invalid surname
+                new PassengerUpdate(null, null, "", null), // invalid email
+                new PassengerUpdate(null, null, " ", null), // invalid email
+                new PassengerUpdate(null, null, "email", null), // invalid email
+                new PassengerUpdate(null, null, "email@", null), // invalid email
+                new PassengerUpdate(null, null, "email@com", null), // invalid email
+                new PassengerUpdate(null, null, null, "aaa"), // invalid phone
+                new PassengerUpdate(null, null, null, ""), // invalid phone
+                new PassengerUpdate(null, null, null, " "), // invalid phone
+                new PassengerUpdate(null, null, null, "21381914"), // invalid phone
+                new PassengerUpdate(null, null, null, "+1234567890123") // invalid phone
+        );
+    }
 
     // before all but after beans are injected
     @PostConstruct
@@ -242,26 +263,5 @@ class PassengerControllerIT extends BaseIntegrationTest {
                 .statusCode(HttpStatus.NO_CONTENT.value());
 
         assertThat(passengerRepository.findById(passengerId)).isNotPresent();
-    }
-
-    private static Stream<PassengerUpdate> invalidPassengerUpdatesForBadRequest() {
-        return Stream.of(
-                new PassengerUpdate("", null, null, null), // invalid name
-                new PassengerUpdate(" ", null, null, null),// invalid name
-                new PassengerUpdate("a", null, null, null),// invalid name
-                new PassengerUpdate(null, "", null, null), // invalid surname
-                new PassengerUpdate(null, " ", null, null), // invalid surname
-                new PassengerUpdate(null, "a", null, null), // invalid surname
-                new PassengerUpdate(null, null, "", null), // invalid email
-                new PassengerUpdate(null, null, " ", null), // invalid email
-                new PassengerUpdate(null, null, "email", null), // invalid email
-                new PassengerUpdate(null, null, "email@", null), // invalid email
-                new PassengerUpdate(null, null, "email@com", null), // invalid email
-                new PassengerUpdate(null, null, null, "aaa"), // invalid phone
-                new PassengerUpdate(null, null, null, ""), // invalid phone
-                new PassengerUpdate(null, null, null, " "), // invalid phone
-                new PassengerUpdate(null, null, null, "21381914"), // invalid phone
-                new PassengerUpdate(null, null, null, "+1234567890123") // invalid phone
-        );
     }
 }
