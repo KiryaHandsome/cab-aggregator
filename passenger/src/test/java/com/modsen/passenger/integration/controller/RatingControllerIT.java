@@ -5,15 +5,12 @@ import com.modsen.passenger.dto.response.RatingResponse;
 import com.modsen.passenger.dto.response.ValidationErrorResponse;
 import com.modsen.passenger.integration.BaseIntegrationTest;
 import com.modsen.passenger.integration.testclient.RatingTestClient;
-import com.modsen.passenger.repository.RatingRepository;
 import com.modsen.passenger.util.TestEntities;
-import io.restassured.http.ContentType;
 import jakarta.annotation.PostConstruct;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -35,8 +32,6 @@ class RatingControllerIT extends BaseIntegrationTest {
     @LocalServerPort
     private Integer port;
 
-    @Autowired
-    private RatingRepository ratingRepository;
     private RatingTestClient ratingTestClient;
 
     @PostConstruct
@@ -49,11 +44,7 @@ class RatingControllerIT extends BaseIntegrationTest {
         Integer passengerId = 1;
         RatingResponse expected = new RatingResponse(TestEntities.JOHN_AVERAGE_RATING, TestEntities.JOHN_TOTAL_RATINGS);
 
-        RatingResponse actual = ratingTestClient.getRating(passengerId)
-                .assertThat()
-                .statusCode(HttpStatus.OK.value())
-                .extract()
-                .as(RatingResponse.class);
+        RatingResponse actual = ratingTestClient.getRating(passengerId);
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -72,12 +63,7 @@ class RatingControllerIT extends BaseIntegrationTest {
                 initialTotal + 1
         );
 
-        RatingResponse actual = ratingTestClient.addScore(passengerId, new ScoreRequest(newScore))
-                .assertThat()
-                .contentType(ContentType.JSON)
-                .statusCode(HttpStatus.OK.value())
-                .extract()
-                .as(RatingResponse.class);
+        RatingResponse actual = ratingTestClient.addScore(passengerId, new ScoreRequest(newScore));
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -88,12 +74,9 @@ class RatingControllerIT extends BaseIntegrationTest {
     void addScore_shouldReturnBadRequest(int newScore) {
         int passengerId = 1;
 
-        ValidationErrorResponse actual = ratingTestClient.addScore(passengerId, new ScoreRequest(newScore))
-                .assertThat()
-                .contentType(ContentType.JSON)
-                .statusCode(HttpStatus.BAD_REQUEST.value())
-                .extract()
-                .as(ValidationErrorResponse.class);
+        ValidationErrorResponse actual = ratingTestClient.addScoreForValidationError(
+                passengerId, new ScoreRequest(newScore)
+        );
 
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }

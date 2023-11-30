@@ -11,11 +11,8 @@ import com.modsen.passenger.mapper.PassengerMapper;
 import com.modsen.passenger.repository.PassengerRepository;
 import com.modsen.passenger.util.TestData;
 import com.modsen.passenger.util.TestEntities;
-import io.restassured.common.mapper.TypeRef;
-import io.restassured.http.ContentType;
 import jakarta.annotation.PostConstruct;
 import lombok.SneakyThrows;
-import org.apache.http.HttpHeaders;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -49,28 +46,8 @@ class PassengerControllerIT extends BaseIntegrationTest {
     private PassengerRepository passengerRepository;
     private PassengerTestClient passengerTestClient;
 
-    private static Stream<PassengerUpdate> invalidPassengerUpdatesForBadRequest() {
-        return Stream.of(
-                new PassengerUpdate("", null, null, null), // invalid name
-                new PassengerUpdate(" ", null, null, null),// invalid name
-                new PassengerUpdate("a", null, null, null),// invalid name
-                new PassengerUpdate(null, "", null, null), // invalid surname
-                new PassengerUpdate(null, " ", null, null), // invalid surname
-                new PassengerUpdate(null, "a", null, null), // invalid surname
-                new PassengerUpdate(null, null, "", null), // invalid email
-                new PassengerUpdate(null, null, " ", null), // invalid email
-                new PassengerUpdate(null, null, "email", null), // invalid email
-                new PassengerUpdate(null, null, "email@", null), // invalid email
-                new PassengerUpdate(null, null, "email@com", null), // invalid email
-                new PassengerUpdate(null, null, null, "aaa"), // invalid phone
-                new PassengerUpdate(null, null, null, ""), // invalid phone
-                new PassengerUpdate(null, null, null, " "), // invalid phone
-                new PassengerUpdate(null, null, null, "21381914"), // invalid phone
-                new PassengerUpdate(null, null, null, "+1234567890123") // invalid phone
-        );
-    }
-
     // before all but after beans are injected
+
     @PostConstruct
     public void setUp() {
         passengerTestClient = PassengerTestClient.withPort(port);
@@ -81,11 +58,7 @@ class PassengerControllerIT extends BaseIntegrationTest {
         int passengerId = TestEntities.JOHN_ID;
         PassengerResponse expected = passengerMapper.toResponse(TestEntities.johnDoe());
 
-        PassengerResponse actual = passengerTestClient.getPassengerById(passengerId)
-                .assertThat()
-                .contentType(ContentType.JSON)
-                .extract()
-                .as(PassengerResponse.class);
+        PassengerResponse actual = passengerTestClient.getPassengerById(passengerId);
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -94,12 +67,7 @@ class PassengerControllerIT extends BaseIntegrationTest {
     void getPassenger_shouldReturnNotFoundCode() {
         int passengerId = 100;
 
-        ErrorResponse actual = passengerTestClient.getPassengerById(passengerId)
-                .assertThat()
-                .contentType(ContentType.JSON)
-                .statusCode(HttpStatus.NOT_FOUND.value())
-                .extract()
-                .as(ErrorResponse.class);
+        ErrorResponse actual = passengerTestClient.getPassengerByIdForError(passengerId);
 
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
@@ -111,9 +79,6 @@ class PassengerControllerIT extends BaseIntegrationTest {
         int totalElements = 3;
 
         passengerTestClient.getPassengers(pageNumber, pageSize)
-                .assertThat()
-                .contentType(ContentType.JSON)
-                .statusCode(HttpStatus.OK.value())
                 .body("totalElements", is(totalElements));
     }
 
@@ -135,12 +100,7 @@ class PassengerControllerIT extends BaseIntegrationTest {
         );
         int passengerId = TestEntities.JOHN_ID;
 
-        PassengerResponse actual = passengerTestClient.updatePassenger(passengerId, requestBody)
-                .contentType(ContentType.JSON)
-                .statusCode(HttpStatus.OK.value())
-                .extract()
-                .as(new TypeRef<>() {
-                });
+        PassengerResponse actual = passengerTestClient.updatePassenger(passengerId, requestBody);
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -149,12 +109,7 @@ class PassengerControllerIT extends BaseIntegrationTest {
     void updatePassenger_shouldReturnNotFoundCode() {
         int passengerId = 100;
 
-        ErrorResponse actual = passengerTestClient.updatePassenger(passengerId, new PassengerUpdate())
-                .assertThat()
-                .statusCode(HttpStatus.NOT_FOUND.value())
-                .contentType(ContentType.JSON)
-                .extract()
-                .as(ErrorResponse.class);
+        ErrorResponse actual = passengerTestClient.updatePassengerForNotFound(passengerId, new PassengerUpdate());
 
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
@@ -165,12 +120,7 @@ class PassengerControllerIT extends BaseIntegrationTest {
         int passengerId = 2;
         PassengerUpdate requestBody = new PassengerUpdate(null, null, TestEntities.JOHN_EMAIL, null);
 
-        ErrorResponse actual = passengerTestClient.updatePassenger(passengerId, requestBody)
-                .assertThat()
-                .contentType(ContentType.JSON)
-                .statusCode(HttpStatus.CONFLICT.value())
-                .extract()
-                .as(ErrorResponse.class);
+        ErrorResponse actual = passengerTestClient.updatePassengerForConflict(passengerId, requestBody);
 
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
@@ -181,12 +131,8 @@ class PassengerControllerIT extends BaseIntegrationTest {
     void updatePassenger_shouldReturnBadRequestStatus(PassengerUpdate requestBody) {
         int passengerId = 2;
 
-        ValidationErrorResponse actual = passengerTestClient.updatePassenger(passengerId, requestBody)
-                .assertThat()
-                .contentType(ContentType.JSON)
-                .statusCode(HttpStatus.BAD_REQUEST.value())
-                .extract()
-                .as(ValidationErrorResponse.class);
+        ValidationErrorResponse actual = passengerTestClient
+                .updatePassengerForValidationError(passengerId, requestBody);
 
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -201,12 +147,7 @@ class PassengerControllerIT extends BaseIntegrationTest {
                 TestData.NEW_PHONE_NUMBER
         );
 
-        ErrorResponse actual = passengerTestClient.createPassenger(requestBody)
-                .assertThat()
-                .contentType(ContentType.JSON)
-                .statusCode(HttpStatus.CONFLICT.value())
-                .extract()
-                .as(ErrorResponse.class);
+        ErrorResponse actual = passengerTestClient.createPassengerForConflict(requestBody);
 
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
@@ -221,12 +162,7 @@ class PassengerControllerIT extends BaseIntegrationTest {
                 TestEntities.JOHN_PHONE_NUMBER
         );
 
-        ErrorResponse actual = passengerTestClient.createPassenger(requestBody)
-                .assertThat()
-                .contentType(ContentType.JSON)
-                .statusCode(HttpStatus.CONFLICT.value())
-                .extract()
-                .as(ErrorResponse.class);
+        ErrorResponse actual = passengerTestClient.createPassengerForConflict(requestBody);
 
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
@@ -244,13 +180,7 @@ class PassengerControllerIT extends BaseIntegrationTest {
                 TestData.NEW_PHONE_NUMBER
         );
 
-        PassengerResponse actual = passengerTestClient.createPassenger(requestBody)
-                .assertThat()
-                .contentType(ContentType.JSON)
-                .statusCode(HttpStatus.CREATED.value())
-                .header(HttpHeaders.LOCATION, "/api/v1/passengers/" + expectedId)
-                .extract()
-                .as(PassengerResponse.class);
+        PassengerResponse actual = passengerTestClient.createPassenger(expectedId, requestBody);
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -263,5 +193,26 @@ class PassengerControllerIT extends BaseIntegrationTest {
                 .statusCode(HttpStatus.NO_CONTENT.value());
 
         assertThat(passengerRepository.findById(passengerId)).isNotPresent();
+    }
+
+    private static Stream<PassengerUpdate> invalidPassengerUpdatesForBadRequest() {
+        return Stream.of(
+                new PassengerUpdate("", null, null, null), // invalid name
+                new PassengerUpdate(" ", null, null, null),// invalid name
+                new PassengerUpdate("a", null, null, null),// invalid name
+                new PassengerUpdate(null, "", null, null), // invalid surname
+                new PassengerUpdate(null, " ", null, null), // invalid surname
+                new PassengerUpdate(null, "a", null, null), // invalid surname
+                new PassengerUpdate(null, null, "", null), // invalid email
+                new PassengerUpdate(null, null, " ", null), // invalid email
+                new PassengerUpdate(null, null, "email", null), // invalid email
+                new PassengerUpdate(null, null, "email@", null), // invalid email
+                new PassengerUpdate(null, null, "email@com", null), // invalid email
+                new PassengerUpdate(null, null, null, "aaa"), // invalid phone
+                new PassengerUpdate(null, null, null, ""), // invalid phone
+                new PassengerUpdate(null, null, null, " "), // invalid phone
+                new PassengerUpdate(null, null, null, "21381914"), // invalid phone
+                new PassengerUpdate(null, null, null, "+1234567890123") // invalid phone
+        );
     }
 }

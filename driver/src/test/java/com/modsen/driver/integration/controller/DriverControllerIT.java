@@ -11,11 +11,8 @@ import com.modsen.driver.mapper.DriverMapper;
 import com.modsen.driver.repository.DriverRepository;
 import com.modsen.driver.util.TestData;
 import com.modsen.driver.util.TestEntities;
-import io.restassured.common.mapper.TypeRef;
-import io.restassured.http.ContentType;
 import jakarta.annotation.PostConstruct;
 import lombok.SneakyThrows;
-import org.apache.http.HttpHeaders;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -28,7 +25,6 @@ import org.springframework.test.context.jdbc.Sql;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.is;
 
 @Sql(
         scripts = {"classpath:sql/delete-all.sql", "classpath:sql/create-data.sql"},
@@ -49,28 +45,8 @@ class DriverControllerIT extends BaseIntegrationTest {
     private DriverRepository driverRepository;
     private DriverTestClient driverTestClient;
 
-    private static Stream<DriverUpdate> invalidDriverUpdatesForBadRequest() {
-        return Stream.of(
-                new DriverUpdate("", null, null, null, null), // invalid name
-                new DriverUpdate(" ", null, null, null, null),// invalid name
-                new DriverUpdate("a", null, null, null, null),// invalid name
-                new DriverUpdate(null, "", null, null, null), // invalid surname
-                new DriverUpdate(null, " ", null, null, null), // invalid surname
-                new DriverUpdate(null, "a", null, null, null), // invalid surname
-                new DriverUpdate(null, null, "", null, null), // invalid email
-                new DriverUpdate(null, null, " ", null, null), // invalid email
-                new DriverUpdate(null, null, "email", null, null), // invalid email
-                new DriverUpdate(null, null, "email@", null, null), // invalid email
-                new DriverUpdate(null, null, "email@com", null, null), // invalid email
-                new DriverUpdate(null, null, null, "aaa", null), // invalid phone
-                new DriverUpdate(null, null, null, "", null), // invalid phone
-                new DriverUpdate(null, null, null, " ", null), // invalid phone
-                new DriverUpdate(null, null, null, "21381914", null), // invalid phone
-                new DriverUpdate(null, null, null, "+1234567890123", null) // invalid phone
-        );
-    }
-
     // before all but after beans are injected
+
     @PostConstruct
     public void setUp() {
         driverTestClient = DriverTestClient.withPort(port);
@@ -81,11 +57,7 @@ class DriverControllerIT extends BaseIntegrationTest {
         int driverId = TestEntities.JOHN_ID;
         DriverResponse expected = driverMapper.toResponse(TestEntities.johnDoe());
 
-        DriverResponse actual = driverTestClient.getDriverById(driverId)
-                .assertThat()
-                .contentType(ContentType.JSON)
-                .extract()
-                .as(DriverResponse.class);
+        DriverResponse actual = driverTestClient.getDriverById(driverId);
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -94,12 +66,7 @@ class DriverControllerIT extends BaseIntegrationTest {
     void getDriver_shouldReturnNotFoundCode() {
         int driverId = 100;
 
-        ErrorResponse actual = driverTestClient.getDriverById(driverId)
-                .assertThat()
-                .contentType(ContentType.JSON)
-                .statusCode(HttpStatus.NOT_FOUND.value())
-                .extract()
-                .as(ErrorResponse.class);
+        ErrorResponse actual = driverTestClient.getDriverByIdForNotFound(driverId);
 
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
@@ -110,11 +77,7 @@ class DriverControllerIT extends BaseIntegrationTest {
         int pageSize = 2;
         int totalElements = 3;
 
-        driverTestClient.getDrivers(pageNumber, pageSize)
-                .assertThat()
-                .contentType(ContentType.JSON)
-                .statusCode(HttpStatus.OK.value())
-                .body("totalElements", is(totalElements));
+        driverTestClient.getDrivers(pageNumber, pageSize, totalElements);
     }
 
     @Test
@@ -137,12 +100,7 @@ class DriverControllerIT extends BaseIntegrationTest {
         );
         int driverId = TestEntities.JOHN_ID;
 
-        DriverResponse actual = driverTestClient.updateDriver(driverId, requestBody)
-                .contentType(ContentType.JSON)
-                .statusCode(HttpStatus.OK.value())
-                .extract()
-                .as(new TypeRef<>() {
-                });
+        DriverResponse actual = driverTestClient.updateDriver(driverId, requestBody);
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -151,12 +109,7 @@ class DriverControllerIT extends BaseIntegrationTest {
     void updateDriver_shouldReturnNotFoundCode() {
         int driverId = 100;
 
-        ErrorResponse actual = driverTestClient.updateDriver(driverId, new DriverUpdate())
-                .assertThat()
-                .statusCode(HttpStatus.NOT_FOUND.value())
-                .contentType(ContentType.JSON)
-                .extract()
-                .as(ErrorResponse.class);
+        ErrorResponse actual = driverTestClient.updateDriverForNotFound(driverId, new DriverUpdate());
 
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
@@ -167,12 +120,7 @@ class DriverControllerIT extends BaseIntegrationTest {
         int driverId = 2;
         DriverUpdate requestBody = new DriverUpdate(null, null, TestEntities.JOHN_EMAIL, null, null);
 
-        ErrorResponse actual = driverTestClient.updateDriver(driverId, requestBody)
-                .assertThat()
-                .contentType(ContentType.JSON)
-                .statusCode(HttpStatus.CONFLICT.value())
-                .extract()
-                .as(ErrorResponse.class);
+        ErrorResponse actual = driverTestClient.updateDriverForConflict(driverId, requestBody);
 
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
@@ -183,12 +131,7 @@ class DriverControllerIT extends BaseIntegrationTest {
     void updateDriver_shouldReturnBadRequestStatus(DriverUpdate requestBody) {
         int driverId = 2;
 
-        ValidationErrorResponse actual = driverTestClient.updateDriver(driverId, requestBody)
-                .assertThat()
-                .contentType(ContentType.JSON)
-                .statusCode(HttpStatus.BAD_REQUEST.value())
-                .extract()
-                .as(ValidationErrorResponse.class);
+        ValidationErrorResponse actual = driverTestClient.updateDriverForValidationError(driverId, requestBody);
 
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -203,12 +146,7 @@ class DriverControllerIT extends BaseIntegrationTest {
                 TestData.NEW_PHONE_NUMBER
         );
 
-        ErrorResponse actual = driverTestClient.createDriver(requestBody)
-                .assertThat()
-                .contentType(ContentType.JSON)
-                .statusCode(HttpStatus.CONFLICT.value())
-                .extract()
-                .as(ErrorResponse.class);
+        ErrorResponse actual = driverTestClient.createDriverForConflict(requestBody);
 
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
@@ -223,12 +161,7 @@ class DriverControllerIT extends BaseIntegrationTest {
                 TestEntities.JOHN_PHONE_NUMBER
         );
 
-        ErrorResponse actual = driverTestClient.createDriver(requestBody)
-                .assertThat()
-                .contentType(ContentType.JSON)
-                .statusCode(HttpStatus.CONFLICT.value())
-                .extract()
-                .as(ErrorResponse.class);
+        ErrorResponse actual = driverTestClient.createDriverForConflict(requestBody);
 
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.CONFLICT.value());
     }
@@ -247,13 +180,7 @@ class DriverControllerIT extends BaseIntegrationTest {
                 TestData.STATUS
         );
 
-        DriverResponse actual = driverTestClient.createDriver(requestBody)
-                .assertThat()
-                .contentType(ContentType.JSON)
-                .statusCode(HttpStatus.CREATED.value())
-                .header(HttpHeaders.LOCATION, "/api/v1/drivers/" + expectedId)
-                .extract()
-                .as(DriverResponse.class);
+        DriverResponse actual = driverTestClient.createDriver(expectedId, requestBody);
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -262,9 +189,29 @@ class DriverControllerIT extends BaseIntegrationTest {
     void deleteDriver_shouldReturnNoContentStatus() {
         int driverId = 1;
 
-        driverTestClient.deleteDriverById(driverId)
-                .statusCode(HttpStatus.NO_CONTENT.value());
+        driverTestClient.deleteDriverById(driverId);
 
         assertThat(driverRepository.findById(driverId)).isNotPresent();
+    }
+
+    private static Stream<DriverUpdate> invalidDriverUpdatesForBadRequest() {
+        return Stream.of(
+                new DriverUpdate("", null, null, null, null), // invalid name
+                new DriverUpdate(" ", null, null, null, null),// invalid name
+                new DriverUpdate("a", null, null, null, null),// invalid name
+                new DriverUpdate(null, "", null, null, null), // invalid surname
+                new DriverUpdate(null, " ", null, null, null), // invalid surname
+                new DriverUpdate(null, "a", null, null, null), // invalid surname
+                new DriverUpdate(null, null, "", null, null), // invalid email
+                new DriverUpdate(null, null, "email", null, null), // invalid email
+                new DriverUpdate(null, null, " ", null, null), // invalid email
+                new DriverUpdate(null, null, "email@", null, null), // invalid email
+                new DriverUpdate(null, null, "email@com", null, null), // invalid email
+                new DriverUpdate(null, null, null, "aaa", null), // invalid phone
+                new DriverUpdate(null, null, null, "", null), // invalid phone
+                new DriverUpdate(null, null, null, " ", null), // invalid phone
+                new DriverUpdate(null, null, null, "21381914", null), // invalid phone
+                new DriverUpdate(null, null, null, "+1234567890123", null) // invalid phone
+        );
     }
 }
