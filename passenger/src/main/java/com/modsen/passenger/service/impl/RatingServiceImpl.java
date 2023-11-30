@@ -1,7 +1,6 @@
 package com.modsen.passenger.service.impl;
 
 import com.modsen.passenger.dto.response.RatingResponse;
-import com.modsen.passenger.exception.PassengerNotFoundException;
 import com.modsen.passenger.exception.RatingNotFoundException;
 import com.modsen.passenger.mapper.RatingMapper;
 import com.modsen.passenger.model.Rating;
@@ -28,17 +27,13 @@ public class RatingServiceImpl implements RatingService {
     public RatingResponse getRating(Integer passengerId) {
         return ratingRepository.findByPassengerId(passengerId)
                 .map(mapper::toResponse)
-                .orElseThrow(() -> new RatingNotFoundException(
-                        "Rating with such passengerId not found, passengerId=" + passengerId
-                ));
+                .orElseThrow(() -> new RatingNotFoundException("exception.rating_not_found", passengerId));
     }
 
     @Override
     public RatingResponse addScore(Integer passengerId, Integer newScore) {
         Rating rating = ratingRepository.findByPassengerId(passengerId)
-                .orElseThrow(() -> new PassengerNotFoundException(
-                        "Rating with such passengerId not found, passengerId=" + passengerId
-                ));
+                .orElseThrow(() -> new RatingNotFoundException("exception.rating_not_found", passengerId));
         Float averageRating = calculateNewAvgRating(rating, newScore);
         rating.setAverageRating(roundTo2Digits(averageRating));
         rating.setTotalRatings(rating.getTotalRatings() + 1);

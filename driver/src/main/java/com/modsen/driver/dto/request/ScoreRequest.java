@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ScoreRequest {
 
-    @Min(value = 0, message = "Score must be more than or equal to 0")
-    @Max(value = 5, message = "Score must be less than or equal to 5")
+    @Min(value = 0, message = "score.min")
+    @Max(value = 5, message = "score.max")
     private Integer score;
 }

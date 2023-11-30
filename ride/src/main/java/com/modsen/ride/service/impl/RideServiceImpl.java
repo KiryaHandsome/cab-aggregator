@@ -4,6 +4,7 @@ import com.modsen.ride.dto.RideRequest;
 import com.modsen.ride.dto.RideResponse;
 import com.modsen.ride.dto.RideStart;
 import com.modsen.ride.dto.WaitingRideResponse;
+import com.modsen.ride.exception.RideAlreadyEndedException;
 import com.modsen.ride.exception.RideNotFoundException;
 import com.modsen.ride.exception.WaitingRideNotFoundException;
 import com.modsen.ride.mapper.RideMapper;
@@ -57,9 +58,7 @@ public class RideServiceImpl implements RideService {
     @Override
     public RideResponse startRide(String waitingRideId, RideStart event) {
         WaitingRide waitingRide = waitingRideRepository.findById(waitingRideId)
-                .orElseThrow(() -> new WaitingRideNotFoundException(
-                        String.format("WaitingRide with id=%s not found", waitingRideId))
-                );
+                .orElseThrow(() -> new WaitingRideNotFoundException("exception.waiting_ride_not_found", waitingRideId));
         Ride ride = rideMapper.toRide(waitingRide);
         ride.setDriverId(event.getDriverId());
         ride.setStartTime(LocalDateTime.now());
@@ -72,9 +71,10 @@ public class RideServiceImpl implements RideService {
     @Override
     public RideResponse endRide(String rideId) {
         Ride ride = rideRepository.findById(rideId)
-                .orElseThrow(() -> new RideNotFoundException(
-                        String.format("Ride with id=%s not found.", rideId)
-                ));
+                .orElseThrow(() -> new RideNotFoundException("exception.ride_not_found", rideId));
+        if (ride.getFinishTime() != null) {
+            throw new RideAlreadyEndedException("exception.ride_already_ended", rideId);
+        }
         ride.setFinishTime(LocalDateTime.now());
         rideRepository.save(ride);
         return rideMapper.toResponse(ride);

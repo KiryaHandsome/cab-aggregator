@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RideRequest {
 
-    @Min(value = 1, message = "PassengerId must be positive")
+    @Min(value = 1, message = "ride.passenger_id")
     private Integer passengerId;
 
     @NotBlank(message = "Start location(from) must not be blank")

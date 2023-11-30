@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 
 public class RideNotFoundException extends BaseException {
 
-    public RideNotFoundException(String message) {
-        super(HttpStatus.NOT_FOUND.value(), message);
+    public RideNotFoundException(String message, String id) {
+        super(HttpStatus.NOT_FOUND.value(), message, id);
     }
 }
