@@ -40,15 +40,15 @@ public class DriverServiceImpl implements DriverService {
     public DriverResponse findById(Integer id) {
         return driverRepository.findById(id)
                 .map(mapper::toResponse)
-                .orElseThrow(() -> new DriverNotFoundException("Driver with such id not found. id=" + id));
+                .orElseThrow(() -> new DriverNotFoundException("exception.driver_not_found", id));
     }
 
     @Override
     public DriverResponse update(Integer id, DriverUpdate request) {
         Driver driver = driverRepository.findById(id)
-                .orElseThrow(() -> new DriverNotFoundException("Driver with such not found. id=" + id));
+                .orElseThrow(() -> new DriverNotFoundException("exception.driver_not_found", id));
         throwIfEmailOrPhoneAlreadyExist(request.getEmail(), request.getPhoneNumber());
-        updateIfNotNull(request, driver);
+        mapper.mapIfNotNull(request, driver);
         driverRepository.save(driver);
         return mapper.toResponse(driver);
     }
@@ -72,24 +72,11 @@ public class DriverServiceImpl implements DriverService {
     private void throwIfEmailOrPhoneAlreadyExist(String email, String phoneNumber) {
         driverRepository.findByEmail(email)
                 .ifPresent(ignored -> {
-                    throw new EmailAlreadyExistsException("Email already exists. email=" + email);
+                    throw new EmailAlreadyExistsException("exception.email_already_exists", email);
                 });
         driverRepository.findByPhoneNumber(phoneNumber)
                 .ifPresent(ignored -> {
-                    throw new PhoneNumberAlreadyExistsException("Phone number already exists. number=" + phoneNumber);
+                    throw new PhoneNumberAlreadyExistsException("exception.phone_already_exists", phoneNumber);
                 });
-    }
-
-    private void updateIfNotNull(DriverUpdate request, Driver driver) {
-        if (request.getName() != null)
-            driver.setName(request.getName());
-        if (request.getSurname() != null)
-            driver.setSurname(request.getSurname());
-        if (request.getEmail() != null)
-            driver.setEmail(request.getEmail());
-        if (request.getPhoneNumber() != null)
-            driver.setPhoneNumber(request.getPhoneNumber());
-        if (request.getStatus() != null)
-            driver.setStatus(request.getStatus());
     }
 }

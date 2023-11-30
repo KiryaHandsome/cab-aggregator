@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 
 public class PhoneNumberAlreadyExistsException extends BaseException {
 
-    public PhoneNumberAlreadyExistsException(String message) {
-        super(HttpStatus.BAD_REQUEST.value(), message);
+    public PhoneNumberAlreadyExistsException(String message, String phoneNumber) {
+        super(HttpStatus.CONFLICT.value(), message, phoneNumber);
     }
 }
