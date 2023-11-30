@@ -15,16 +15,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DriverUpdate {
 
-    @Size(min = 2, max = 255, message = "Name size must be between 2 and 255")
+    @Size(min = 2, max = 255, message = "driver.name.size")
     private String name;
 
-    @Size(min = 2, max = 255, message = "Surname size must be between 2 and 255")
+    @Size(min = 2, max = 255, message = "driver.surname.size")
     private String surname;
 
-    @Email(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+\\.[A-Za-z]{2,}$", message = "Invalid email format")
+    @Email(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+\\.[A-Za-z]{2,}$", message = "driver.email.email")
     private String email;
 
-    @Pattern(regexp = "^\\+\\d{12}$", message = "Phone number must be in format +375446789012 (exactly 12 digits)")
+    @Pattern(regexp = "^\\+\\d{12}$", message = "driver.phone.pattern")
     private String phoneNumber;
     private Status status;
 }

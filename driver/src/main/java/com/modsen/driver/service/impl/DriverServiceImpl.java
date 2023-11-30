@@ -14,6 +14,7 @@ import com.modsen.driver.repository.DriverRepository;
 import com.modsen.driver.repository.RatingRepository;
 import com.modsen.driver.service.DriverService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -40,13 +41,13 @@ public class DriverServiceImpl implements DriverService {
     public DriverResponse findById(Integer id) {
         return driverRepository.findById(id)
                 .map(mapper::toResponse)
-                .orElseThrow(() -> new DriverNotFoundException("Driver with such id not found. id=" + id));
+                .orElseThrow(() -> new DriverNotFoundException("exception.driver_not_found", id));
     }
 
     @Override
     public DriverResponse update(Integer id, DriverUpdate request) {
         Driver driver = driverRepository.findById(id)
-                .orElseThrow(() -> new DriverNotFoundException("Driver with such not found. id=" + id));
+                .orElseThrow(() -> new DriverNotFoundException("exception.driver_not_found", id));
         throwIfEmailOrPhoneAlreadyExist(request.getEmail(), request.getPhoneNumber());
         mapper.mapIfNotNull(request, driver);
         driverRepository.save(driver);
@@ -72,11 +73,11 @@ public class DriverServiceImpl implements DriverService {
     private void throwIfEmailOrPhoneAlreadyExist(String email, String phoneNumber) {
         driverRepository.findByEmail(email)
                 .ifPresent(ignored -> {
-                    throw new EmailAlreadyExistsException("Email already exists. email=" + email);
+                    throw new EmailAlreadyExistsException("exception.email_already_exists", email);
                 });
         driverRepository.findByPhoneNumber(phoneNumber)
                 .ifPresent(ignored -> {
-                    throw new PhoneNumberAlreadyExistsException("Phone number already exists. number=" + phoneNumber);
+                    throw new PhoneNumberAlreadyExistsException("exception.phone_already_exists", phoneNumber);
                 });
     }
 }

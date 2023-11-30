@@ -27,9 +27,7 @@ public class RatingServiceImpl implements RatingService {
     public RatingResponse getRating(Integer driverId) {
         return ratingRepository.findByDriverId(driverId)
                 .map(mapper::toResponse)
-                .orElseThrow(() -> new RatingNotFoundException(
-                        "Rating with such driverId not found, driverId=" + driverId
-                ));
+                .orElseThrow(() -> new RatingNotFoundException("exception.rating_not_found", driverId));
     }
 
     @Override
@@ -37,7 +35,7 @@ public class RatingServiceImpl implements RatingService {
     public RatingResponse addScore(Integer driverId, Integer newScore) {
         Rating rating = ratingRepository.findByDriverId(driverId)
                 .orElseThrow(() -> new RatingNotFoundException(
-                        "Rating with such driverId not found, driverId=" + driverId
+                        "exception.rating_not_found", driverId
                 ));
         Float averageRating = calculateNewAvgRating(rating, newScore);
         rating.setAverageRating(roundTo2Digits(averageRating));

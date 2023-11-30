@@ -14,23 +14,22 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DriverCreate {
 
-    @NotNull(message = "Name must not be null")
-    @NotBlank(message = "Name must not be blank")
-    @Size(min = 2, max = 255, message = "Name size must be between 2 and 255")
+    @NotNull(message = "driver.name.not_null")
+    @NotBlank(message = "driver.name.not_blank")
+    @Size(min = 2, max = 255, message = "driver.name.size")
     private String name;
 
-    @NotNull(message = "Surname must not be null")
-    @NotBlank(message = "Surname must not be blank")
-    @Size(min = 2, max = 255, message = "Surname size must be between 2 and 255")
+    @NotNull(message = "driver.surname.not_null")
+    @NotBlank(message = "driver.surname.not_blank")
+    @Size(min = 2, max = 255, message = "driver.surname.size")
     private String surname;
 
-    @NotNull(message = "Email must not be null")
-    @NotBlank(message = "Email must not be blank")
-    @Email(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+\\.[A-Za-z]{2,}$", message = "Invalid email format")
+    @NotNull(message = "driver.email.not_null")
+    @Email(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+\\.[A-Za-z]{2,}$", message = "driver.email.email")
     private String email;
 
-    @NotNull(message = "Phone number must not be null")
-    @NotBlank(message = "Phone number must not be blank")
-    @Pattern(regexp = "^\\+\\d{12}$", message = "Phone number must be in format +375446789012 (exactly 12 digits)")
+    @NotNull(message = "driver.phone.not_null")
+    @NotBlank(message = "driver.phone.not_blank")
+    @Pattern(regexp = "^\\+\\d{12}$", message = "driver.phone.pattern")
     private String phoneNumber;
 }

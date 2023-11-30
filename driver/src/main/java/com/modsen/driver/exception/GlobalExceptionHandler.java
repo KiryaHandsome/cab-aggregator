@@ -2,6 +2,9 @@ package com.modsen.driver.exception;
 
 import com.modsen.driver.dto.response.ErrorResponse;
 import com.modsen.driver.dto.response.ValidationErrorResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,11 +16,15 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import java.util.List;
 
 @ControllerAdvice
+@RequiredArgsConstructor
 public class GlobalExceptionHandler {
+
+    private final MessageSource messageSource;
 
     @ExceptionHandler(BaseException.class)
     public ResponseEntity<ErrorResponse> handleBase(BaseException ex) {
-        ErrorResponse response = new ErrorResponse(ex.getResponseCode(), ex.getMessage());
+        String errorMessage = messageSource.getMessage(ex.getMessage(), ex.getParams(), LocaleContextHolder.getLocale());
+        ErrorResponse response = new ErrorResponse(ex.getResponseCode(), errorMessage);
         return ResponseEntity
                 .status(response.getStatusCode())
                 .body(response);
@@ -29,6 +36,7 @@ public class GlobalExceptionHandler {
         List<String> errorsMessages = bindingResult.getAllErrors()
                 .stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .map(m -> messageSource.getMessage(m, new Object[0], LocaleContextHolder.getLocale()))
                 .toList();
         ValidationErrorResponse response = new ValidationErrorResponse(HttpStatus.BAD_REQUEST.value(), errorsMessages);
         return ResponseEntity
