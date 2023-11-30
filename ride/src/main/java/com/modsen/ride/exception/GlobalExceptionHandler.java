@@ -50,7 +50,7 @@ public class GlobalExceptionHandler {
         List<String> errorsMessages = bindingResult.getAllErrors()
                 .stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                .map(m -> messageSource.getMessage(m, new Object[0], LocaleContextHolder.getLocale()))
+                .map(m -> messageSource.getMessage(m, null, LocaleContextHolder.getLocale()))
                 .toList();
         ValidationErrorResponse response = new ValidationErrorResponse(HttpStatus.BAD_REQUEST.value(), errorsMessages);
         return ResponseEntity
