@@ -105,7 +105,7 @@ public class DriverTestClient {
                 .log().all()
                 .assertThat()
                 .contentType(ContentType.JSON)
-                .statusCode(HttpStatus.CONFLICT.value())
+                .statusCode(HttpStatus.BAD_REQUEST.value())
                 .extract()
                 .as(ValidationErrorResponse.class);
     }
