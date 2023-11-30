@@ -32,7 +32,7 @@ public class PassengerServiceImpl implements PassengerService {
     public PassengerResponse findById(Integer id) {
         return passengerRepository.findById(id)
                 .map(mapper::toResponse)
-                .orElseThrow(() -> new PassengerNotFoundException("Passenger with such id not found. id=" + id));
+                .orElseThrow(() -> new PassengerNotFoundException("exception.passenger_not_found", id));
     }
 
     @Override
@@ -45,7 +45,7 @@ public class PassengerServiceImpl implements PassengerService {
     @Override
     public PassengerResponse update(Integer id, PassengerUpdate request) {
         Passenger passenger = passengerRepository.findById(id)
-                .orElseThrow(() -> new PassengerNotFoundException("Passenger with such not found. id=" + id));
+                .orElseThrow(() -> new PassengerNotFoundException("exception.passenger_not_found", id));
         throwIfEmailOrPhoneAlreadyExist(request.getEmail(), request.getPhoneNumber());
         mapper.mapIfNotNull(request, passenger);
         passengerRepository.save(passenger);
@@ -71,11 +71,11 @@ public class PassengerServiceImpl implements PassengerService {
     private void throwIfEmailOrPhoneAlreadyExist(String email, String phoneNumber) {
         passengerRepository.findByEmail(email)
                 .ifPresent(ignored -> {
-                    throw new EmailAlreadyExistsException("Email already exists. email=" + email);
+                    throw new EmailAlreadyExistsException("exception.email_already_exists", email);
                 });
         passengerRepository.findByPhoneNumber(phoneNumber)
                 .ifPresent(ignored -> {
-                    throw new PhoneNumberAlreadyExistsException("Phone number already exists. number=" + phoneNumber);
+                    throw new PhoneNumberAlreadyExistsException("exception.phone_already_exists", phoneNumber);
                 });
     }
 }

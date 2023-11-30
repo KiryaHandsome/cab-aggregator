@@ -12,15 +12,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PassengerUpdate {
 
-    @Size(min = 2, max = 255, message = "Name size must be between 2 and 255")
+    @Size(min = 2, max = 255, message = "passenger.name.size")
     private String name;
 
-    @Size(min = 2, max = 255, message = "Surname size must be between 2 and 255")
+    @Size(min = 2, max = 255, message = "passenger.surname.size")
     private String surname;
 
-    @Email(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+\\.[A-Za-z]{2,}$", message = "Invalid email format")
+    @Email(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+\\.[A-Za-z]{2,}$", message = "passenger.email.email")
     private String email;
 
-    @Pattern(regexp = "^\\+\\d{12}$", message = "Phone number must be in format +123456789012 (exactly 12 digits)")
+    @Pattern(regexp = "^\\+\\d{12}$", message = "passenger.phone.pattern")
     private String phoneNumber;
 }

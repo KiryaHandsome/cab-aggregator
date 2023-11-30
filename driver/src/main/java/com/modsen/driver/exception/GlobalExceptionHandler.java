@@ -44,4 +44,11 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
+    @ExceptionHandler({RuntimeException.class})
+    public ResponseEntity<ErrorResponse> handleRuntime(RuntimeException ex) {
+        ErrorResponse response = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
+        return ResponseEntity
+                .internalServerError()
+                .body(response);
+    }
 }
