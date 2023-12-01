@@ -1,5 +1,6 @@
 package com.modsen.ride.service;
 
+import com.modsen.ride.dto.PaymentEvent;
 import com.modsen.ride.dto.RideDto;
 import com.modsen.ride.dto.RideStart;
 import com.modsen.ride.dto.request.RideRequest;
@@ -20,4 +21,6 @@ public interface RideService {
     RideDto startRide(String waitingRideId, RideStart event);
 
     RideDto endRide(String rideId);
+
+    void handlePaymentResult(PaymentEvent paymentEvent);
 }

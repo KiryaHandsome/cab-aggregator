@@ -1,9 +1,7 @@
 package com.modsen.payment.exception;
 
 import com.modsen.payment.dto.ErrorResponse;
-import com.modsen.payment.dto.PaymentEvent;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -19,24 +17,6 @@ public class GlobalExceptionHandler {
         ErrorResponse response = new ErrorResponse(ex.getResponseCode(), ex.getMessage());
         return ResponseEntity
                 .status(ex.getResponseCode())
-                .body(response);
-    }
-
-    @ExceptionHandler(LowBalanceException.class)
-    public ResponseEntity<PaymentEvent> handleLowBalance(LowBalanceException ex) {
-        log.warn("LowBalanceException caught: {}", ex.getMessage());
-        PaymentEvent response = new PaymentEvent(ex.getMessage());
-        return ResponseEntity
-                .status(ex.getResponseCode())
-                .body(response);
-    }
-
-    @ExceptionHandler(OptimisticLockingFailureException.class)
-    public ResponseEntity<PaymentEvent> handleOptimisticLockingFailure(OptimisticLockingFailureException ex) {
-        log.warn("OptimisticLockingFailureException caught: {}", ex.getMessage());
-        PaymentEvent response = new PaymentEvent(ex.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
                 .body(response);
     }
 

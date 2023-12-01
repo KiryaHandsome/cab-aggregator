@@ -5,15 +5,13 @@ import com.modsen.ride.dto.RideDto;
 import com.modsen.ride.dto.RideStart;
 import com.modsen.ride.dto.request.RideRequest;
 import com.modsen.ride.dto.response.WaitingRideResponse;
+import com.modsen.ride.service.KafkaChannelGateway;
 import com.modsen.ride.service.RideService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,15 +25,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class RideController implements RideControllerOpenApi {
 
     private final RideService rideService;
-    private final MessageChannel kafkaChannel;
+    private final KafkaChannelGateway kafkaChannelGateway;
 
     @PostMapping("/book")
-    public ResponseEntity<?> bookRide(@RequestBody @Valid RideRequest rideRequest) {
+    public ResponseEntity<WaitingRideResponse> bookRide(@RequestBody @Valid RideRequest rideRequest) {
         WaitingRideResponse response = rideService.bookRide(rideRequest);
-        // todo : send using spring integration message channel
-        Message<RideRequest> message = MessageBuilder.withPayload(rideRequest).build();
-        kafkaChannel.send();
-        kafkaProducer.sendMessage("ride-ordered", rideRequest);
+        kafkaChannelGateway.sendToRideOrdered(rideRequest);
         return ResponseEntity.ok(response);
     }
 
@@ -66,6 +61,7 @@ public class RideController implements RideControllerOpenApi {
     @PostMapping("/end/{rideId}")
     public ResponseEntity<RideDto> endRide(@PathVariable String rideId) {
         RideDto rideDto = rideService.endRide(rideId);
+        kafkaChannelGateway.sendToRidePayment(rideDto);
         return ResponseEntity.ok(rideDto);
     }
 }

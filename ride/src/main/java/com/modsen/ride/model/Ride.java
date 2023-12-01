@@ -21,7 +21,7 @@ public class Ride {
     private String from;
     private String to;
     private Float cost;
-    private String paymentStatus;
+    private PaymentStatus paymentStatus;
     private LocalDateTime startTime;
     private LocalDateTime finishTime;
 }

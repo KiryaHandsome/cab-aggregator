@@ -1,5 +1,6 @@
 package com.modsen.ride.dto;
 
+import com.modsen.ride.model.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,5 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PaymentEvent {
 
-    private String status;
+    private String rideId;
+    private PaymentStatus status;
 }

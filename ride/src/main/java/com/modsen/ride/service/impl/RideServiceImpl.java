@@ -1,30 +1,26 @@
 package com.modsen.ride.service.impl;
 
 
+import com.modsen.ride.dto.PaymentEvent;
 import com.modsen.ride.dto.RideDto;
 import com.modsen.ride.dto.RideStart;
 import com.modsen.ride.dto.request.RideRequest;
-import com.modsen.ride.dto.response.PaymentInfo;
 import com.modsen.ride.dto.response.WaitingRideResponse;
-import com.modsen.ride.exception.PaymentFailedException;
 import com.modsen.ride.exception.RideAlreadyEndedException;
 import com.modsen.ride.exception.RideNotFoundException;
 import com.modsen.ride.exception.WaitingRideNotFoundException;
 import com.modsen.ride.mapper.RideMapper;
+import com.modsen.ride.model.PaymentStatus;
 import com.modsen.ride.model.Ride;
 import com.modsen.ride.model.WaitingRide;
 import com.modsen.ride.repository.RideRepository;
 import com.modsen.ride.repository.WaitingRideRepository;
 import com.modsen.ride.service.CostCalculator;
-import com.modsen.ride.service.PaymentClient;
 import com.modsen.ride.service.RideService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -35,7 +31,6 @@ import java.time.LocalDateTime;
 public class RideServiceImpl implements RideService {
 
     private final RideMapper rideMapper;
-    private final PaymentClient paymentClient;
     private final RideRepository rideRepository;
     private final CostCalculator costCalculator;
     private final WaitingRideRepository waitingRideRepository;
@@ -81,7 +76,7 @@ public class RideServiceImpl implements RideService {
         ride.setStartTime(LocalDateTime.now());
         Float cost = costCalculator.calculate(ride.getFrom(), ride.getTo());
         ride.setCost(cost);
-        ride.setPaymentStatus("waiting");
+        ride.setPaymentStatus(PaymentStatus.WAITING);
     }
 
     @Override
@@ -92,23 +87,15 @@ public class RideServiceImpl implements RideService {
             throw new RideAlreadyEndedException("exception.ride_already_ended", rideId);
         }
         ride.setFinishTime(LocalDateTime.now());
-        payForRide(ride);
         rideRepository.save(ride);
         return rideMapper.toDto(ride);
     }
 
-    private void payForRide(Ride ride) {
-        ResponseEntity<PaymentInfo> response = paymentClient.pay(rideMapper.toDto(ride));
-        HttpStatusCode statusCode = response.getStatusCode();
-        PaymentInfo responseBody = response.getBody();
-        if (HttpStatus.OK.equals(statusCode)) {
-            log.info("Payment success: {}", responseBody);
-        } else {
-            log.warn("Payment failed: {}", responseBody);
-            throw new PaymentFailedException(
-                    String.format("Payment for ride with id=%s failed with message: %s",
-                            ride.getId(), responseBody.getMessage())
-            );
-        }
+    @Override
+    public void handlePaymentResult(PaymentEvent paymentEvent) {
+        Ride ride = rideRepository.findById(paymentEvent.getRideId())
+                .orElseThrow(() -> new RideNotFoundException("exception.ride_not_found", paymentEvent.getRideId()));
+        ride.setPaymentStatus(paymentEvent.getStatus());
+        rideRepository.save(ride);
     }
 }
