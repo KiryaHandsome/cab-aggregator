@@ -1,9 +1,9 @@
 package com.modsen.ride.config;
 
 import com.modsen.ride.dto.PaymentEvent;
+import com.modsen.ride.service.RideService;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.logging.log4j.message.SimpleMessage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,16 +23,16 @@ public class KafkaConsumerConfig {
     private String bootstrapServers;
 
     @Bean
-    public IntegrationFlow flow(ConsumerFactory<String, String> cf) {
+    public IntegrationFlow flow(ConsumerFactory<String, PaymentEvent> cf, RideService rideService) {
         return IntegrationFlow.from(
-                        Kafka.inboundChannelAdapter(cf, new ConsumerProperties("ride-payment"))
+                        Kafka.inboundChannelAdapter(cf, new ConsumerProperties("payment-result"))
                 )
-                .handle(System.out::println)
+                .handle(rideService, "handlePaymentResult")
                 .get();
     }
 
     @Bean
-    public ConsumerFactory<String, String> consumerFactory() {
+    public ConsumerFactory<String, PaymentEvent> consumerFactory() {
         return new DefaultKafkaConsumerFactory<>(consumerConfigs());
     }
 
@@ -42,8 +42,8 @@ public class KafkaConsumerConfig {
                 ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers,
                 ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class,
                 ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class,
-                JsonDeserializer.TYPE_MAPPINGS, "paymentEvent:" + PaymentEvent.class.getName(),
-                ConsumerConfig.GROUP_ID_CONFIG, "ride-service"
+                ConsumerConfig.GROUP_ID_CONFIG, "ride-service",
+                JsonDeserializer.TYPE_MAPPINGS, "paymentResult:" + PaymentEvent.class.getName()
         );
     }
 }

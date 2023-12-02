@@ -35,4 +35,11 @@ public class TopicConfig {
                 .name("ride-payment")
                 .build();
     }
+
+    @Bean
+    public NewTopic paymentResultTopic() {
+        return TopicBuilder
+                .name("payment-result")
+                .build();
+    }
 }

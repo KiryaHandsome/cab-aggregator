@@ -7,7 +7,6 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.MongoDBContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
@@ -22,16 +21,17 @@ public class BaseIntegrationTest {
     public static final String MONGO_IMAGE_NAME = "mongo:7.0";
     public static final String KAFKA_IMAGE_NAME = "confluentinc/cp-kafka:7.5.1";
 
-    @Container
-    protected static final MongoDBContainer mongoContainer = new MongoDBContainer(
-            DockerImageName.parse(MONGO_IMAGE_NAME)
-    )
-            .withExposedPorts(MONGO_PORT);
-
-    @Container
     protected static final KafkaContainer kafkaContainer = new KafkaContainer(
             DockerImageName.parse(KAFKA_IMAGE_NAME)
     );
+    protected static final MongoDBContainer mongoContainer = new MongoDBContainer(
+            DockerImageName.parse(MONGO_IMAGE_NAME)
+    ).withExposedPorts(MONGO_PORT);
+
+    static {
+        kafkaContainer.start();
+        mongoContainer.start();
+    }
 
     @DynamicPropertySource
     static void init(DynamicPropertyRegistry registry) {

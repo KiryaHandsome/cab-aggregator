@@ -1,4 +1,4 @@
-package com.modsen.ride.integration.service;
+package com.modsen.ride.integration.kafka;
 
 import com.modsen.ride.dto.RideDto;
 import com.modsen.ride.dto.request.RideRequest;
