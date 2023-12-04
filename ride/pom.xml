@@ -19,7 +19,7 @@
         <openapi.version>2.2.0</openapi.version>
         <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
         <spring-cloud.version>2022.0.4</spring-cloud.version>
-        <!--        <spring-cloud.eureka.version>4.0.3</spring-cloud.eureka.version>-->
+        <feign.version>12.5</feign.version>
     </properties>
     <dependencies>
         <dependency>
@@ -98,6 +98,11 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.openfeign</groupId>
+            <artifactId>feign-okhttp</artifactId>
+            <version>${feign.version}</version>
         </dependency>
     </dependencies>
 

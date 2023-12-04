@@ -1,12 +1,15 @@
 package com.modsen.ride.service.impl;
 
+import com.modsen.ride.dto.DriverStatus;
 import com.modsen.ride.dto.RideDto;
+import com.modsen.ride.dto.response.DriverResponse;
 import com.modsen.ride.dto.response.WaitingRideResponse;
 import com.modsen.ride.mapper.RideMapper;
 import com.modsen.ride.model.Ride;
 import com.modsen.ride.repository.RideRepository;
 import com.modsen.ride.repository.WaitingRideRepository;
 import com.modsen.ride.service.CostCalculator;
+import com.modsen.ride.service.DriverClient;
 import com.modsen.ride.util.TestData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,6 +45,9 @@ class RideServiceImplTest {
 
     @Mock
     private CostCalculator costCalculator;
+
+    @Mock
+    private DriverClient driverClient;
 
     @InjectMocks
     private RideServiceImpl rideService;
@@ -141,6 +147,9 @@ class RideServiceImplTest {
         doReturn(TestData.COST)
                 .when(costCalculator)
                 .calculate(TestData.START_LOCATION, TestData.FINISH_LOCATION);
+        doReturn(new DriverResponse(null, null, null, null, null, DriverStatus.AVAILABLE))
+                .when(driverClient)
+                .getDriverById(TestData.DRIVER_ID);
 
         rideService.startRide(TestData.WAITING_RIDE_ID, TestData.rideStart());
 
