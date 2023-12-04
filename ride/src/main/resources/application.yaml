@@ -10,8 +10,6 @@ spring:
   kafka:
     bootstrap-servers: localhost:9092
 
-
-payment:
-  url: localhost:8083
-  name: payment
-  pay_uri: /api/v1/payment/ride
+logging:
+  level:
+    com.modsen.ride: debug

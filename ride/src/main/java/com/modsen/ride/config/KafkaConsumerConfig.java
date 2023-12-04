@@ -33,7 +33,8 @@ public class KafkaConsumerConfig {
 
     @Bean
     public ConsumerFactory<String, PaymentEvent> consumerFactory() {
-        return new DefaultKafkaConsumerFactory<>(consumerConfigs());
+        return new DefaultKafkaConsumerFactory<>(consumerConfigs(),
+                new StringDeserializer(), new JsonDeserializer<>(PaymentEvent.class, false));
     }
 
     @Bean
@@ -42,8 +43,7 @@ public class KafkaConsumerConfig {
                 ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers,
                 ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class,
                 ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class,
-                ConsumerConfig.GROUP_ID_CONFIG, "ride-service",
-                JsonDeserializer.TYPE_MAPPINGS, "paymentResult:" + PaymentEvent.class.getName()
+                ConsumerConfig.GROUP_ID_CONFIG, "ride-service"
         );
     }
 }

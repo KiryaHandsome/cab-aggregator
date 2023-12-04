@@ -1,8 +1,8 @@
 package com.modsen.ride.exception;
 
-import lombok.RequiredArgsConstructor;
 import com.modsen.ride.dto.response.ErrorResponse;
 import com.modsen.ride.dto.response.ValidationErrorResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;

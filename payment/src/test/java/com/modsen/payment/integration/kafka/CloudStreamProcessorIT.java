@@ -6,7 +6,6 @@ import com.modsen.payment.integration.BaseIntegrationTest;
 import com.modsen.payment.model.Balance;
 import com.modsen.payment.model.PaymentStatus;
 import com.modsen.payment.repository.BalanceRepository;
-import com.modsen.payment.util.JsonUtil;
 import com.modsen.payment.util.TestData;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -18,8 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.test.context.jdbc.Sql;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 
 import java.time.Duration;
@@ -53,10 +52,7 @@ public class CloudStreamProcessorIT extends BaseIntegrationTest {
         Float passengerBalance = 90.88f;
         rideInfo.setPassengerId(passengerId);
         Float expectedAmount = passengerBalance - rideInfo.getCost();
-        PaymentEvent expectedPaymentEvent = PaymentEvent.builder()
-                .status(PaymentStatus.PAID)
-                .rideId(rideInfo.getId())
-                .build();
+        PaymentEvent expectedPaymentEvent = new PaymentEvent(rideInfo.getId(), PaymentStatus.PAID);
 
         kafkaTemplate.send("ride-payment", rideInfo);
 
@@ -68,20 +64,22 @@ public class CloudStreamProcessorIT extends BaseIntegrationTest {
                     assertThat(actual.get().getAmount()).isCloseTo(expectedAmount, Offset.offset(.001f));
                 });
 
-        KafkaConsumer<String, String> consumer =
-                setUpKafkaConsumer("payment-result");
+        KafkaConsumer<String, PaymentEvent> consumer =
+                setUpKafkaConsumer("payment-result", PaymentEvent.class);
 
-        ConsumerRecords<String, String> records = consumer.poll(Duration.of(10, TimeUnit.SECONDS.toChronoUnit()));
+        ConsumerRecords<String, PaymentEvent> records = consumer.poll(Duration.of(10, TimeUnit.SECONDS.toChronoUnit()));
         assertThat(records.count()).isEqualTo(1);
-        records.forEach(r -> assertThat(r.value()).isEqualTo(JsonUtil.toJson(expectedPaymentEvent)));
+        records.forEach(r -> assertThat(r.value()).isEqualTo(expectedPaymentEvent));
     }
 
-    private KafkaConsumer<String, String> setUpKafkaConsumer(String topicName) {
-        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(ImmutableMap.of(
+    private <T> KafkaConsumer<String, T> setUpKafkaConsumer(String topicName, Class<T> type) {
+        JsonDeserializer<T> jsonDeserializer = new JsonDeserializer<>();
+        jsonDeserializer.addTrustedPackages("*");
+        KafkaConsumer<String, T> consumer = new KafkaConsumer<>(ImmutableMap.of(
                 ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers,
                 ConsumerConfig.GROUP_ID_CONFIG, topicName + "cloud-stream-processor-test",
                 ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest"
-        ), new StringDeserializer(), new StringDeserializer());
+        ), new StringDeserializer(), jsonDeserializer);
         consumer.subscribe(Collections.singletonList(topicName));
         return consumer;
     }

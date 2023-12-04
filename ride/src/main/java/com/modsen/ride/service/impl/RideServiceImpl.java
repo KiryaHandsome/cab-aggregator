@@ -93,6 +93,7 @@ public class RideServiceImpl implements RideService {
 
     @Override
     public void handlePaymentResult(PaymentEvent paymentEvent) {
+        log.debug("HandlePaymentResult: {}", paymentEvent);
         Ride ride = rideRepository.findById(paymentEvent.getRideId())
                 .orElseThrow(() -> new RideNotFoundException("exception.ride_not_found", paymentEvent.getRideId()));
         ride.setPaymentStatus(paymentEvent.getStatus());

@@ -67,7 +67,7 @@ public class KafkaProducerConfig {
                 ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers,
                 ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class,
                 ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class,
-                JsonDeserializer.TYPE_MAPPINGS, "paymentResult:" + PaymentEvent.class.getName()
+                JsonDeserializer.TYPE_MAPPINGS, "paymentEvent:" + PaymentEvent.class.getName()
         );
     }
 }
