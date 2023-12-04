@@ -16,5 +16,6 @@
         <module>driver</module>
         <module>ride</module>
         <module>payment</module>
+        <module>eureka-server</module>
     </modules>
 </project>

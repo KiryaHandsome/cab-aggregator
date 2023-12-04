@@ -18,7 +18,8 @@
         <mapstruct.version>1.5.5.Final</mapstruct.version>
         <openapi.version>2.2.0</openapi.version>
         <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
-        <openfeign.version>4.0.4</openfeign.version>
+        <spring-cloud.version>2022.0.4</spring-cloud.version>
+        <!--        <spring-cloud.eureka.version>4.0.3</spring-cloud.eureka.version>-->
     </properties>
     <dependencies>
         <dependency>
@@ -28,6 +29,10 @@
         <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -93,9 +98,20 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
-            <version>${openfeign.version}</version>
         </dependency>
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>

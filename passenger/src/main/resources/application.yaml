@@ -1,4 +1,9 @@
+server:
+  port: 8080
+
 spring:
+  application:
+    name: passenger
   datasource:
     url: jdbc:postgresql://localhost:5432/passenger
     username: postgres
