@@ -1,0 +1,35 @@
+server:
+  port: 8888
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      routes:
+        - id: driver
+          uri: lb://driver
+          predicates:
+            - Path=/api/v1/drivers
+        - id: passenger
+          uri: lb://passenger
+          predicates:
+            - Path=/api/v1/passenger
+        - id: ride
+          uri: lb://ride
+          predicates:
+            - Path=/api/v1/ride
+        - id: payment
+          uri: lb://payment
+          predicates:
+            - Path=/api/v1/payment
+        - id: rating    # must be implemented in future
+          uri: lb://rating
+          predicates:
+            - Path=/api/v1/ratings
+
