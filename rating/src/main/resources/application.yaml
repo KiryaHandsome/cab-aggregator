@@ -1,0 +1,15 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: rating
+  datasource:
+    url: jdbc:postgresql://localhost:5432/rating
+    username: postgres
+    password: postgres
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/

@@ -7,7 +7,6 @@ import com.modsen.passenger.exception.PhoneNumberAlreadyExistsException;
 import com.modsen.passenger.mapper.PassengerMapper;
 import com.modsen.passenger.model.Passenger;
 import com.modsen.passenger.repository.PassengerRepository;
-import com.modsen.passenger.repository.RatingRepository;
 import com.modsen.passenger.util.TestData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

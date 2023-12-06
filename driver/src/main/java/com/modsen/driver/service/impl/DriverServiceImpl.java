@@ -8,7 +8,6 @@ import com.modsen.driver.exception.EmailAlreadyExistsException;
 import com.modsen.driver.exception.PhoneNumberAlreadyExistsException;
 import com.modsen.driver.mapper.DriverMapper;
 import com.modsen.driver.model.Driver;
-import com.modsen.driver.model.Rating;
 import com.modsen.driver.model.Status;
 import com.modsen.driver.repository.DriverRepository;
 import com.modsen.driver.repository.RatingRepository;
@@ -59,8 +58,6 @@ public class DriverServiceImpl implements DriverService {
         throwIfEmailOrPhoneAlreadyExist(request.getEmail(), request.getPhoneNumber());
         driver.setStatus(Status.OFFLINE);
         driverRepository.save(driver);
-        Rating rating = new Rating(null, 0, 0f, driver);
-        ratingRepository.save(rating);
         return mapper.toResponse(driver);
     }
 

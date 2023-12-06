@@ -1,7 +1,5 @@
 package com.modsen.driver.mapper;
 
-import com.modsen.driver.dto.response.RatingResponse;
-import com.modsen.driver.model.Rating;
 import com.modsen.driver.util.TestData;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

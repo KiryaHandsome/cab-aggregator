@@ -5,9 +5,7 @@ import com.modsen.driver.dto.event.RideOrdered;
 import com.modsen.driver.dto.request.DriverCreate;
 import com.modsen.driver.dto.request.DriverUpdate;
 import com.modsen.driver.dto.response.DriverResponse;
-import com.modsen.driver.dto.response.RatingResponse;
 import com.modsen.driver.model.Driver;
-import com.modsen.driver.model.Rating;
 import com.modsen.driver.model.Status;
 
 public class TestData {
