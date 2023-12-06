@@ -19,17 +19,16 @@ spring:
         - id: passenger
           uri: lb://passenger
           predicates:
-            - Path=/api/v1/passenger
+            - Path=/api/v1/passengers
         - id: ride
           uri: lb://ride
           predicates:
-            - Path=/api/v1/ride
+            - Path=/api/v1/rides
         - id: payment
           uri: lb://payment
           predicates:
-            - Path=/api/v1/payment
+            - Path=/api/v1/payments
         - id: rating    # must be implemented in future
           uri: lb://rating
           predicates:
             - Path=/api/v1/ratings
-
