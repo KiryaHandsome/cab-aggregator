@@ -10,7 +10,6 @@ import com.modsen.driver.mapper.DriverMapper;
 import com.modsen.driver.model.Driver;
 import com.modsen.driver.model.Status;
 import com.modsen.driver.repository.DriverRepository;
-import com.modsen.driver.repository.RatingRepository;
 import com.modsen.driver.service.DriverService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class DriverServiceImpl implements DriverService {
 
     private final DriverMapper mapper;
-    private final RatingRepository ratingRepository;
     private final DriverRepository driverRepository;
 
     @Override

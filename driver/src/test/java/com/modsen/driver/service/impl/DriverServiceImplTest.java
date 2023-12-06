@@ -7,7 +7,6 @@ import com.modsen.driver.exception.PhoneNumberAlreadyExistsException;
 import com.modsen.driver.mapper.DriverMapper;
 import com.modsen.driver.model.Driver;
 import com.modsen.driver.repository.DriverRepository;
-import com.modsen.driver.repository.RatingRepository;
 import com.modsen.driver.util.TestData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,9 +29,6 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class DriverServiceImplTest {
-
-    @Mock
-    private RatingRepository ratingRepository;
 
     @Mock
     private DriverMapper driverMapper;
@@ -178,7 +174,6 @@ class DriverServiceImplTest {
 
         assertThat(actual).isEqualTo(TestData.defaultDriverResponse());
 
-        verify(ratingRepository).save(eq(TestData.initialRating()));
         verify(driverMapper).toResponse(eq(TestData.defaultDriver()));
         verify(driverMapper).toModel(eq(TestData.defaultDriverCreate()));
         verify(driverRepository).findByEmail(eq(TestData.EMAIL));

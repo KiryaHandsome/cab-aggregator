@@ -79,10 +79,6 @@ public class TestData {
         );
     }
 
-    public static Rating initialRating() {
-        return new Rating(null, 0, 0f, defaultDriver());
-    }
-
     public static DriverUpdate newDriverUpdate() {
         return new DriverUpdate(
                 NEW_NAME,
@@ -104,13 +100,5 @@ public class TestData {
 
     public static RideOrdered defaultRideOrdered() {
         return new RideOrdered(PASSENGER_ID, START_LOCATION, FINISH_LOCATION);
-    }
-
-    public static Rating defaultRating() {
-        return new Rating(RATING_ID, TOTAL_RATINGS, AVERAGE_RATING, defaultDriver());
-    }
-
-    public static RatingResponse defaultRatingResponse() {
-        return new RatingResponse(AVERAGE_RATING, TOTAL_RATINGS);
     }
 }

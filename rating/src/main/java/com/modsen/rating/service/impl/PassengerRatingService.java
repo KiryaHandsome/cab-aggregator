@@ -4,7 +4,6 @@ import com.modsen.rating.dto.AvgRatingResponse;
 import com.modsen.rating.dto.RatingResponse;
 import com.modsen.rating.dto.ScoreRequest;
 import com.modsen.rating.exception.RatingNotFoundException;
-import com.modsen.rating.model.DriverRating;
 import com.modsen.rating.model.PassengerRating;
 import com.modsen.rating.repository.PassengerRatingRepository;
 import com.modsen.rating.service.RatingService;

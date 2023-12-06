@@ -1,6 +1,5 @@
 package com.modsen.rating.repository;
 
-import com.modsen.rating.dto.AvgRatingResponse;
 import com.modsen.rating.model.DriverRating;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
