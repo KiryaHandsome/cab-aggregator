@@ -1,7 +1,6 @@
 package com.modsen.driver.util;
 
 
-import com.modsen.driver.dto.event.RideOrdered;
 import com.modsen.driver.dto.request.DriverCreate;
 import com.modsen.driver.dto.request.DriverUpdate;
 import com.modsen.driver.dto.response.DriverResponse;
@@ -24,9 +23,6 @@ public class TestData {
     public static final Integer PASSENGER_ID = 13;
     public static final String START_LOCATION = "Minsk";
     public static final String FINISH_LOCATION = "Volkovysk";
-    public static final Integer RATING_ID = 51;
-    public static final Integer TOTAL_RATINGS = 100;
-    public static final Float AVERAGE_RATING = 3.7f;
 
     public static Driver defaultDriver() {
         return new Driver(
@@ -96,9 +92,5 @@ public class TestData {
                 NEW_EMAIL,
                 NEW_PHONE_NUMBER
         );
-    }
-
-    public static RideOrdered defaultRideOrdered() {
-        return new RideOrdered(PASSENGER_ID, START_LOCATION, FINISH_LOCATION);
     }
 }
