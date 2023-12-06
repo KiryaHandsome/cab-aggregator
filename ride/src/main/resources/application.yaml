@@ -9,3 +9,7 @@ spring:
       port: 27017
   kafka:
     bootstrap-servers: localhost:9092
+
+logging:
+  level:
+    com.modsen.ride: debug

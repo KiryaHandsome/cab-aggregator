@@ -15,5 +15,6 @@
         <module>passenger</module>
         <module>driver</module>
         <module>ride</module>
+        <module>payment</module>
     </modules>
 </project>

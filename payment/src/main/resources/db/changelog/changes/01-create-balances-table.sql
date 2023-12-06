@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS balances
+(
+    id           INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    passenger_id INTEGER NOT NULL UNIQUE,
+    amount       NUMERIC(10, 2),
+    "version"    INTEGER NOT NULL DEFAULT 0
+);

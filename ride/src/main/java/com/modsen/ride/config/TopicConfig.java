@@ -9,23 +9,23 @@ import org.springframework.kafka.config.TopicBuilder;
 public class TopicConfig {
 
     @Bean
-    public NewTopic rideStartedTopic() {
-        return TopicBuilder
-                .name("ride-started")
-                .build();
-    }
-
-    @Bean
-    public NewTopic rideEndedTopic() {
-        return TopicBuilder
-                .name("ride-ended")
-                .build();
-    }
-
-    @Bean
     public NewTopic rideOrderedTopic() {
         return TopicBuilder
                 .name("ride-ordered")
+                .build();
+    }
+
+    @Bean
+    public NewTopic ridePaymentTopic() {
+        return TopicBuilder
+                .name("ride-payment")
+                .build();
+    }
+
+    @Bean
+    public NewTopic paymentResultTopic() {
+        return TopicBuilder
+                .name("payment-result")
                 .build();
     }
 }

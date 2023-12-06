@@ -1,0 +1,24 @@
+server:
+  port: 8083
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/payment
+    username: postgres
+    password: postgres
+  kafka:
+    bootstrap-servers: localhost:9092
+  cloud:
+    function:
+      definition: processRidePayment
+    stream:
+      kafka:
+        binder:
+          brokers:
+            - localhost:9092
+      bindings:
+        processRidePayment-in-0:
+          destination: ride-payment
+          group: payment-service
+        processRidePayment-out-0:
+          destination: payment-result

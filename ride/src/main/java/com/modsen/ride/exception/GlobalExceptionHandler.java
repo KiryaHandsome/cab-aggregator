@@ -1,7 +1,7 @@
 package com.modsen.ride.exception;
 
-import com.modsen.ride.dto.ErrorResponse;
-import com.modsen.ride.dto.ValidationErrorResponse;
+import com.modsen.ride.dto.response.ErrorResponse;
+import com.modsen.ride.dto.response.ValidationErrorResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
@@ -34,7 +34,6 @@ public class GlobalExceptionHandler {
                 .body(errorResponse);
     }
 
-
     @ExceptionHandler(BaseException.class)
     public ResponseEntity<ErrorResponse> handleBase(BaseException ex) {
         String errorMessage = messageSource.getMessage(ex.getMessage(), ex.getParams(), LocaleContextHolder.getLocale());
@@ -46,6 +45,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ValidationErrorResponse> handleValidationException(MethodArgumentNotValidException ex) {
+        log.warn("Caught validation exception: {}", ex.getMessage());
         BindingResult bindingResult = ex.getBindingResult();
         List<String> errorsMessages = bindingResult.getAllErrors()
                 .stream()

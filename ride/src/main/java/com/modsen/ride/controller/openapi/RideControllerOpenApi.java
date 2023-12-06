@@ -1,9 +1,9 @@
 package com.modsen.ride.controller.openapi;
 
-import com.modsen.ride.dto.RideRequest;
-import com.modsen.ride.dto.RideResponse;
+import com.modsen.ride.dto.RideDto;
 import com.modsen.ride.dto.RideStart;
-import com.modsen.ride.dto.WaitingRideResponse;
+import com.modsen.ride.dto.request.RideRequest;
+import com.modsen.ride.dto.response.WaitingRideResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -146,7 +146,7 @@ public interface RideControllerOpenApi {
                     )
             )
     )
-    ResponseEntity<Page<RideResponse>> getPassengerRides(Integer passengerId, Pageable pageable);
+    ResponseEntity<Page<RideDto>> getPassengerRides(Integer passengerId, Pageable pageable);
 
     @Operation(
             tags = "Ride",
@@ -201,7 +201,7 @@ public interface RideControllerOpenApi {
                     )
             )
     )
-    ResponseEntity<Page<RideResponse>> getDriverRides(Integer driverId, Pageable pageable);
+    ResponseEntity<Page<RideDto>> getDriverRides(Integer driverId, Pageable pageable);
 
     @Operation(
             tags = "Ride",
@@ -257,7 +257,7 @@ public interface RideControllerOpenApi {
                     )
             }
     )
-    ResponseEntity<RideResponse> startRide(String waitingRideId, RideStart rideDto);
+    ResponseEntity<RideDto> startRide(String waitingRideId, RideStart rideDto);
 
     @Operation(
             tags = "Ride",
@@ -300,5 +300,5 @@ public interface RideControllerOpenApi {
                     )
             }
     )
-    ResponseEntity<RideResponse> endRide(String rideId);
+    ResponseEntity<RideDto> endRide(String rideId);
 }
