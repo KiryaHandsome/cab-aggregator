@@ -11,24 +11,32 @@ spring:
     name: gateway
   cloud:
     gateway:
+      discovery:
+        locator:
+          enabled: true
+          lowerCaseServiceId: true
       routes:
         - id: driver
           uri: lb://driver
           predicates:
-            - Path=/api/v1/drivers
+            - Path=/api/v1/drivers/**
         - id: passenger
           uri: lb://passenger
           predicates:
-            - Path=/api/v1/passengers
+            - Path=/api/v1/passengers/**
         - id: ride
           uri: lb://ride
           predicates:
-            - Path=/api/v1/rides
+            - Path=/api/v1/rides/**
         - id: payment
           uri: lb://payment
           predicates:
-            - Path=/api/v1/payments
-        - id: rating    # must be implemented in future
+            - Path=/api/v1/payments/**
+        - id: rating
           uri: lb://rating
           predicates:
-            - Path=/api/v1/ratings
+            - Path=/api/v1/ratings/**
+
+logging:
+  level:
+    web: debug
