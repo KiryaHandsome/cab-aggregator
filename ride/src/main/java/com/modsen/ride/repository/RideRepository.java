@@ -5,7 +5,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
+import java.util.Optional;
+
 public interface RideRepository extends MongoRepository<Ride, String> {
+
+    Optional<Ride> findFirstByDriverIdAndPassengerId(Integer driverId, Integer passengerId);
 
     Page<Ride> findByPassengerId(Integer passengerId, Pageable pageable);
 

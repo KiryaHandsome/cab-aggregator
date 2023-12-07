@@ -5,6 +5,7 @@ import com.modsen.ride.dto.DriverStatus;
 import com.modsen.ride.dto.PaymentEvent;
 import com.modsen.ride.dto.RideDto;
 import com.modsen.ride.dto.RideStart;
+import com.modsen.ride.dto.SharedRideResponse;
 import com.modsen.ride.dto.StatusUpdate;
 import com.modsen.ride.dto.request.RideRequest;
 import com.modsen.ride.dto.response.DriverResponse;
@@ -122,5 +123,13 @@ public class RideServiceImpl implements RideService {
                 .orElseThrow(() -> new RideNotFoundException("exception.ride_not_found", paymentEvent.getRideId()));
         ride.setPaymentStatus(paymentEvent.getStatus());
         rideRepository.save(ride);
+    }
+
+    @Override
+    public SharedRideResponse haveSharedRide(Integer driverId, Integer passengerId) {
+        boolean haveSharedRide = rideRepository
+                .findFirstByDriverIdAndPassengerId(driverId, passengerId)
+                .isPresent();
+        return new SharedRideResponse(haveSharedRide);
     }
 }

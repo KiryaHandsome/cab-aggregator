@@ -3,6 +3,7 @@ package com.modsen.ride.controller;
 import com.modsen.ride.controller.openapi.RideControllerOpenApi;
 import com.modsen.ride.dto.RideDto;
 import com.modsen.ride.dto.RideStart;
+import com.modsen.ride.dto.SharedRideResponse;
 import com.modsen.ride.dto.request.RideRequest;
 import com.modsen.ride.dto.response.WaitingRideResponse;
 import com.modsen.ride.service.KafkaChannelGateway;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/api/v1/rides")
@@ -31,6 +33,15 @@ public class RideController implements RideControllerOpenApi {
     public ResponseEntity<WaitingRideResponse> bookRide(@RequestBody @Valid RideRequest rideRequest) {
         WaitingRideResponse response = rideService.bookRide(rideRequest);
         kafkaChannelGateway.sendToRideOrdered(rideRequest);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/check-shared-ride")
+    public ResponseEntity<SharedRideResponse> checkSharedRide(
+            @RequestParam("driver-id") Integer driverId,
+            @RequestParam("passenger-id") Integer passengerId
+    ) {
+        SharedRideResponse response = rideService.haveSharedRide(driverId, passengerId);
         return ResponseEntity.ok(response);
     }
 
