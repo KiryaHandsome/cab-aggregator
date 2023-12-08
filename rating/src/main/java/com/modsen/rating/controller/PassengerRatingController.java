@@ -19,11 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("/api/v1/ratings/passengers")
 @RestController
-public class RatingController {
+public class PassengerRatingController {
 
     private final RatingService passengerRatingService;
 
-    public RatingController(@Qualifier("passenger") RatingService passengerRatingService) {
+    public PassengerRatingController(@Qualifier("passenger") RatingService passengerRatingService) {
         this.passengerRatingService = passengerRatingService;
     }
 

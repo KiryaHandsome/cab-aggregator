@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "passengers_rating")
+@Table(name = "passenger_ratings")
 public class PassengerRating {
 
     @Id

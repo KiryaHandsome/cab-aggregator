@@ -35,7 +35,7 @@ public class PassengerRatingService implements RatingService {
 
     @Override
     public Page<RatingResponse> getRatingsWithCommentsByUserId(int driverId, Pageable pageable) {
-        return passengerRatingRepository.getAllByPassengerIdAndCommentIsNotNull(driverId, pageable)
+        return passengerRatingRepository.findAllByPassengerIdAndCommentIsNotNull(driverId, pageable)
                 .map(this::mapToRatingResponse);
     }
 

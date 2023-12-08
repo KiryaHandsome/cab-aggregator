@@ -35,7 +35,7 @@ public class DriverRatingService implements RatingService {
 
     @Override
     public Page<RatingResponse> getRatingsWithCommentsByUserId(int driverId, Pageable pageable) {
-        return driverRatingRepository.getAllByDriverIdAndCommentIsNotNull(driverId, pageable)
+        return driverRatingRepository.findAllByDriverIdAndCommentIsNotNull(driverId, pageable)
                 .map(this::mapToRatingResponse);
     }
 

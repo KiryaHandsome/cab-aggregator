@@ -18,5 +18,5 @@ public interface DriverRatingRepository extends JpaRepository<DriverRating, Inte
             """)
     Optional<Float> getAverageRatingByDriverId(@Param("driverId") Integer driverId);
 
-    Page<DriverRating> getAllByDriverIdAndCommentIsNotNull(Integer driverId, Pageable pageable);
+    Page<DriverRating> findAllByDriverIdAndCommentIsNotNull(Integer driverId, Pageable pageable);
 }

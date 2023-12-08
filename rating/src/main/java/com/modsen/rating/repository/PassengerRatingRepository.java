@@ -18,5 +18,5 @@ public interface PassengerRatingRepository extends JpaRepository<PassengerRating
             """)
     Optional<Float> getAverageRatingByPassengerId(@Param("passengerId") Integer passengerId);
 
-    Page<PassengerRating> getAllByPassengerIdAndCommentIsNotNull(Integer driverId, Pageable pageable);
+    Page<PassengerRating> findAllByPassengerIdAndCommentIsNotNull(Integer driverId, Pageable pageable);
 }
