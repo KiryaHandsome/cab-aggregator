@@ -19,6 +19,7 @@
         <openapi.version>2.2.0</openapi.version>
         <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
         <spring-cloud.version>2022.0.4</spring-cloud.version>
+        <cucumber.version>7.14.1</cucumber.version>
     </properties>
     <dependencies>
         <dependency>
@@ -84,6 +85,24 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <scope>test</scope>
+            <artifactId>cucumber-java</artifactId>
+            <version>${cucumber.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-spring</artifactId>
+            <version>${cucumber.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit</artifactId>
+            <version>${cucumber.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
