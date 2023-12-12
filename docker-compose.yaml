@@ -27,6 +27,52 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
+  eureka-server:
+    build:
+      context: eureka-server
+      dockerfile: Dockerfile
+    container_name: eureka-server
+    ports:
+      - 8761:8761
+    restart: always
+    networks:
+      - discovery
+
+  gateway:
+    build:
+      context: gateway
+      dockerfile: Dockerfile
+    container_name: gateway
+    ports:
+      - 8888:8888
+    depends_on:
+      - eureka-server
+    restart: always
+    networks:
+      - discovery
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+
+  passenger:
+    build:
+      context: passenger
+      dockerfile: Dockerfile
+    container_name: passenger
+    depends_on:
+      - eureka-server
+      - passenger_db
+      - kafka
+    networks:
+      - passenger
+      - kafka
+      - discovery
+    ports:
+      - 8080:8080
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://passenger_db:5432/passenger
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+
   passenger_db:
     image: postgres:15-alpine
     container_name: passenger_db
@@ -40,21 +86,23 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=passenger
 
-  passenger:
+  driver:
     build:
-      context: passenger
+      context: driver
       dockerfile: Dockerfile
-    container_name: passenger
+    container_name: driver
     depends_on:
-      - passenger_db
-      - kafka
+      - driver_db
+      - eureka-server
     networks:
-      - passenger
+      - driver
       - kafka
+      - discovery
     ports:
-      - 8080:8080
+      - 8081:8081
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://passenger_db:5432/driver
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://driver_db:5432/driver
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
 
   driver_db:
@@ -70,20 +118,24 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=driver
 
-  driver:
+  ride:
     build:
-      context: driver
+      context: ride
       dockerfile: Dockerfile
-    container_name: driver
+    container_name: ride
     depends_on:
-      - driver_db
-    networks:
-      - driver
+      - ride_db
       - kafka
+      - eureka-server
+    networks:
+      - ride
+      - kafka
+      - discovery
     ports:
-      - 8081:8081
+      - 8082:8082
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://driver_db:5432/driver
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - SPRING_DATA_MONGODB_HOST=ride_db
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
 
   ride_db:
@@ -96,28 +148,75 @@ services:
     environment:
       - MONGO_INITDB_DATABASE=ride
 
-  ride:
+  payment:
     build:
-      context: ride
+      context: payment
       dockerfile: Dockerfile
-    container_name: ride
+    container_name: payment
     depends_on:
-      - ride_db
-      - kafka
+      - payment_db
+      - eureka-server
     networks:
-      - ride
+      - payment
       - kafka
+      - discovery
     ports:
-      - 8082:8082
+      - 8083:8083
     environment:
-      - SPRING_DATA_MONGODB_HOST=ride_db
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://payment_db:5432/payment
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+
+  payment_db:
+    image: postgres:15-alpine
+    container_name: payment_db
+    restart: always
+    networks:
+      - payment
+    ports:
+      - 5435:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=payment
+
+  rating:
+    build:
+      context: rating
+      dockerfile: Dockerfile
+    container_name: rating
+    depends_on:
+      - rating_db
+      - eureka-server
+    networks:
+      - rating
+      - kafka
+      - discovery
+    ports:
+      - 8084:8084
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://rating_db:5432/rating
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+
+  rating_db:
+    image: postgres:15-alpine
+    container_name: rating_db
+    restart: always
+    networks:
+      - rating
+    ports:
+      - 5436:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=rating
 
 networks:
   ride:
   kafka:
   driver:
   passenger:
-
-
-
+  payment:
+  rating:
+  discovery:
