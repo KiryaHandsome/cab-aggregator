@@ -1,6 +1,7 @@
 package com.modsen.passenger.component;
 
 import com.modsen.passenger.PassengerApplication;
+import com.modsen.passenger.integration.BaseIntegrationTest;
 import io.cucumber.junit.Cucumber;
 import io.cucumber.junit.CucumberOptions;
 import io.cucumber.spring.CucumberContextConfiguration;
@@ -15,6 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest(
         classes = {PassengerApplication.class, RunCucumberTest.class},
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class RunCucumberTest {
+public class RunCucumberTest extends BaseIntegrationTest {
 
 }
