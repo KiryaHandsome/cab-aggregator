@@ -2,6 +2,7 @@ package com.modsen.ride.component;
 
 
 import com.modsen.ride.integration.BaseIntegrationTest;
+import com.modsen.ride.repository.RideRepository;
 import com.modsen.ride.repository.WaitingRideRepository;
 import com.modsen.ride.service.DriverClient;
 import io.cucumber.junit.Cucumber;
@@ -24,4 +25,7 @@ public class RunCucumberTest extends BaseIntegrationTest {
 
     @MockBean
     WaitingRideRepository waitingRideRepository;
+
+    @MockBean
+    RideRepository rideRepository;
 }
