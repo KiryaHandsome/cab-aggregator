@@ -27,7 +27,7 @@ public class PassengerRatingController {
         this.passengerRatingService = passengerRatingService;
     }
 
-    @GetMapping("/avg/{passengerId}")
+    @GetMapping("/{passengerId}/avg")
     @ResponseStatus(HttpStatus.OK)
     public AvgRatingResponse getAveragePassengerRating(@PathVariable Integer passengerId) {
         return passengerRatingService.getAverageRating(passengerId);

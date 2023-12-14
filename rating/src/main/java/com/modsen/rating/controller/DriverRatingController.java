@@ -27,7 +27,7 @@ public class DriverRatingController {
         this.driverRatingService = driverRatingService;
     }
 
-    @GetMapping("/avg/{driverId}")
+    @GetMapping("/{driverId}/avg")
     @ResponseStatus(HttpStatus.OK)
     public AvgRatingResponse getAverageDriverRating(@PathVariable Integer driverId) {
         return driverRatingService.getAverageRating(driverId);
