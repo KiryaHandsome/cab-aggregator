@@ -11,6 +11,7 @@ spring:
 
 ride:
   name: ride
+  path: /api/v1/rides
 
 eureka:
   client:
