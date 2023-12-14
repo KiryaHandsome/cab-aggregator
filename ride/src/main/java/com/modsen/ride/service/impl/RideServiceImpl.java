@@ -94,7 +94,6 @@ public class RideServiceImpl implements RideService {
         return rideMapper.toDto(ride);
     }
 
-
     private void setupRide(Ride ride, Integer driverId) {
         ride.setDriverId(driverId);
         ride.setStartTime(LocalDateTime.now());
