@@ -2,6 +2,8 @@ server:
   port: 8082
 
 spring:
+  application:
+    name: ride
   data:
     mongodb:
       host: localhost
@@ -9,6 +11,17 @@ spring:
       port: 27017
   kafka:
     bootstrap-servers: localhost:9092
+
+driver:
+  name: driver
+  url: localhost:8081
+  getById: /api/v1/drivers/{id}
+  update: /api/v1/drivers/{id}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
 
 logging:
   level:

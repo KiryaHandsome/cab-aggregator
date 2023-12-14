@@ -8,9 +8,7 @@ import com.modsen.passenger.exception.PassengerNotFoundException;
 import com.modsen.passenger.exception.PhoneNumberAlreadyExistsException;
 import com.modsen.passenger.mapper.PassengerMapper;
 import com.modsen.passenger.model.Passenger;
-import com.modsen.passenger.model.Rating;
 import com.modsen.passenger.repository.PassengerRepository;
-import com.modsen.passenger.repository.RatingRepository;
 import com.modsen.passenger.service.PassengerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class PassengerServiceImpl implements PassengerService {
 
     private final PassengerMapper mapper;
-    private final RatingRepository ratingRepository;
     private final PassengerRepository passengerRepository;
 
     @Override
@@ -63,8 +60,6 @@ public class PassengerServiceImpl implements PassengerService {
         Passenger passenger = mapper.toModel(request);
         throwIfEmailOrPhoneAlreadyExist(request.getEmail(), request.getPhoneNumber());
         passengerRepository.save(passenger);
-        Rating rating = new Rating(null, 0, 0f, passenger);
-        ratingRepository.save(rating);
         return mapper.toResponse(passenger);
     }
 

@@ -7,7 +7,6 @@ import com.modsen.passenger.exception.PhoneNumberAlreadyExistsException;
 import com.modsen.passenger.mapper.PassengerMapper;
 import com.modsen.passenger.model.Passenger;
 import com.modsen.passenger.repository.PassengerRepository;
-import com.modsen.passenger.repository.RatingRepository;
 import com.modsen.passenger.util.TestData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,9 +33,6 @@ class PassengerServiceImplTest {
 
     @Mock
     private PassengerMapper passengerMapper;
-
-    @Mock
-    private RatingRepository ratingRepository;
 
     @Mock
     private PassengerRepository passengerRepository;
@@ -198,7 +194,6 @@ class PassengerServiceImplTest {
         verify(passengerMapper).toModel(eq(TestData.defaultPassengerCreate()));
         verify(passengerMapper).toResponse(eq(TestData.defaultPassenger()));
         verify(passengerRepository).save(TestData.defaultPassenger());
-        verify(ratingRepository).save(eq(TestData.initialRating()));
     }
 
     @Test

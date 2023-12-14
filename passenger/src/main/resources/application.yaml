@@ -1,5 +1,15 @@
+server:
+  port: 8080
+
 spring:
+  application:
+    name: passenger
   datasource:
     url: jdbc:postgresql://localhost:5432/passenger
     username: postgres
     password: postgres
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/

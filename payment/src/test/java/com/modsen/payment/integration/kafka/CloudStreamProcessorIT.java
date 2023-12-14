@@ -27,7 +27,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
+import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 @Sql(
         scripts = {"classpath:sql/delete-data.sql", "classpath:sql/create-data.sql"},

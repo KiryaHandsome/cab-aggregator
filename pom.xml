@@ -15,6 +15,9 @@
         <module>passenger</module>
         <module>driver</module>
         <module>ride</module>
+        <module>rating</module>
         <module>payment</module>
+        <module>eureka-server</module>
+        <module>gateway</module>
     </modules>
 </project>
