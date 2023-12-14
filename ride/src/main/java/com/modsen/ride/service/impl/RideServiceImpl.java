@@ -4,7 +4,6 @@ package com.modsen.ride.service.impl;
 import com.modsen.ride.dto.DriverStatus;
 import com.modsen.ride.dto.PaymentEvent;
 import com.modsen.ride.dto.RideDto;
-import com.modsen.ride.dto.RideStart;
 import com.modsen.ride.dto.SharedRideResponse;
 import com.modsen.ride.dto.StatusUpdate;
 import com.modsen.ride.dto.request.RideRequest;
@@ -68,13 +67,13 @@ public class RideServiceImpl implements RideService {
     }
 
     @Override
-    public RideDto startRide(String waitingRideId, RideStart event) {
+    public RideDto startRide(String waitingRideId, Integer driverId) {
         WaitingRide waitingRide = waitingRideRepository.findById(waitingRideId)
                 .orElseThrow(() -> new WaitingRideNotFoundException("exception.waiting_ride_not_found", waitingRideId));
-        DriverResponse driverResponse = driverClient.getDriverById(event.getDriverId());
-        checkDriverAvailable(driverResponse, event.getDriverId());
-        driverClient.updateDriver(event.getDriverId(), new StatusUpdate(DriverStatus.BUSY));
-        return saveNewRide(waitingRide, event.getDriverId());
+        DriverResponse driverResponse = driverClient.getDriverById(driverId);
+        checkDriverAvailable(driverResponse, driverId);
+        driverClient.updateDriver(driverId, new StatusUpdate(DriverStatus.BUSY));
+        return saveNewRide(waitingRide, driverId);
     }
 
     private void checkDriverAvailable(DriverResponse response, Integer driverId) {

@@ -65,7 +65,7 @@ public class RideController implements RideControllerOpenApi {
 
     @PostMapping("/{waitingRideId}/start")
     public ResponseEntity<RideDto> startRide(@PathVariable String waitingRideId, @RequestBody RideStart request) {
-        RideDto rideDto = rideService.startRide(waitingRideId, request);
+        RideDto rideDto = rideService.startRide(waitingRideId, request.getDriverId());
         return ResponseEntity.ok(rideDto);
     }
 

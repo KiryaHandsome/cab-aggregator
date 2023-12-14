@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "${driver.name}", url = "${driver.url}")
+@FeignClient(name = "${driver.name}", url = "${driver.url}", path = "${driver.path}")
 public interface DriverClient {
 
-    @GetMapping("${driver.getById}")
+    @GetMapping("/{id}")
     DriverResponse getDriverById(@PathVariable("id") Integer id);
 
-    @PatchMapping("${driver.update}")
+    @PatchMapping("/{id}")
     DriverResponse updateDriver(@PathVariable("id") Integer id, @RequestBody StatusUpdate statusUpdate);
 }

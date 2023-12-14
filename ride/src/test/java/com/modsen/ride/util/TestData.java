@@ -15,23 +15,23 @@ public class TestData {
     public static final Integer PASSENGER_ID = 5;
     public static final String RIDE_ID = "12jla2mfadsjf";
     public static final String WAITING_RIDE_ID = "asdjfklh12893llafl";
-    public static final String START_LOCATION = "start";
-    public static final String FINISH_LOCATION = "finish";
+    public static final String FROM = "start";
+    public static final String TO = "finish";
     public static final Integer DRIVER_ID = 52;
     public static final LocalDateTime START_TIME = LocalDateTime.now();
     public static final LocalDateTime FINISH_TIME = START_TIME.plusHours(1);
     public static final Float COST = 718.56f;
 
     public static RideRequest rideRequest() {
-        return new RideRequest(PASSENGER_ID, START_LOCATION, FINISH_LOCATION);
+        return new RideRequest(PASSENGER_ID, FROM, TO);
     }
 
     public static WaitingRide defaultWaitingRide() {
         return new WaitingRide(
                 WAITING_RIDE_ID,
                 PASSENGER_ID,
-                START_LOCATION,
-                FINISH_LOCATION
+                FROM,
+                TO
         );
     }
 
@@ -40,8 +40,8 @@ public class TestData {
                 RIDE_ID,
                 DRIVER_ID,
                 PASSENGER_ID,
-                START_LOCATION,
-                FINISH_LOCATION,
+                FROM,
+                TO,
                 COST,
                 PaymentStatus.WAITING,
                 START_TIME,
@@ -54,8 +54,8 @@ public class TestData {
                 RIDE_ID,
                 DRIVER_ID,
                 PASSENGER_ID,
-                START_LOCATION,
-                FINISH_LOCATION,
+                FROM,
+                TO,
                 COST,
                 START_TIME,
                 FINISH_TIME
@@ -66,8 +66,8 @@ public class TestData {
         return new WaitingRideResponse(
                 WAITING_RIDE_ID,
                 PASSENGER_ID,
-                START_LOCATION,
-                FINISH_LOCATION
+                FROM,
+                TO
         );
     }
 
