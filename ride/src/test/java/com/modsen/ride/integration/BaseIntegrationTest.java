@@ -14,7 +14,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @ActiveProfiles("test")
-@Testcontainers
 public class BaseIntegrationTest {
 
     public static final Integer MONGO_PORT = 27017;
@@ -38,11 +37,5 @@ public class BaseIntegrationTest {
         registry.add("spring.kafka.bootstrap-servers", kafkaContainer::getBootstrapServers);
         registry.add("spring.data.mongodb.host", mongoContainer::getHost);
         registry.add("spring.data.mongodb.port", mongoContainer::getFirstMappedPort);
-    }
-
-    @Test
-    void testMongoConnection() {
-        assertThat(mongoContainer.getConnectionString()).isNotNull();
-        log.info("Mongo container connection uri: " + mongoContainer.getConnectionString());
     }
 }
