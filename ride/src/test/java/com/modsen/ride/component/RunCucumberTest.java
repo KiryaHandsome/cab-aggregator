@@ -14,9 +14,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 @RunWith(Cucumber.class)
 @CucumberContextConfiguration
-@CucumberOptions(
-        features = "classpath:features"
-)
+@CucumberOptions(features = "classpath:features")
 @SpringBootTest
 public class RunCucumberTest extends BaseIntegrationTest {
 

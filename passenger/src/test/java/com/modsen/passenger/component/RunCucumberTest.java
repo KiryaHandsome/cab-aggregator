@@ -10,12 +10,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @RunWith(Cucumber.class)
 @CucumberContextConfiguration
-@CucumberOptions(
-        features = "classpath:features"
-)
+@CucumberOptions(features = "classpath:features")
 @SpringBootTest(
         classes = {PassengerApplication.class, RunCucumberTest.class},
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+)
 public class RunCucumberTest extends BaseIntegrationTest {
 
 }

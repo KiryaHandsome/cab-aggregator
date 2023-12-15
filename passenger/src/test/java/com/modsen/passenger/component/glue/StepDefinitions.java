@@ -1,6 +1,5 @@
 package com.modsen.passenger.component.glue;
 
-import com.modsen.passenger.component.RunCucumberTest;
 import com.modsen.passenger.dto.response.PassengerResponse;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -13,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-public class StepDefinitions extends RunCucumberTest {
+public class StepDefinitions {
 
     @Autowired
     private TestRestTemplate testClient;
@@ -26,13 +25,13 @@ public class StepDefinitions extends RunCucumberTest {
     }
 
     @When("Client makes request to {string}")
-    public void clientMakesRequestToApiVPassengers(String endpoint) {
+    public void clientMakesRequestToApiPassengers(String endpoint) {
         response = testClient
                 .getForEntity(endpoint + passengerId, PassengerResponse.class);
     }
 
     @Then("Should return OK status and expected passenger")
-    public void shouldReturnOkStatusAndExpectedPassenger() {
+    public void shouldReturnOkStatus() {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 }
