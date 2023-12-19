@@ -9,9 +9,9 @@ import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,19 +33,15 @@ public class PaymentServiceIT extends BaseIntegrationTest {
     public void payForRide_shouldUpdateBalanceOnlyOnce() {
         Integer passengerId = 1;
         RideInfo rideInfo = new RideInfo(null, null, passengerId, null, null, 10.f, null, null);
-        Float passengerBalance = 90.88f;
         rideInfo.setPassengerId(passengerId);
-        Float expectedAmount = passengerBalance - rideInfo.getCost();
+        int threadCount = 3;
+        float passengerBalance = 90.88f;
+        Float expectedAmount = passengerBalance - rideInfo.getCost() * threadCount;
 
-        // Simulate two threads trying to pay for the ride simultaneously
-        Runnable payForRideTask = () -> {
-            try {
-                paymentService.payForRide(rideInfo);
-            } catch (OptimisticLockingFailureException e) {
-                System.out.println("Caught the OptimisticLockingFailureException");
-            }
-        };
-        List<Thread> threads = List.of(new Thread(payForRideTask), new Thread(payForRideTask));
+        // Simulate few threads trying to pay for the ride simultaneously
+        Runnable payForRideTask = () -> paymentService.payForRide(rideInfo);
+        List<Thread> threads = new ArrayList<>();
+        for (int i = 0; i < threadCount; i++) threads.add(new Thread(payForRideTask));
         threads.forEach(Thread::start);
         threads.forEach(t -> {
             try {
@@ -54,7 +50,6 @@ public class PaymentServiceIT extends BaseIntegrationTest {
                 throw new RuntimeException(e);
             }
         });
-
         Balance updatedBalance = balanceRepository.findByPassengerId(passengerId).orElse(null);
 
         assertThat(updatedBalance).isNotNull();
