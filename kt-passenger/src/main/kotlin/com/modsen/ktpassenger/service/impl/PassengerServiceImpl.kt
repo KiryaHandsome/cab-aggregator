@@ -6,6 +6,9 @@ import com.modsen.ktpassenger.dto.PassengerUpdate
 import com.modsen.ktpassenger.dto.mapIfNotNull
 import com.modsen.ktpassenger.dto.toEntity
 import com.modsen.ktpassenger.dto.toResponse
+import com.modsen.ktpassenger.exception.EmailAlreadyExistsException
+import com.modsen.ktpassenger.exception.PassengerNotFoundException
+import com.modsen.ktpassenger.exception.PhoneNumberAlreadyExistsException
 import com.modsen.ktpassenger.repository.PassengerRepository
 import com.modsen.ktpassenger.service.PassengerService
 import org.springframework.data.domain.Page
@@ -23,7 +26,7 @@ class PassengerServiceImpl(
     override fun findById(id: Int): PassengerResponse {
         return passengerRepository.findById(id)
             .map { p -> p.toResponse() }
-            .orElseThrow { RuntimeException("Passenger with id=$id not found") }
+            .orElseThrow { PassengerNotFoundException("exception.passenger_not_found", id) }
     }
 
     @Transactional(readOnly = true)
@@ -34,7 +37,8 @@ class PassengerServiceImpl(
 
     override fun update(id: Int, request: PassengerUpdate): PassengerResponse {
         val entity = passengerRepository.findById(id)
-            .orElseThrow { RuntimeException("Passenger with id=$id not found") }
+            .orElseThrow { PassengerNotFoundException("exception.passenger_not_found", id) }
+        throwIfEmailOrPhoneAlreadyExist(request.email ?: "", request.phoneNumber ?: "")
         entity.mapIfNotNull(request)
         passengerRepository.save(entity)
         return entity.toResponse()
@@ -46,7 +50,15 @@ class PassengerServiceImpl(
 
     override fun create(request: PassengerCreate): PassengerResponse {
         val entity = request.toEntity()
+        throwIfEmailOrPhoneAlreadyExist(entity.email, entity.phoneNumber)
         passengerRepository.save(entity)
         return entity.toResponse()
+    }
+
+    private fun throwIfEmailOrPhoneAlreadyExist(email: String, phoneNumber: String) {
+        passengerRepository.findByEmail(email)
+            .ifPresent { throw EmailAlreadyExistsException("exception.email_already_exists", email) }
+        passengerRepository.findByPhoneNumber(phoneNumber)
+            .ifPresent { throw PhoneNumberAlreadyExistsException("exception.phone_already_exists", phoneNumber) }
     }
 }

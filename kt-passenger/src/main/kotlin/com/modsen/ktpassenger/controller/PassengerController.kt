@@ -4,6 +4,7 @@ import com.modsen.ktpassenger.dto.PassengerCreate
 import com.modsen.ktpassenger.dto.PassengerResponse
 import com.modsen.ktpassenger.dto.PassengerUpdate
 import com.modsen.ktpassenger.service.PassengerService
+import jakarta.validation.Valid
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
@@ -35,13 +36,13 @@ class PassengerController(
     }
 
     @PatchMapping("/{id}")
-    fun updatePassenger(@PathVariable id: Int, @RequestBody request: PassengerUpdate): PassengerResponse {
+    fun updatePassenger(@PathVariable id: Int, @Valid @RequestBody request: PassengerUpdate): PassengerResponse {
         return passengerService.update(id, request)
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    fun createPassenger(@RequestBody request: PassengerCreate): PassengerResponse {
+    fun createPassenger(@Valid @RequestBody request: PassengerCreate): PassengerResponse {
         return passengerService.create(request)
     }
 
