@@ -28,7 +28,6 @@ public class RedisCachingFilter implements GlobalFilter, Ordered {
     private final RedisTemplate<String, Object> redisTemplate;
     private final ModifyResponseBodyGatewayFilterFactory modifyResponseBodyFilterFactory;
 
-
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         if (!HttpMethod.GET.equals(exchange.getRequest().getMethod())) {
