@@ -8,7 +8,6 @@ import org.testcontainers.utility.DockerImageName;
 
 public class RedisContainer {
 
-
     private static final GenericContainer<?> redisContainer = new GenericContainer<>(
             DockerImageName.parse("redis:7-alpine")
     ).withExposedPorts(6379);

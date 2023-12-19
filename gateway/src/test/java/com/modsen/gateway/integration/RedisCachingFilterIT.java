@@ -41,7 +41,6 @@ class RedisCachingFilterIT extends RedisContainer {
     @LocalServerPort
     private Integer port;
 
-
     @BeforeAll
     static void startServer() {
         wireMockServer = new WireMockServer(WireMockConfiguration
@@ -77,12 +76,7 @@ class RedisCachingFilterIT extends RedisContainer {
         int id = 1;
         String url = "/api/v1/passengers/" + id;
         PassengerResponse expected = new PassengerResponse(1, "name", "surname", "email", "phone");
-        wireMockServer.stubFor(get(url)
-                .willReturn(aResponse()
-                        .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                        .withResponseBody(Body.fromJsonBytes(objectMapper.writeValueAsBytes(expected)))
-                )
-        );
+        PassengerServiceWireMockConfigurer.configureGetPassenger(wireMockServer, url, expected);
 
         int requestCount = 3;
         List<PassengerResponse> responses = new ArrayList<>();
