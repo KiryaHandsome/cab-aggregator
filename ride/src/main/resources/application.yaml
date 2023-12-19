@@ -15,8 +15,7 @@ spring:
 driver:
   name: driver
   url: localhost:8081
-  getById: /api/v1/drivers/{id}
-  update: /api/v1/drivers/{id}
+  path: /api/v1/drivers
 
 eureka:
   client:

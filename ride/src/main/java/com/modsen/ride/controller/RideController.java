@@ -63,13 +63,13 @@ public class RideController implements RideControllerOpenApi {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/start/{waitingRideId}")
+    @PostMapping("/{waitingRideId}/start")
     public ResponseEntity<RideDto> startRide(@PathVariable String waitingRideId, @RequestBody RideStart request) {
-        RideDto rideDto = rideService.startRide(waitingRideId, request);
+        RideDto rideDto = rideService.startRide(waitingRideId, request.getDriverId());
         return ResponseEntity.ok(rideDto);
     }
 
-    @PostMapping("/end/{rideId}")
+    @PostMapping("/{rideId}/end")
     public ResponseEntity<RideDto> endRide(@PathVariable String rideId) {
         RideDto rideDto = rideService.endRide(rideId);
         kafkaChannelGateway.sendToRidePayment(rideDto);

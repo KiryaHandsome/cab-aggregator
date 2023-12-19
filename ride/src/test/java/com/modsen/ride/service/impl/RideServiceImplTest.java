@@ -146,15 +146,15 @@ class RideServiceImplTest {
                 .toRide(TestData.defaultWaitingRide());
         doReturn(TestData.COST)
                 .when(costCalculator)
-                .calculate(TestData.START_LOCATION, TestData.FINISH_LOCATION);
+                .calculate(TestData.FROM, TestData.TO);
         doReturn(new DriverResponse(null, null, null, null, null, DriverStatus.AVAILABLE))
                 .when(driverClient)
                 .getDriverById(TestData.DRIVER_ID);
 
-        rideService.startRide(TestData.WAITING_RIDE_ID, TestData.rideStart());
+        rideService.startRide(TestData.WAITING_RIDE_ID, TestData.rideStart().getDriverId());
 
         verify(rideMapper).toRide(eq(TestData.defaultWaitingRide()));
-        verify(costCalculator).calculate(eq(TestData.START_LOCATION), eq(TestData.FINISH_LOCATION));
+        verify(costCalculator).calculate(eq(TestData.FROM), eq(TestData.TO));
         verify(rideRepository).save(any());
         verify(waitingRideRepository).deleteById(eq(TestData.WAITING_RIDE_ID));
     }

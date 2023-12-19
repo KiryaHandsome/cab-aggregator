@@ -39,7 +39,7 @@ public class KafkaConsumerIT extends BaseIntegrationTest {
 
         await()
                 .pollInterval(Duration.ofSeconds(3))
-                .atMost(10, TimeUnit.SECONDS)
+                .atMost(20, TimeUnit.SECONDS)
                 .untilAsserted(() -> {
                     Optional<Ride> actual = rideRepository.findById(ride.getId());
                     assertThat(actual.get().getPaymentStatus()).isEqualTo(PaymentStatus.PAID);

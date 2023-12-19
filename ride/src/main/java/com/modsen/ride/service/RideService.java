@@ -2,7 +2,6 @@ package com.modsen.ride.service;
 
 import com.modsen.ride.dto.PaymentEvent;
 import com.modsen.ride.dto.RideDto;
-import com.modsen.ride.dto.RideStart;
 import com.modsen.ride.dto.SharedRideResponse;
 import com.modsen.ride.dto.request.RideRequest;
 import com.modsen.ride.dto.response.WaitingRideResponse;
@@ -19,7 +18,7 @@ public interface RideService {
 
     Page<WaitingRideResponse> findWaitingRides(Pageable pageable);
 
-    RideDto startRide(String waitingRideId, RideStart event);
+    RideDto startRide(String waitingRideId, Integer driverId);
 
     RideDto endRide(String rideId);
 
