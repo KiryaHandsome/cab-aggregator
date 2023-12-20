@@ -10,10 +10,12 @@ data class PassengerResponse(
     val phoneNumber: String,
 )
 
-fun Passenger.toResponse() = PassengerResponse(
-    id = id ?: 0,
-    name = name,
-    surname = surname,
-    email = email,
-    phoneNumber = phoneNumber,
-)
+fun Passenger.toResponse() = id?.let {
+    PassengerResponse(
+        id = it,
+        name = name,
+        surname = surname,
+        email = email,
+        phoneNumber = phoneNumber,
+    )
+}

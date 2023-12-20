@@ -36,10 +36,9 @@ internal class PassengerControllerIT : BaseIntegrationTest() {
     private val port: Int? = null
 
     @Autowired
-    private val passengerRepository: PassengerRepository? = null
-    private var passengerTestClient: PassengerTestClient? = null
+    private lateinit var passengerRepository: PassengerRepository
+    private lateinit var passengerTestClient: PassengerTestClient
 
-    // before all but after beans are injected
     @PostConstruct
     fun setUp() {
         passengerTestClient = PassengerTestClient.withPort(port ?: 8080)
@@ -48,10 +47,9 @@ internal class PassengerControllerIT : BaseIntegrationTest() {
     @Test
     fun passenger_shouldReturnExpectedPassenger() {
         val passengerId = TestEntities.JOHN_ID
-        val expected: PassengerResponse = TestEntities.johnDoe().toResponse()
+        val expected = TestEntities.johnDoe().toResponse()
 
-
-        val actual: PassengerResponse = passengerTestClient!!.getPassengerById(passengerId)
+        val actual: PassengerResponse = passengerTestClient.getPassengerById(passengerId)
 
         assertThat(actual).isEqualTo(expected)
     }
@@ -59,7 +57,9 @@ internal class PassengerControllerIT : BaseIntegrationTest() {
     @Test
     fun passenger_shouldReturnNotFoundCode() {
         val passengerId = 100
-        val actual: ErrorResponse = passengerTestClient!!.getPassengerByIdForError(passengerId)
+
+        val actual: ErrorResponse = passengerTestClient.getPassengerByIdForError(passengerId)
+
         assertThat(actual.statusCode).isEqualTo(HttpStatus.NOT_FOUND.value())
     }
 
@@ -68,7 +68,8 @@ internal class PassengerControllerIT : BaseIntegrationTest() {
         val pageNumber = 0
         val pageSize = 2
         val totalElements = 3
-        passengerTestClient!!.getPassengers(pageNumber, pageSize)
+
+        passengerTestClient.getPassengers(pageNumber, pageSize)
             .body("totalElements", CoreMatchers.`is`(totalElements))
     }
 
@@ -89,7 +90,9 @@ internal class PassengerControllerIT : BaseIntegrationTest() {
             TestEntities.JOHN_PHONE_NUMBER
         )
         val passengerId = TestEntities.JOHN_ID
-        val actual: PassengerResponse = passengerTestClient!!.updatePassenger(passengerId, requestBody)
+
+        val actual: PassengerResponse = passengerTestClient.updatePassenger(passengerId, requestBody)
+
         assertThat(actual).isEqualTo(expected)
     }
 
@@ -98,7 +101,7 @@ internal class PassengerControllerIT : BaseIntegrationTest() {
         val passengerId = 100
         val request = TestData.defaultPassengerUpdate()
 
-        val actual: ErrorResponse = passengerTestClient!!.updatePassengerForNotFound(passengerId, request)
+        val actual: ErrorResponse = passengerTestClient.updatePassengerForNotFound(passengerId, request)
 
         assertThat(actual.statusCode).isEqualTo(HttpStatus.NOT_FOUND.value())
     }
@@ -109,7 +112,7 @@ internal class PassengerControllerIT : BaseIntegrationTest() {
         val passengerId = 2
         val requestBody = PassengerUpdate(null, null, TestEntities.JOHN_EMAIL, null)
 
-        val actual: ErrorResponse = passengerTestClient!!.updatePassengerForConflict(passengerId, requestBody)
+        val actual: ErrorResponse = passengerTestClient.updatePassengerForConflict(passengerId, requestBody)
 
         assertThat(actual.statusCode).isEqualTo(HttpStatus.CONFLICT.value())
     }
@@ -121,7 +124,7 @@ internal class PassengerControllerIT : BaseIntegrationTest() {
         val passengerId = 2
 
         val actual: ValidationErrorResponse = passengerTestClient
-            ?.updatePassengerForValidationError(passengerId, requestBody) ?: throw AssertionError()
+            .updatePassengerForValidationError(passengerId, requestBody)
 
         assertThat(actual.statusCode).isEqualTo(HttpStatus.BAD_REQUEST.value())
     }
@@ -136,7 +139,7 @@ internal class PassengerControllerIT : BaseIntegrationTest() {
             TestData.NEW_PHONE_NUMBER
         )
 
-        val actual: ErrorResponse = passengerTestClient!!.createPassengerForConflict(requestBody)
+        val actual: ErrorResponse = passengerTestClient.createPassengerForConflict(requestBody)
 
         assertThat(actual.statusCode).isEqualTo(HttpStatus.CONFLICT.value())
     }
@@ -151,7 +154,7 @@ internal class PassengerControllerIT : BaseIntegrationTest() {
             TestEntities.JOHN_PHONE_NUMBER
         )
 
-        val actual: ErrorResponse = passengerTestClient!!.createPassengerForConflict(requestBody)
+        val actual: ErrorResponse = passengerTestClient.createPassengerForConflict(requestBody)
 
         assertThat(actual.statusCode).isEqualTo(HttpStatus.CONFLICT.value())
     }
@@ -169,7 +172,7 @@ internal class PassengerControllerIT : BaseIntegrationTest() {
             TestData.NEW_PHONE_NUMBER
         )
 
-        val actual: PassengerResponse = passengerTestClient!!.createPassenger(requestBody)
+        val actual: PassengerResponse = passengerTestClient.createPassenger(requestBody)
 
         assertThat(actual).isEqualTo(expected)
     }
@@ -178,17 +181,17 @@ internal class PassengerControllerIT : BaseIntegrationTest() {
     fun deletePassenger_shouldReturnNoContentStatus() {
         val passengerId = 1
 
-        passengerTestClient!!.deletePassengerById(passengerId)
+        passengerTestClient.deletePassengerById(passengerId)
             .statusCode(HttpStatus.NO_CONTENT.value())
 
-        assertThat(passengerRepository!!.findById(passengerId)).isNotPresent()
+        assertThat(passengerRepository.findById(passengerId)).isNotPresent()
     }
 
     companion object {
 
         @JvmStatic
         private fun invalidPassengerUpdatesForBadRequest(): Stream<PassengerUpdate> {
-            return Stream.of<PassengerUpdate>(
+            return Stream.of(
                 PassengerUpdate("", null, null, null),  // invalid name
                 PassengerUpdate(" ", null, null, null),  // invalid name
                 PassengerUpdate("a", null, null, null),  // invalid name

@@ -11,10 +11,10 @@ class MessageLocalizationConfig {
 
     @Bean
     fun messageSource(): MessageSource {
-        val messageSource = ReloadableResourceBundleMessageSource()
-        messageSource.setBasename("classpath:messages/errors")
-        messageSource.setDefaultEncoding("UTF-8")
-        return messageSource
+        return ReloadableResourceBundleMessageSource().apply {
+            this.setBasename("classpath:messages/errors")
+            this.setDefaultEncoding("UTF-8")
+        }
     }
 }
 

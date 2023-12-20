@@ -26,25 +26,19 @@ class PassengerController(
 ) {
 
     @GetMapping("/{id}")
-    fun getPassenger(@PathVariable id: Int): PassengerResponse {
-        return passengerService.findById(id)
-    }
+    fun getPassenger(@PathVariable id: Int): PassengerResponse = passengerService.findById(id)
 
     @GetMapping
-    fun getAllPassengers(pageable: Pageable): Page<PassengerResponse> {
-        return passengerService.findAll(pageable)
-    }
+    fun getAllPassengers(pageable: Pageable): Page<PassengerResponse> = passengerService.findAll(pageable)
 
     @PatchMapping("/{id}")
-    fun updatePassenger(@PathVariable id: Int, @Valid @RequestBody request: PassengerUpdate): PassengerResponse {
-        return passengerService.update(id, request)
-    }
+    fun updatePassenger(@PathVariable id: Int, @Valid @RequestBody request: PassengerUpdate): PassengerResponse =
+        passengerService.update(id, request)
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    fun createPassenger(@Valid @RequestBody request: PassengerCreate): PassengerResponse {
-        return passengerService.create(request)
-    }
+    fun createPassenger(@Valid @RequestBody request: PassengerCreate): PassengerResponse =
+        passengerService.create(request)
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
