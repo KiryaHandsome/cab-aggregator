@@ -1,4 +1,4 @@
-package com.modsen.gateway.config;
+package com.modsen.gateway.filter;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

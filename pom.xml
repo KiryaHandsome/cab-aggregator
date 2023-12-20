@@ -26,6 +26,7 @@
         <module>payment</module>
         <module>eureka-server</module>
         <module>gateway</module>
+        <module>kt-passenger</module>
         <module>jacoco-report</module>
     </modules>
     <build>
