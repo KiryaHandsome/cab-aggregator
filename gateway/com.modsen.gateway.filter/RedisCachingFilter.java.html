@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>RedisCachingFilter.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">jacoco-coverage-aggregate-report</a> &gt; <a href="../index.html" class="el_bundle">gateway</a> &gt; <a href="index.source.html" class="el_package">com.modsen.gateway.filter</a> &gt; <span class="el_source">RedisCachingFilter.java</span></div><h1>RedisCachingFilter.java</h1><pre class="source lang-java linenums">package com.modsen.gateway.filter;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.http.entity.ContentType;
+import org.springframework.cloud.gateway.filter.GatewayFilterChain;
+import org.springframework.cloud.gateway.filter.GlobalFilter;
+import org.springframework.cloud.gateway.filter.NettyWriteResponseFilter;
+import org.springframework.cloud.gateway.filter.factory.rewrite.ModifyResponseBodyGatewayFilterFactory;
+import org.springframework.core.Ordered;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.stereotype.Component;
+import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.util.Objects;
+
+<span class="fc" id="L23">@Slf4j</span>
+@Component
+<span class="fc" id="L25">@RequiredArgsConstructor</span>
+public class RedisCachingFilter implements GlobalFilter, Ordered {
+
+    private final RedisTemplate&lt;String, Object&gt; redisTemplate;
+    private final ModifyResponseBodyGatewayFilterFactory modifyResponseBodyFilterFactory;
+
+    @Override
+    public Mono&lt;Void&gt; filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+<span class="pc bpc" id="L33" title="1 of 2 branches missed.">        if (!HttpMethod.GET.equals(exchange.getRequest().getMethod())) {</span>
+<span class="nc" id="L34">            return chain.filter(exchange);</span>
+        }
+<span class="fc" id="L36">        String cacheKey = generateCacheKey(exchange.getRequest());</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">        if (isInCache(cacheKey)) {</span>
+<span class="fc" id="L38">            log.info(&quot;Cache hit by key={}&quot;, cacheKey);</span>
+<span class="fc" id="L39">            String response = Objects.requireNonNull(redisTemplate.opsForValue().get(cacheKey)).toString();</span>
+<span class="fc" id="L40">            DataBuffer dataBuffer = exchange.getResponse().bufferFactory().wrap(response.getBytes());</span>
+<span class="fc" id="L41">            exchange.getResponse().getHeaders().add(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType());</span>
+<span class="fc" id="L42">            return exchange.getResponse().writeWith(Flux.just(dataBuffer));</span>
+        } else {
+<span class="fc" id="L44">            log.info(&quot;Cache miss for key={}&quot;, cacheKey);</span>
+<span class="fc" id="L45">            ModifyResponseBodyGatewayFilterFactory.Config config = new ModifyResponseBodyGatewayFilterFactory.Config();</span>
+<span class="fc" id="L46">            config.setRewriteFunction(String.class, String.class, (swe, body) -&gt; {</span>
+<span class="fc" id="L47">                log.info(&quot;Put value to cache: {}&quot;, body);</span>
+<span class="fc" id="L48">                redisTemplate.opsForValue().set(cacheKey, body);</span>
+<span class="fc" id="L49">                return Mono.just(body);</span>
+            });
+<span class="fc" id="L51">            return modifyResponseBodyFilterFactory</span>
+<span class="fc" id="L52">                    .apply(config)</span>
+<span class="fc" id="L53">                    .filter(exchange, chain);</span>
+        }
+    }
+
+    @Override
+    public int getOrder() {
+<span class="fc" id="L59">        return NettyWriteResponseFilter.WRITE_RESPONSE_FILTER_ORDER - 1;</span>
+    }
+
+    private boolean isInCache(String cacheKey) {
+<span class="fc" id="L63">        return Boolean.TRUE.equals(redisTemplate.hasKey(cacheKey));</span>
+    }
+
+    private String generateCacheKey(ServerHttpRequest request) {
+<span class="fc" id="L67">        return request.getURI() + &quot;?&quot; + request.getQueryParams();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

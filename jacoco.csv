@@ -29,7 +29,9 @@ jacoco-coverage-aggregate-report/driver,com.modsen.driver.util,JsonUtil,27,0,0,0
 jacoco-coverage-aggregate-report/driver,com.modsen.driver.mapper,DriverMapperImpl,5,97,3,13,3,29,3,9,0,4
 jacoco-coverage-aggregate-report/driver,com.modsen.driver.consumer,KafkaListeners,14,10,0,0,4,2,1,2,1,2
 jacoco-coverage-aggregate-report/driver,com.modsen.driver.config,MessageLocalizationConfig,0,15,0,0,0,5,0,2,0,2
-jacoco-coverage-aggregate-report/gateway,com.modsen.gateway,GatewayApplication,8,0,0,0,3,0,2,0,2,0
+jacoco-coverage-aggregate-report/gateway,com.modsen.gateway,GatewayApplication,5,3,0,0,2,1,1,1,1,1
+jacoco-coverage-aggregate-report/gateway,com.modsen.gateway.filter,RedisConfig,0,22,0,0,0,6,0,2,0,2
+jacoco-coverage-aggregate-report/gateway,com.modsen.gateway.filter,RedisCachingFilter,4,112,1,3,1,22,1,8,0,7
 jacoco-coverage-aggregate-report/passenger,com.modsen.passenger.exception,PassengerNotFoundException,0,13,0,0,0,2,0,1,0,1
 jacoco-coverage-aggregate-report/passenger,com.modsen.passenger.exception,BaseException,0,16,0,0,0,6,0,3,0,3
 jacoco-coverage-aggregate-report/passenger,com.modsen.passenger.exception,PhoneNumberAlreadyExistsException,0,13,0,0,0,2,0,1,0,1
