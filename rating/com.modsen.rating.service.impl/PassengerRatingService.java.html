@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>PassengerRatingService.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">jacoco-coverage-aggregate-report</a> &gt; <a href="../index.html" class="el_bundle">rating</a> &gt; <a href="index.source.html" class="el_package">com.modsen.rating.service.impl</a> &gt; <span class="el_source">PassengerRatingService.java</span></div><h1>PassengerRatingService.java</h1><pre class="source lang-java linenums">package com.modsen.rating.service.impl;
+
+import com.modsen.rating.dto.AvgRatingResponse;
+import com.modsen.rating.dto.RatingResponse;
+import com.modsen.rating.dto.ScoreRequest;
+import com.modsen.rating.exception.RatingNotFoundException;
+import com.modsen.rating.model.PassengerRating;
+import com.modsen.rating.repository.PassengerRatingRepository;
+import com.modsen.rating.service.RatingService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service(&quot;passenger&quot;)
+@Transactional
+<span class="fc" id="L18">@RequiredArgsConstructor</span>
+public class PassengerRatingService implements RatingService {
+
+    private final PassengerRatingRepository passengerRatingRepository;
+
+    @Override
+    public void addScore(ScoreRequest request) {
+<span class="fc" id="L25">        PassengerRating passengerRating = mapToPassengerRating(request);</span>
+<span class="fc" id="L26">        passengerRatingRepository.save(passengerRating);</span>
+<span class="fc" id="L27">    }</span>
+
+    @Override
+    public AvgRatingResponse getAverageRating(int passengerId) {
+<span class="fc" id="L31">        Float averageRating = passengerRatingRepository.getAverageRatingByPassengerId(passengerId)</span>
+<span class="fc" id="L32">                .orElseThrow(() -&gt; new RatingNotFoundException(&quot;exception.passenger.rating_not_found&quot;, passengerId));</span>
+<span class="fc" id="L33">        return new AvgRatingResponse(averageRating);</span>
+    }
+
+    @Override
+    public Page&lt;RatingResponse&gt; getRatingsWithCommentsByUserId(int driverId, Pageable pageable) {
+<span class="fc" id="L38">        return passengerRatingRepository.findAllByPassengerIdAndCommentIsNotNull(driverId, pageable)</span>
+<span class="fc" id="L39">                .map(this::mapToRatingResponse);</span>
+    }
+
+    private RatingResponse mapToRatingResponse(PassengerRating driverRating) {
+<span class="fc" id="L43">        return RatingResponse.builder()</span>
+<span class="fc" id="L44">                .id(driverRating.getId())</span>
+<span class="fc" id="L45">                .userId(driverRating.getPassengerId())</span>
+<span class="fc" id="L46">                .score(driverRating.getScore())</span>
+<span class="fc" id="L47">                .comment(driverRating.getComment())</span>
+<span class="fc" id="L48">                .build();</span>
+    }
+
+    private PassengerRating mapToPassengerRating(ScoreRequest request) {
+<span class="fc" id="L52">        return PassengerRating.builder()</span>
+<span class="fc" id="L53">                .passengerId(request.getUserId())</span>
+<span class="fc" id="L54">                .score(request.getScore())</span>
+<span class="fc" id="L55">                .comment(request.getComment())</span>
+<span class="fc" id="L56">                .build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -29,7 +29,6 @@ jacoco-coverage-aggregate-report/driver,com.modsen.driver.util,JsonUtil,27,0,0,0
 jacoco-coverage-aggregate-report/driver,com.modsen.driver.mapper,DriverMapperImpl,5,97,3,13,3,29,3,9,0,4
 jacoco-coverage-aggregate-report/driver,com.modsen.driver.consumer,KafkaListeners,14,10,0,0,4,2,1,2,1,2
 jacoco-coverage-aggregate-report/driver,com.modsen.driver.config,MessageLocalizationConfig,0,15,0,0,0,5,0,2,0,2
-jacoco-coverage-aggregate-report/eureka-server,com.modsen.eurekaserver,EurekaServerApplication,8,0,0,0,3,0,2,0,2,0
 jacoco-coverage-aggregate-report/gateway,com.modsen.gateway,GatewayApplication,8,0,0,0,3,0,2,0,2,0
 jacoco-coverage-aggregate-report/passenger,com.modsen.passenger.exception,PassengerNotFoundException,0,13,0,0,0,2,0,1,0,1
 jacoco-coverage-aggregate-report/passenger,com.modsen.passenger.exception,BaseException,0,16,0,0,0,6,0,3,0,3
@@ -50,3 +49,14 @@ jacoco-coverage-aggregate-report/payment,com.modsen.payment.exception,BaseExcept
 jacoco-coverage-aggregate-report/payment,com.modsen.payment.exception,GlobalExceptionHandler,38,7,0,0,10,2,2,2,2,2
 jacoco-coverage-aggregate-report/payment,com.modsen.payment.exception,LowBalanceException,7,0,0,0,2,0,1,0,1,0
 jacoco-coverage-aggregate-report/payment,com.modsen.payment.exception,BalanceNotFoundException,7,0,0,0,2,0,1,0,1,0
+jacoco-coverage-aggregate-report/rating,com.modsen.rating,RatingApplication,5,3,0,0,2,1,1,1,1,1
+jacoco-coverage-aggregate-report/rating,com.modsen.rating.config,MessageLocalizationConfig,0,15,0,0,0,5,0,2,0,2
+jacoco-coverage-aggregate-report/rating,com.modsen.rating.exception,ValidationErrorResponse,98,26,22,0,0,5,15,6,4,6
+jacoco-coverage-aggregate-report/rating,com.modsen.rating.exception,GlobalExceptionHandler,32,69,0,0,9,18,2,5,2,5
+jacoco-coverage-aggregate-report/rating,com.modsen.rating.exception,ErrorResponse,75,32,16,0,0,5,11,7,3,7
+jacoco-coverage-aggregate-report/rating,com.modsen.rating.exception,BaseException,0,16,0,0,0,6,0,3,0,3
+jacoco-coverage-aggregate-report/rating,com.modsen.rating.exception,RatingNotFoundException,0,13,0,0,0,2,0,1,0,1
+jacoco-coverage-aggregate-report/rating,com.modsen.rating.service.impl,DriverRatingService,0,79,0,0,0,20,0,7,0,7
+jacoco-coverage-aggregate-report/rating,com.modsen.rating.service.impl,PassengerRatingService,0,79,0,0,0,20,0,7,0,7
+jacoco-coverage-aggregate-report/rating,com.modsen.rating.controller,PassengerRatingController,0,24,0,0,0,7,0,4,0,4
+jacoco-coverage-aggregate-report/rating,com.modsen.rating.controller,DriverRatingController,0,24,0,0,0,7,0,4,0,4
