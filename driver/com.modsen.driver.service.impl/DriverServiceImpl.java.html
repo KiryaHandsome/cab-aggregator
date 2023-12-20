@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>DriverServiceImpl.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">jacoco-coverage-aggregate-report</a> &gt; <a href="../index.html" class="el_bundle">driver</a> &gt; <a href="index.source.html" class="el_package">com.modsen.driver.service.impl</a> &gt; <span class="el_source">DriverServiceImpl.java</span></div><h1>DriverServiceImpl.java</h1><pre class="source lang-java linenums">package com.modsen.driver.service.impl;
+
+import com.modsen.driver.dto.request.DriverCreate;
+import com.modsen.driver.dto.request.DriverUpdate;
+import com.modsen.driver.dto.response.DriverResponse;
+import com.modsen.driver.exception.DriverNotFoundException;
+import com.modsen.driver.exception.EmailAlreadyExistsException;
+import com.modsen.driver.exception.PhoneNumberAlreadyExistsException;
+import com.modsen.driver.mapper.DriverMapper;
+import com.modsen.driver.model.Driver;
+import com.modsen.driver.model.Status;
+import com.modsen.driver.repository.DriverRepository;
+import com.modsen.driver.service.DriverService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@Transactional
+<span class="fc" id="L22">@RequiredArgsConstructor</span>
+public class DriverServiceImpl implements DriverService {
+
+    private final DriverMapper mapper;
+    private final DriverRepository driverRepository;
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page&lt;DriverResponse&gt; findAll(Pageable pageable) {
+<span class="fc" id="L31">        return driverRepository.findAll(pageable)</span>
+<span class="fc" id="L32">                .map(mapper::toResponse);</span>
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public DriverResponse findById(Integer id) {
+<span class="fc" id="L38">        return driverRepository.findById(id)</span>
+<span class="fc" id="L39">                .map(mapper::toResponse)</span>
+<span class="fc" id="L40">                .orElseThrow(() -&gt; new DriverNotFoundException(&quot;exception.driver_not_found&quot;, id));</span>
+    }
+
+    @Override
+    public DriverResponse update(Integer id, DriverUpdate request) {
+<span class="fc" id="L45">        Driver driver = driverRepository.findById(id)</span>
+<span class="fc" id="L46">                .orElseThrow(() -&gt; new DriverNotFoundException(&quot;exception.driver_not_found&quot;, id));</span>
+<span class="fc" id="L47">        throwIfEmailOrPhoneAlreadyExist(request.getEmail(), request.getPhoneNumber());</span>
+<span class="fc" id="L48">        mapper.mapIfNotNull(request, driver);</span>
+<span class="fc" id="L49">        driverRepository.save(driver);</span>
+<span class="fc" id="L50">        return mapper.toResponse(driver);</span>
+    }
+
+    @Override
+    public DriverResponse create(DriverCreate request) {
+<span class="fc" id="L55">        Driver driver = mapper.toModel(request);</span>
+<span class="fc" id="L56">        throwIfEmailOrPhoneAlreadyExist(request.getEmail(), request.getPhoneNumber());</span>
+<span class="fc" id="L57">        driver.setStatus(Status.OFFLINE);</span>
+<span class="fc" id="L58">        driverRepository.save(driver);</span>
+<span class="fc" id="L59">        return mapper.toResponse(driver);</span>
+    }
+
+    @Override
+    public void deleteById(Integer id) {
+<span class="fc" id="L64">        driverRepository.deleteById(id);</span>
+<span class="fc" id="L65">    }</span>
+
+    private void throwIfEmailOrPhoneAlreadyExist(String email, String phoneNumber) {
+<span class="fc" id="L68">        driverRepository.findByEmail(email)</span>
+<span class="fc" id="L69">                .ifPresent(ignored -&gt; {</span>
+<span class="fc" id="L70">                    throw new EmailAlreadyExistsException(&quot;exception.email_already_exists&quot;, email);</span>
+                });
+<span class="fc" id="L72">        driverRepository.findByPhoneNumber(phoneNumber)</span>
+<span class="fc" id="L73">                .ifPresent(ignored -&gt; {</span>
+<span class="fc" id="L74">                    throw new PhoneNumberAlreadyExistsException(&quot;exception.phone_already_exists&quot;, phoneNumber);</span>
+                });
+<span class="fc" id="L76">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

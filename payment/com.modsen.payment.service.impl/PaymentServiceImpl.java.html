@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>PaymentServiceImpl.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">jacoco-coverage-aggregate-report</a> &gt; <a href="../index.html" class="el_bundle">payment</a> &gt; <a href="index.source.html" class="el_package">com.modsen.payment.service.impl</a> &gt; <span class="el_source">PaymentServiceImpl.java</span></div><h1>PaymentServiceImpl.java</h1><pre class="source lang-java linenums">package com.modsen.payment.service.impl;
+
+import com.modsen.payment.dto.PaymentEvent;
+import com.modsen.payment.dto.RideInfo;
+import com.modsen.payment.exception.BalanceNotFoundException;
+import com.modsen.payment.model.Balance;
+import com.modsen.payment.model.PaymentStatus;
+import com.modsen.payment.repository.BalanceRepository;
+import com.modsen.payment.service.PaymentService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+<span class="fc" id="L18">@Slf4j</span>
+@Service
+@Transactional
+<span class="fc" id="L21">@RequiredArgsConstructor</span>
+public class PaymentServiceImpl implements PaymentService {
+
+    private final BalanceRepository balanceRepository;
+
+    @Override
+    @Retryable(
+            maxAttempts = 5,
+            backoff = @Backoff(1000),
+            retryFor = ObjectOptimisticLockingFailureException.class
+    )
+    public PaymentEvent payForRide(RideInfo ride) {
+<span class="fc" id="L33">        Balance balance = balanceRepository.findByPassengerId(ride.getPassengerId())</span>
+<span class="pc" id="L34">                .orElseThrow(() -&gt; new BalanceNotFoundException(</span>
+<span class="nc" id="L35">                        String.format(&quot;Balance of passenger with id=%d doesn't exist.&quot;, ride.getPassengerId())</span>
+                ));
+<span class="pc bpc" id="L37" title="1 of 2 branches missed.">        if (balance.getAmount() &lt; ride.getCost()) {</span>
+<span class="nc" id="L38">            log.info(&quot;Payment for ride with id={} failed. Not enough money.&quot;, ride.getId());</span>
+<span class="nc" id="L39">            return PaymentEvent.builder()</span>
+<span class="nc" id="L40">                    .rideId(ride.getId())</span>
+<span class="nc" id="L41">                    .status(PaymentStatus.FAILED)</span>
+<span class="nc" id="L42">                    .build();</span>
+        }
+<span class="fc" id="L44">        Float resultAmount = balance.getAmount() - ride.getCost();</span>
+<span class="fc" id="L45">        balance.setAmount(resultAmount);</span>
+<span class="fc" id="L46">        balanceRepository.save(balance);</span>
+<span class="fc" id="L47">        return PaymentEvent.builder()</span>
+<span class="fc" id="L48">                .rideId(ride.getId())</span>
+<span class="fc" id="L49">                .status(PaymentStatus.PAID)</span>
+<span class="fc" id="L50">                .build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>KafkaConsumerConfig.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">jacoco-coverage-aggregate-report</a> &gt; <a href="../index.html" class="el_bundle">ride</a> &gt; <a href="index.source.html" class="el_package">com.modsen.ride.config</a> &gt; <span class="el_source">KafkaConsumerConfig.java</span></div><h1>KafkaConsumerConfig.java</h1><pre class="source lang-java linenums">package com.modsen.ride.config;
+
+import com.modsen.ride.dto.PaymentEvent;
+import com.modsen.ride.service.RideService;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.integration.dsl.IntegrationFlow;
+import org.springframework.integration.kafka.dsl.Kafka;
+import org.springframework.kafka.core.ConsumerFactory;
+import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.listener.ConsumerProperties;
+import org.springframework.kafka.support.serializer.JsonDeserializer;
+
+import java.util.Map;
+
+@Configuration
+<span class="fc" id="L20">public class KafkaConsumerConfig {</span>
+
+    @Value(&quot;${spring.kafka.bootstrap-servers}&quot;)
+    private String bootstrapServers;
+
+    @Bean
+    public IntegrationFlow flow(ConsumerFactory&lt;String, PaymentEvent&gt; cf, RideService rideService) {
+<span class="fc" id="L27">        return IntegrationFlow.from(</span>
+<span class="fc" id="L28">                        Kafka.inboundChannelAdapter(cf, new ConsumerProperties(&quot;payment-result&quot;))</span>
+                )
+<span class="fc" id="L30">                .handle(rideService, &quot;handlePaymentResult&quot;)</span>
+<span class="fc" id="L31">                .get();</span>
+    }
+
+    @Bean
+    public ConsumerFactory&lt;String, PaymentEvent&gt; consumerFactory() {
+<span class="fc" id="L36">        return new DefaultKafkaConsumerFactory&lt;&gt;(consumerConfigs(),</span>
+                new StringDeserializer(), new JsonDeserializer&lt;&gt;(PaymentEvent.class, false));
+    }
+
+    @Bean
+    public Map&lt;String, Object&gt; consumerConfigs() {
+<span class="fc" id="L42">        return Map.of(</span>
+                ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers,
+                ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class,
+                ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class,
+                ConsumerConfig.GROUP_ID_CONFIG, &quot;ride-service&quot;
+        );
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>RideController.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">jacoco-coverage-aggregate-report</a> &gt; <a href="../index.html" class="el_bundle">ride</a> &gt; <a href="index.source.html" class="el_package">com.modsen.ride.controller</a> &gt; <span class="el_source">RideController.java</span></div><h1>RideController.java</h1><pre class="source lang-java linenums">package com.modsen.ride.controller;
+
+import com.modsen.ride.controller.openapi.RideControllerOpenApi;
+import com.modsen.ride.dto.RideDto;
+import com.modsen.ride.dto.RideStart;
+import com.modsen.ride.dto.SharedRideResponse;
+import com.modsen.ride.dto.request.RideRequest;
+import com.modsen.ride.dto.response.WaitingRideResponse;
+import com.modsen.ride.service.KafkaChannelGateway;
+import com.modsen.ride.service.RideService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+@Controller
+@RequestMapping(&quot;/api/v1/rides&quot;)
+<span class="fc" id="L26">@RequiredArgsConstructor</span>
+public class RideController implements RideControllerOpenApi {
+
+    private final RideService rideService;
+    private final KafkaChannelGateway kafkaChannelGateway;
+
+    @PostMapping(&quot;/book&quot;)
+    public ResponseEntity&lt;WaitingRideResponse&gt; bookRide(@RequestBody @Valid RideRequest rideRequest) {
+<span class="nc" id="L34">        WaitingRideResponse response = rideService.bookRide(rideRequest);</span>
+<span class="nc" id="L35">        kafkaChannelGateway.sendToRideOrdered(rideRequest);</span>
+<span class="nc" id="L36">        return ResponseEntity.ok(response);</span>
+    }
+
+    @GetMapping(&quot;/check-shared-ride&quot;)
+    public ResponseEntity&lt;SharedRideResponse&gt; checkSharedRide(
+            @RequestParam(&quot;driver-id&quot;) Integer driverId,
+            @RequestParam(&quot;passenger-id&quot;) Integer passengerId
+    ) {
+<span class="nc" id="L44">        SharedRideResponse response = rideService.haveSharedRide(driverId, passengerId);</span>
+<span class="nc" id="L45">        return ResponseEntity.ok(response);</span>
+    }
+
+    @GetMapping(&quot;/waiting&quot;)
+    public ResponseEntity&lt;Page&lt;WaitingRideResponse&gt;&gt; getWaitingRides(Pageable pageable) {
+<span class="nc" id="L50">        Page&lt;WaitingRideResponse&gt; response = rideService.findWaitingRides(pageable);</span>
+<span class="nc" id="L51">        return ResponseEntity.ok(response);</span>
+    }
+
+    @GetMapping(&quot;/passengers/{passengerId}&quot;)
+    public ResponseEntity&lt;Page&lt;RideDto&gt;&gt; getPassengerRides(@PathVariable Integer passengerId, Pageable pageable) {
+<span class="nc" id="L56">        Page&lt;RideDto&gt; response = rideService.findByPassengerId(passengerId, pageable);</span>
+<span class="nc" id="L57">        return ResponseEntity.ok(response);</span>
+    }
+
+    @GetMapping(&quot;/drivers/{driverId}&quot;)
+    public ResponseEntity&lt;Page&lt;RideDto&gt;&gt; getDriverRides(@PathVariable Integer driverId, Pageable pageable) {
+<span class="nc" id="L62">        Page&lt;RideDto&gt; response = rideService.findByDriverId(driverId, pageable);</span>
+<span class="nc" id="L63">        return ResponseEntity.ok(response);</span>
+    }
+
+    @PostMapping(&quot;/{waitingRideId}/start&quot;)
+    public ResponseEntity&lt;RideDto&gt; startRide(@PathVariable String waitingRideId, @RequestBody RideStart request) {
+<span class="nc" id="L68">        RideDto rideDto = rideService.startRide(waitingRideId, request.getDriverId());</span>
+<span class="nc" id="L69">        return ResponseEntity.ok(rideDto);</span>
+    }
+
+    @PostMapping(&quot;/{rideId}/end&quot;)
+    public ResponseEntity&lt;RideDto&gt; endRide(@PathVariable String rideId) {
+<span class="nc" id="L74">        RideDto rideDto = rideService.endRide(rideId);</span>
+<span class="nc" id="L75">        kafkaChannelGateway.sendToRidePayment(rideDto);</span>
+<span class="nc" id="L76">        return ResponseEntity.ok(rideDto);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

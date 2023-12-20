@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>PassengerMapperImpl.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">jacoco-coverage-aggregate-report</a> &gt; <a href="../index.html" class="el_bundle">passenger</a> &gt; <a href="index.source.html" class="el_package">com.modsen.passenger.mapper</a> &gt; <span class="el_source">PassengerMapperImpl.java</span></div><h1>PassengerMapperImpl.java</h1><pre class="source lang-java linenums">package com.modsen.passenger.mapper;
+
+import com.modsen.passenger.dto.request.PassengerCreate;
+import com.modsen.passenger.dto.request.PassengerUpdate;
+import com.modsen.passenger.dto.response.PassengerResponse;
+import com.modsen.passenger.model.Passenger;
+import javax.annotation.processing.Generated;
+import org.springframework.stereotype.Component;
+
+@Generated(
+    value = &quot;org.mapstruct.ap.MappingProcessor&quot;,
+    date = &quot;2023-12-20T06:38:08+0000&quot;,
+    comments = &quot;version: 1.5.5.Final, compiler: javac, environment: Java 17.0.9 (Eclipse Adoptium)&quot;
+)
+@Component
+<span class="fc" id="L16">public class PassengerMapperImpl implements PassengerMapper {</span>
+
+    @Override
+    public PassengerResponse toResponse(Passenger passenger) {
+<span class="pc bpc" id="L20" title="1 of 2 branches missed.">        if ( passenger == null ) {</span>
+<span class="nc" id="L21">            return null;</span>
+        }
+
+<span class="fc" id="L24">        PassengerResponse passengerResponse = new PassengerResponse();</span>
+
+<span class="fc" id="L26">        passengerResponse.setId( passenger.getId() );</span>
+<span class="fc" id="L27">        passengerResponse.setName( passenger.getName() );</span>
+<span class="fc" id="L28">        passengerResponse.setSurname( passenger.getSurname() );</span>
+<span class="fc" id="L29">        passengerResponse.setEmail( passenger.getEmail() );</span>
+<span class="fc" id="L30">        passengerResponse.setPhoneNumber( passenger.getPhoneNumber() );</span>
+
+<span class="fc" id="L32">        return passengerResponse;</span>
+    }
+
+    @Override
+    public Passenger toModel(PassengerCreate dto) {
+<span class="pc bpc" id="L37" title="1 of 2 branches missed.">        if ( dto == null ) {</span>
+<span class="nc" id="L38">            return null;</span>
+        }
+
+<span class="fc" id="L41">        Passenger passenger = new Passenger();</span>
+
+<span class="fc" id="L43">        passenger.setName( dto.getName() );</span>
+<span class="fc" id="L44">        passenger.setSurname( dto.getSurname() );</span>
+<span class="fc" id="L45">        passenger.setEmail( dto.getEmail() );</span>
+<span class="fc" id="L46">        passenger.setPhoneNumber( dto.getPhoneNumber() );</span>
+
+<span class="fc" id="L48">        return passenger;</span>
+    }
+
+    @Override
+    public void mapIfNotNull(PassengerUpdate source, Passenger target) {
+<span class="pc bpc" id="L53" title="1 of 2 branches missed.">        if ( source == null ) {</span>
+<span class="nc" id="L54">            return;</span>
+        }
+
+<span class="fc bfc" id="L57" title="All 2 branches covered.">        if ( source.getName() != null ) {</span>
+<span class="fc" id="L58">            target.setName( source.getName() );</span>
+        }
+<span class="fc bfc" id="L60" title="All 2 branches covered.">        if ( source.getSurname() != null ) {</span>
+<span class="fc" id="L61">            target.setSurname( source.getSurname() );</span>
+        }
+<span class="fc bfc" id="L63" title="All 2 branches covered.">        if ( source.getEmail() != null ) {</span>
+<span class="fc" id="L64">            target.setEmail( source.getEmail() );</span>
+        }
+<span class="fc bfc" id="L66" title="All 2 branches covered.">        if ( source.getPhoneNumber() != null ) {</span>
+<span class="fc" id="L67">            target.setPhoneNumber( source.getPhoneNumber() );</span>
+        }
+<span class="fc" id="L69">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

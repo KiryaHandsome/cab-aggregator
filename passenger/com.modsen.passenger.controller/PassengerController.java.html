@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>PassengerController.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">jacoco-coverage-aggregate-report</a> &gt; <a href="../index.html" class="el_bundle">passenger</a> &gt; <a href="index.source.html" class="el_package">com.modsen.passenger.controller</a> &gt; <span class="el_source">PassengerController.java</span></div><h1>PassengerController.java</h1><pre class="source lang-java linenums">package com.modsen.passenger.controller;
+
+import com.modsen.passenger.controller.openapi.PassengerControllerOpenApi;
+import com.modsen.passenger.dto.request.PassengerCreate;
+import com.modsen.passenger.dto.request.PassengerUpdate;
+import com.modsen.passenger.dto.response.PassengerResponse;
+import com.modsen.passenger.service.PassengerService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.net.URI;
+
+@Controller
+@RequestMapping(&quot;/api/v1/passengers&quot;)
+<span class="fc" id="L26">@RequiredArgsConstructor</span>
+public class PassengerController implements PassengerControllerOpenApi {
+
+    private final PassengerService passengerService;
+
+    @GetMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;PassengerResponse&gt; getPassenger(@PathVariable Integer id) {
+<span class="fc" id="L33">        PassengerResponse response = passengerService.findById(id);</span>
+<span class="fc" id="L34">        return ResponseEntity.ok(response);</span>
+    }
+
+    @GetMapping
+    public ResponseEntity&lt;Page&lt;PassengerResponse&gt;&gt; getAllPassengers(Pageable pageable) {
+<span class="fc" id="L39">        Page&lt;PassengerResponse&gt; response = passengerService.findAll(pageable);</span>
+<span class="fc" id="L40">        return ResponseEntity.ok(response);</span>
+    }
+
+    @PatchMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;PassengerResponse&gt; updatePassenger(
+            @PathVariable Integer id,
+            @Valid @RequestBody PassengerUpdate request
+    ) {
+<span class="fc" id="L48">        PassengerResponse response = passengerService.update(id, request);</span>
+<span class="fc" id="L49">        return ResponseEntity.ok(response);</span>
+    }
+
+    @PostMapping
+    public ResponseEntity&lt;PassengerResponse&gt; createPassenger(@Valid @RequestBody PassengerCreate request) {
+<span class="fc" id="L54">        PassengerResponse response = passengerService.create(request);</span>
+<span class="fc" id="L55">        return ResponseEntity</span>
+<span class="fc" id="L56">                .created(URI.create(&quot;/api/v1/passengers/&quot; + response.getId()))</span>
+<span class="fc" id="L57">                .body(response);</span>
+    }
+
+    @DeleteMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;?&gt; deletePassenger(@PathVariable Integer id) {
+<span class="fc" id="L62">        passengerService.deleteById(id);</span>
+<span class="fc" id="L63">        return ResponseEntity</span>
+<span class="fc" id="L64">                .noContent()</span>
+<span class="fc" id="L65">                .build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

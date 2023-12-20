@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>RideServiceImpl.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">jacoco-coverage-aggregate-report</a> &gt; <a href="../index.html" class="el_bundle">ride</a> &gt; <a href="index.source.html" class="el_package">com.modsen.ride.service.impl</a> &gt; <span class="el_source">RideServiceImpl.java</span></div><h1>RideServiceImpl.java</h1><pre class="source lang-java linenums">package com.modsen.ride.service.impl;
+
+
+import com.modsen.ride.dto.DriverStatus;
+import com.modsen.ride.dto.PaymentEvent;
+import com.modsen.ride.dto.RideDto;
+import com.modsen.ride.dto.SharedRideResponse;
+import com.modsen.ride.dto.StatusUpdate;
+import com.modsen.ride.dto.request.RideRequest;
+import com.modsen.ride.dto.response.DriverResponse;
+import com.modsen.ride.dto.response.WaitingRideResponse;
+import com.modsen.ride.exception.DriverNotAvailableException;
+import com.modsen.ride.exception.RideAlreadyEndedException;
+import com.modsen.ride.exception.RideNotFoundException;
+import com.modsen.ride.exception.WaitingRideNotFoundException;
+import com.modsen.ride.mapper.RideMapper;
+import com.modsen.ride.model.PaymentStatus;
+import com.modsen.ride.model.Ride;
+import com.modsen.ride.model.WaitingRide;
+import com.modsen.ride.repository.RideRepository;
+import com.modsen.ride.repository.WaitingRideRepository;
+import com.modsen.ride.service.CostCalculator;
+import com.modsen.ride.service.DriverClient;
+import com.modsen.ride.service.RideService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+
+<span class="fc" id="L33">@Slf4j</span>
+@Service
+<span class="fc" id="L35">@RequiredArgsConstructor</span>
+public class RideServiceImpl implements RideService {
+
+    private final RideMapper rideMapper;
+    private final DriverClient driverClient;
+    private final RideRepository rideRepository;
+    private final CostCalculator costCalculator;
+    private final WaitingRideRepository waitingRideRepository;
+
+    @Override
+    public WaitingRideResponse bookRide(RideRequest rideRequest) {
+<span class="fc" id="L46">        WaitingRide waitingRide = rideMapper.toWaitingRide(rideRequest);</span>
+<span class="fc" id="L47">        waitingRideRepository.save(waitingRide);</span>
+<span class="fc" id="L48">        return rideMapper.toWaitingResponse(waitingRide);</span>
+    }
+
+    @Override
+    public Page&lt;RideDto&gt; findByPassengerId(Integer passengerId, Pageable pageable) {
+<span class="fc" id="L53">        return rideRepository.findByPassengerId(passengerId, pageable)</span>
+<span class="fc" id="L54">                .map(rideMapper::toDto);</span>
+    }
+
+    @Override
+    public Page&lt;RideDto&gt; findByDriverId(Integer driverId, Pageable pageable) {
+<span class="fc" id="L59">        return rideRepository.findByDriverId(driverId, pageable)</span>
+<span class="fc" id="L60">                .map(rideMapper::toDto);</span>
+    }
+
+    @Override
+    public Page&lt;WaitingRideResponse&gt; findWaitingRides(Pageable pageable) {
+<span class="fc" id="L65">        return waitingRideRepository.findAll(pageable)</span>
+<span class="fc" id="L66">                .map(rideMapper::toWaitingResponse);</span>
+    }
+
+    @Override
+    public RideDto startRide(String waitingRideId, Integer driverId) {
+<span class="fc" id="L71">        WaitingRide waitingRide = waitingRideRepository.findById(waitingRideId)</span>
+<span class="fc" id="L72">                .orElseThrow(() -&gt; new WaitingRideNotFoundException(&quot;exception.waiting_ride_not_found&quot;, waitingRideId));</span>
+<span class="fc" id="L73">        DriverResponse driverResponse = driverClient.getDriverById(driverId);</span>
+<span class="fc" id="L74">        checkDriverAvailable(driverResponse, driverId);</span>
+<span class="fc" id="L75">        driverClient.updateDriver(driverId, new StatusUpdate(DriverStatus.BUSY));</span>
+<span class="fc" id="L76">        return saveNewRide(waitingRide, driverId);</span>
+    }
+
+    private void checkDriverAvailable(DriverResponse response, Integer driverId) {
+<span class="fc" id="L80">        boolean driverAvailable = DriverStatus.AVAILABLE.equals(response.getStatus());</span>
+<span class="pc bpc" id="L81" title="1 of 2 branches missed.">        if (!driverAvailable) {</span>
+<span class="nc" id="L82">            log.warn(&quot;Driver service returned bad driver status={}&quot;, response.getStatus());</span>
+<span class="nc" id="L83">            throw new DriverNotAvailableException(&quot;exception.driver_not_available&quot;,</span>
+<span class="nc" id="L84">                    driverId, response.getStatus());</span>
+        }
+<span class="fc" id="L86">    }</span>
+
+    private RideDto saveNewRide(WaitingRide waitingRide, Integer driverId) {
+<span class="fc" id="L89">        Ride ride = rideMapper.toRide(waitingRide);</span>
+<span class="fc" id="L90">        setupRide(ride, driverId);</span>
+<span class="fc" id="L91">        rideRepository.save(ride);</span>
+<span class="fc" id="L92">        waitingRideRepository.deleteById(waitingRide.getId());</span>
+<span class="fc" id="L93">        return rideMapper.toDto(ride);</span>
+    }
+
+    private void setupRide(Ride ride, Integer driverId) {
+<span class="fc" id="L97">        ride.setDriverId(driverId);</span>
+<span class="fc" id="L98">        ride.setStartTime(LocalDateTime.now());</span>
+<span class="fc" id="L99">        Float cost = costCalculator.calculate(ride.getFrom(), ride.getTo());</span>
+<span class="fc" id="L100">        ride.setCost(cost);</span>
+<span class="fc" id="L101">        ride.setPaymentStatus(PaymentStatus.WAITING);</span>
+<span class="fc" id="L102">    }</span>
+
+    @Override
+    public RideDto endRide(String rideId) {
+<span class="fc" id="L106">        Ride ride = rideRepository.findById(rideId)</span>
+<span class="fc" id="L107">                .orElseThrow(() -&gt; new RideNotFoundException(&quot;exception.ride_not_found&quot;, rideId));</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">        if (ride.getFinishTime() != null) {</span>
+<span class="fc" id="L109">            throw new RideAlreadyEndedException(&quot;exception.ride_already_ended&quot;, rideId);</span>
+        }
+<span class="fc" id="L111">        driverClient.updateDriver(ride.getDriverId(), new StatusUpdate(DriverStatus.AVAILABLE));</span>
+<span class="fc" id="L112">        ride.setFinishTime(LocalDateTime.now());</span>
+<span class="fc" id="L113">        rideRepository.save(ride);</span>
+<span class="fc" id="L114">        return rideMapper.toDto(ride);</span>
+    }
+
+    @Override
+    public void handlePaymentResult(PaymentEvent paymentEvent) {
+<span class="fc" id="L119">        log.debug(&quot;HandlePaymentResult: {}&quot;, paymentEvent);</span>
+<span class="fc" id="L120">        Ride ride = rideRepository.findById(paymentEvent.getRideId())</span>
+<span class="pc" id="L121">                .orElseThrow(() -&gt; new RideNotFoundException(&quot;exception.ride_not_found&quot;, paymentEvent.getRideId()));</span>
+<span class="fc" id="L122">        ride.setPaymentStatus(paymentEvent.getStatus());</span>
+<span class="fc" id="L123">        rideRepository.save(ride);</span>
+<span class="fc" id="L124">    }</span>
+
+    @Override
+    public SharedRideResponse haveSharedRide(Integer driverId, Integer passengerId) {
+<span class="nc" id="L128">        boolean haveSharedRide = rideRepository</span>
+<span class="nc" id="L129">                .findFirstByDriverIdAndPassengerId(driverId, passengerId)</span>
+<span class="nc" id="L130">                .isPresent();</span>
+<span class="nc" id="L131">        return new SharedRideResponse(haveSharedRide);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
