@@ -24,7 +24,7 @@ public class DriverRatingTestClient {
 
     public AvgRatingResponse getAverageDriverRatingForOk(Integer driverId) {
         return RestAssured.when()
-                .get(BASE_URL + "/avg/{driverId}", driverId)
+                .get(BASE_URL + "/{driverId}/avg", driverId)
                 .then()
                 .log().all()
                 .assertThat()
@@ -36,7 +36,7 @@ public class DriverRatingTestClient {
 
     public ErrorResponse getAverageDriverRatingForNotFound(Integer driverId) {
         return RestAssured.when()
-                .get(BASE_URL + "/avg/{driverId}", driverId)
+                .get(BASE_URL + "/{driverId}/avg", driverId)
                 .then()
                 .log().all()
                 .assertThat()

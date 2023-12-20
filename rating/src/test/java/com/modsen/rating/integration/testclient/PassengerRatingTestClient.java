@@ -24,7 +24,7 @@ public class PassengerRatingTestClient {
 
     public AvgRatingResponse getAveragePassengerRatingForOk(Integer passengerId) {
         return RestAssured.when()
-                .get(BASE_URL + "/avg/{passengerId}", passengerId)
+                .get(BASE_URL + "/{passengerId}/avg", passengerId)
                 .then()
                 .log().all()
                 .assertThat()
@@ -36,7 +36,7 @@ public class PassengerRatingTestClient {
 
     public ErrorResponse getAveragePassengerRatingForNotFound(Integer passengerId) {
         return RestAssured.when()
-                .get(BASE_URL + "/avg/{passengerId}", passengerId)
+                .get(BASE_URL + "/{passengerId}/avg", passengerId)
                 .then()
                 .log().all()
                 .assertThat()

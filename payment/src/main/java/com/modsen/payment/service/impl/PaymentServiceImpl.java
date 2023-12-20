@@ -9,6 +9,9 @@ import com.modsen.payment.repository.BalanceRepository;
 import com.modsen.payment.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +24,11 @@ public class PaymentServiceImpl implements PaymentService {
     private final BalanceRepository balanceRepository;
 
     @Override
+    @Retryable(
+            maxAttempts = 5,
+            backoff = @Backoff(1000),
+            retryFor = ObjectOptimisticLockingFailureException.class
+    )
     public PaymentEvent payForRide(RideInfo ride) {
         Balance balance = balanceRepository.findByPassengerId(ride.getPassengerId())
                 .orElseThrow(() -> new BalanceNotFoundException(
