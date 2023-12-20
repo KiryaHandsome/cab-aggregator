@@ -27,11 +27,6 @@
         </dependency>
         <dependency>
             <groupId>com.modsen</groupId>
-            <artifactId>eureka-server</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.modsen</groupId>
             <artifactId>gateway</artifactId>
             <version>1.0</version>
         </dependency>
@@ -43,6 +38,11 @@
         <dependency>
             <groupId>com.modsen</groupId>
             <artifactId>payment</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.modsen</groupId>
+            <artifactId>rating</artifactId>
             <version>1.0</version>
         </dependency>
     </dependencies>
