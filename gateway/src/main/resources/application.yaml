@@ -9,10 +9,6 @@ eureka:
 spring:
   application:
     name: gateway
-  data:
-    redis:
-      port: 6379
-      host: localhost
   cloud:
     gateway:
       discovery:
@@ -44,4 +40,3 @@ spring:
 logging:
   level:
     web: debug
-    com.modsen.gateway: debug
