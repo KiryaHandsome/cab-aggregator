@@ -76,8 +76,7 @@ public class DriverTestClient {
                 .contentType(ContentType.JSON)
                 .statusCode(HttpStatus.OK.value())
                 .extract()
-                .as(new TypeRef<>() {
-                });
+                .as(DriverResponse.class);
     }
 
     public ErrorResponse updateDriverForConflict(Integer driverId, DriverUpdate requestBody) {

@@ -4,10 +4,9 @@ package com.modsen.driver.integration;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
-public class BaseIntegrationTest {
+public class PostgresContainer {
 
     public static final String POSTGRES_IMAGE_NAME = "postgres:15-alpine";
 

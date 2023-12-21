@@ -22,8 +22,6 @@ VALUES ('John', 'Doe', 'john.doe@example.com', '+375447775566', '0'),
        ('Alice', 'Johnson', 'alice.johnson@example.com', '+375441235566', '2');
 
 INSERT INTO ratings(total_ratings, average_rating, driver_id)
-VALUES (5, 4.0, 1);
-INSERT INTO ratings(total_ratings, average_rating, driver_id)
-VALUES (1, 1.2, 2);
-INSERT INTO ratings(total_ratings, average_rating, driver_id)
-VALUES (6, 2.3, 3);
+VALUES (5, 4.0, 1),
+       (1, 1.2, 2),
+       (6, 2.3, 3);
