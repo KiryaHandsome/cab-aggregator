@@ -31,13 +31,22 @@ Feature: Driver api
       | newEmail@gmail.com     | 200           |
       | jane.smith@example.com | 409           |
 
-  Scenario Outline: Create driver
+  Scenario Outline: Invalid create driver
     Given request body where name "<name>" surname "<surname>" email "<email>" phone "<phone>"
     When send post request
     Then response status code should be <response code>
 
     Examples:
       | name  | surname  | email                  | phone         | response code |
-      | Kiryl | Pryhozhy | newEmail@gmail.com     | +375441231231 | 201           |
       | Kiryl | Pryhozhy | jane.smith@example.com | +375445553333 | 409           |
       | K     | P        | invalidemail           | abc           | 400           |
+
+  Scenario Outline: Create driver with valid request
+    Given request body where name "<name>" surname "<surname>" email "<email>" phone "<phone>"
+    When send post request
+    Then response status code should be <response code>
+    And driver with id 4 exists
+
+    Examples:
+      | name  | surname  | email              | phone         | response code |
+      | Kiryl | Pryhozhy | newEmail@gmail.com | +375441231231 | 201           |

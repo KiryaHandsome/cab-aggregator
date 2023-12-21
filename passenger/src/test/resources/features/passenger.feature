@@ -31,13 +31,22 @@ Feature: Passenger api
       | newEmail@gmail.com      | 200           |
       | alice.smith@example.com | 409           |
 
-  Scenario Outline: Create passenger
+  Scenario Outline: Bad create passenger
     Given request body where name "<name>" surname "<surname>" email "<email>" phone "<phone>"
     When send post request
     Then response status code should be <response code>
 
     Examples:
       | name  | surname  | email                   | phone         | response code |
-      | Kiryl | Pryhozhy | newEmail@gmail.com      | +375441231231 | 201           |
       | Kiryl | Pryhozhy | alice.smith@example.com | +375445553333 | 409           |
       | K     | P        | invalidemail            | abc           | 400           |
+
+  Scenario Outline: Create passenger with valid request
+    Given request body where name "<name>" surname "<surname>" email "<email>" phone "<phone>"
+    When send post request
+    Then response status code should be <response code>
+    And passenger with id 4 exists
+
+    Examples:
+      | name  | surname  | email              | phone         | response code |
+      | Kiryl | Pryhozhy | newEmail@gmail.com | +375441231231 | 201           |
