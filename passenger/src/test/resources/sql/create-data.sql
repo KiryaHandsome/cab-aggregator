@@ -9,8 +9,6 @@ CREATE TABLE IF NOT EXISTS passengers
 );
 
 INSERT INTO passengers ("name", surname, email, phone_number)
-VALUES ('John', 'Doe', 'john.doe@example.com', '+375441112222');
-INSERT INTO passengers ("name", surname, email, phone_number)
-VALUES ('Alice', 'Smith', 'alice.smith@example.com', '+375442223344');
-INSERT INTO passengers ("name", surname, email, phone_number)
-VALUES ('Bob', 'Johnson', 'bob.johnson@example.com', '+375336661122');
+VALUES ('John', 'Doe', 'john.doe@example.com', '+375441112222'),
+       ('Alice', 'Smith', 'alice.smith@example.com', '+375442223344'),
+       ('Bob', 'Johnson', 'bob.johnson@example.com', '+375336661122');
