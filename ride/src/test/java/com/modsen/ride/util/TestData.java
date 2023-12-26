@@ -1,8 +1,8 @@
 package com.modsen.ride.util;
 
 import com.modsen.ride.dto.RideDto;
-import com.modsen.ride.dto.RideStart;
 import com.modsen.ride.dto.request.RideRequest;
+import com.modsen.ride.dto.request.RideStart;
 import com.modsen.ride.dto.response.WaitingRideResponse;
 import com.modsen.ride.model.PaymentStatus;
 import com.modsen.ride.model.Ride;

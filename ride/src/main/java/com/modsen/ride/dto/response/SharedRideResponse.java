@@ -1,4 +1,4 @@
-package com.modsen.ride.dto;
+package com.modsen.ride.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
