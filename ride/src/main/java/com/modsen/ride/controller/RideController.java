@@ -4,7 +4,6 @@ import com.modsen.ride.controller.openapi.RideControllerOpenApi;
 import com.modsen.ride.dto.RideDto;
 import com.modsen.ride.dto.request.RideRequest;
 import com.modsen.ride.dto.request.RideStart;
-import com.modsen.ride.dto.response.ErrorResponse;
 import com.modsen.ride.dto.response.SharedRideResponse;
 import com.modsen.ride.dto.response.WaitingRideResponse;
 import com.modsen.ride.service.KafkaChannelGateway;
@@ -68,22 +67,14 @@ public class RideController implements RideControllerOpenApi {
     }
 
     @PostMapping("/{waitingRideId}/start")
-    @CircuitBreaker(name = DRIVER_CIRCUIT_BREAKER_NAME, fallbackMethod = "driverFallback")
+    @CircuitBreaker(name = DRIVER_CIRCUIT_BREAKER_NAME)
     public ResponseEntity<RideDto> startRide(@PathVariable String waitingRideId, @RequestBody RideStart request) {
         RideDto rideDto = rideService.startRide(waitingRideId, request.getDriverId());
         return ResponseEntity.ok(rideDto);
     }
 
-    public ResponseEntity<?> driverFallback(Exception ex) {
-        return ResponseEntity
-                .status(HttpStatus.SERVICE_UNAVAILABLE)
-                .body(new ErrorResponse(
-                        HttpStatus.SERVICE_UNAVAILABLE.value(),
-                        ex.getMessage()
-                ));
-    }
-
     @PostMapping("/{rideId}/end")
+    @CircuitBreaker(name = DRIVER_CIRCUIT_BREAKER_NAME)
     public ResponseEntity<RideDto> endRide(@PathVariable String rideId) {
         RideDto rideDto = rideService.endRide(rideId);
         kafkaChannelGateway.sendToRidePayment(rideDto);

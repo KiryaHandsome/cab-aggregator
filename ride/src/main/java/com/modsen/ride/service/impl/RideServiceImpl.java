@@ -35,6 +35,8 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class RideServiceImpl implements RideService {
 
+    private static final String DRIVER_CIRCUIT_BREAKER_NAME = "driver";
+
     private final RideMapper rideMapper;
     private final DriverClient driverClient;
     private final RideRepository rideRepository;
