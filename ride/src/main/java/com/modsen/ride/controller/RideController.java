@@ -4,14 +4,17 @@ import com.modsen.ride.controller.openapi.RideControllerOpenApi;
 import com.modsen.ride.dto.RideDto;
 import com.modsen.ride.dto.request.RideRequest;
 import com.modsen.ride.dto.request.RideStart;
+import com.modsen.ride.dto.response.ErrorResponse;
 import com.modsen.ride.dto.response.SharedRideResponse;
 import com.modsen.ride.dto.response.WaitingRideResponse;
 import com.modsen.ride.service.KafkaChannelGateway;
 import com.modsen.ride.service.RideService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequiredArgsConstructor
 public class RideController implements RideControllerOpenApi {
 
+    private static final String DRIVER_CIRCUIT_BREAKER_NAME = "driver";
     private final RideService rideService;
     private final KafkaChannelGateway kafkaChannelGateway;
 
@@ -64,9 +68,19 @@ public class RideController implements RideControllerOpenApi {
     }
 
     @PostMapping("/{waitingRideId}/start")
+    @CircuitBreaker(name = DRIVER_CIRCUIT_BREAKER_NAME, fallbackMethod = "driverFallback")
     public ResponseEntity<RideDto> startRide(@PathVariable String waitingRideId, @RequestBody RideStart request) {
         RideDto rideDto = rideService.startRide(waitingRideId, request.getDriverId());
         return ResponseEntity.ok(rideDto);
+    }
+
+    public ResponseEntity<?> driverFallback(Exception ex) {
+        return ResponseEntity
+                .status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(new ErrorResponse(
+                        HttpStatus.SERVICE_UNAVAILABLE.value(),
+                        ex.getMessage()
+                ));
     }
 
     @PostMapping("/{rideId}/end")
