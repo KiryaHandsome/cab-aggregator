@@ -1,10 +1,13 @@
 package com.modsen.e2e;
 
 import com.modsen.e2e.dto.ErrorResponse;
+import com.modsen.e2e.dto.RideDto;
 import com.modsen.e2e.dto.WaitingRideResponse;
+import com.modsen.e2e.util.DriverTestClient;
 import com.modsen.e2e.util.E2ESuite;
 import com.modsen.e2e.util.RideTestClient;
 import jakarta.annotation.PostConstruct;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +24,7 @@ public class StartRideTest extends E2ESuite {
     @Autowired
     private TestRestTemplate restTemplate;
     private static RideTestClient rideTestClient;
+    private static DriverTestClient driverTestClient;
     private WaitingRideResponse waitingRide;
     private final Integer passengerId = 1;
     private final String from = "From";
@@ -28,10 +32,12 @@ public class StartRideTest extends E2ESuite {
 
     @PostConstruct
     public void setUp() {
+        initClients();
+    }
+
+    private void initClients() {
         rideTestClient = new RideTestClient(restTemplate, RIDE.getHost(), RIDE.getFirstMappedPort());
-        ResponseEntity<WaitingRideResponse> response = rideTestClient.bookRide(passengerId, from, to);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        waitingRide = response.getBody();
+        driverTestClient = new DriverTestClient(restTemplate, DRIVER.getHost(), DRIVER.getFirstMappedPort());
     }
 
     @Test
@@ -48,11 +54,33 @@ public class StartRideTest extends E2ESuite {
     @Test
     void withBusyDriver_shouldNotStartRide() {
         Integer driverId = 1;
+        driverTestClient.updateDriverStatus(driverId, "BUSY");
+        waitingRide = rideTestClient.bookRide(passengerId, from, to);
         String rideId = waitingRide.getId();
 
         ResponseEntity<ErrorResponse> response = rideTestClient.startRide(rideId, driverId, ErrorResponse.class);
 
         log.info("Response withBusyDriver: {}", response.getBody());
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    @SneakyThrows
+    void shouldStartRideAndEndRide() {
+        Integer driverId1 = 2;
+        Integer driverId = driverId1;
+        waitingRide = rideTestClient.bookRide(passengerId, from, to);
+        String rideId = waitingRide.getId();
+        driverTestClient.updateDriverStatus(driverId, "AVAILABLE");
+
+        ResponseEntity<RideDto> startResponse = rideTestClient.startRide(rideId, driverId, RideDto.class);
+        assertThat(startResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        Thread.sleep(2);
+
+        ResponseEntity<RideDto> endResponse = rideTestClient.endRide(startResponse.getBody().id(), RideDto.class);
+        assertThat(endResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+        RideDto endBody = endResponse.getBody();
+        assertThat(endBody.finishTime()).isNotNull();
     }
 }

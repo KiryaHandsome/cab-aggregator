@@ -10,7 +10,6 @@ import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.images.PullPolicy;
 import org.testcontainers.lifecycle.Startables;
@@ -35,6 +34,7 @@ public class E2ESuite {
 
     static class Initializer implements
             ApplicationContextInitializer<ConfigurableApplicationContext> {
+
 
         @Override
         public void initialize(ConfigurableApplicationContext context) {
@@ -69,7 +69,6 @@ public class E2ESuite {
                     .withEnv("SPRING_DATA_MONGODB_PORT", "27017")
                     .withEnv("DRIVER_URL", "driver:8081")
                     .withEnv("LOGGING_LEVEL_ROOT", "debug")
-//                    .withLogConsumer(new Slf4jLogConsumer(log))
                     .waitingFor(
                             Wait.forHttp("/actuator/health")
                                     .forStatusCode(200)
@@ -90,9 +89,7 @@ public class E2ESuite {
         private KafkaContainer createKafkaContainer() {
             return new KafkaContainer(DockerImageName.parse(KAFKA_IMAGE))
                     .withNetwork(SHARED_NETWORK)
-                    .withNetworkAliases("kafka")
-//                    .withLogConsumer(new Slf4jLogConsumer(log))
-                    ;
+                    .withNetworkAliases("kafka");
         }
 
         private GenericContainer createDriverServiceContainer() {
@@ -106,7 +103,6 @@ public class E2ESuite {
                     .withEnv("SPRING_KAFKA_BOOTSTRAP_SERVERS", "kafka:9092")
                     .withEnv("SPRING_DATASOURCE_URL", "jdbc:postgresql://driver_db:5432/driver")
                     .withEnv("LOGGING_LEVEL_ROOT", "debug")
-                    .withLogConsumer(new Slf4jLogConsumer(log))
                     .withImagePullPolicy(PullPolicy.alwaysPull());
         }
     }

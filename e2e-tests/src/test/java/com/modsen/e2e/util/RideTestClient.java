@@ -4,7 +4,10 @@ import com.modsen.e2e.dto.RideRequest;
 import com.modsen.e2e.dto.RideStart;
 import com.modsen.e2e.dto.WaitingRideResponse;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class RideTestClient {
 
@@ -22,8 +25,14 @@ public class RideTestClient {
                 new RideStart(driverId), type, rideId);
     }
 
-    public ResponseEntity<WaitingRideResponse> bookRide(Integer passengerId, String from, String to) {
-        return restTemplate.postForEntity(url + PATH_PREFIX + "/book",
+    public <T> ResponseEntity<T> endRide(String rideId, Class<T> type) {
+        return restTemplate.postForEntity(url + PATH_PREFIX + "/{id}/end", null, type, rideId);
+    }
+
+    public WaitingRideResponse bookRide(Integer passengerId, String from, String to) {
+        var response = restTemplate.postForEntity(url + PATH_PREFIX + "/book",
                 new RideRequest(passengerId, from, to), WaitingRideResponse.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        return response.getBody();
     }
 }
