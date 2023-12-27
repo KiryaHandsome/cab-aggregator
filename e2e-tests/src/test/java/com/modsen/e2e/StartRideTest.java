@@ -56,7 +56,7 @@ public class StartRideTest extends E2ESuite {
         Integer driverId = 1;
         driverTestClient.updateDriverStatus(driverId, "BUSY");
         waitingRide = rideTestClient.bookRide(passengerId, from, to);
-        String rideId = waitingRide.getId();
+        String rideId = waitingRide.id();
 
         ResponseEntity<ErrorResponse> response = rideTestClient.startRide(rideId, driverId, ErrorResponse.class);
 
@@ -67,10 +67,9 @@ public class StartRideTest extends E2ESuite {
     @Test
     @SneakyThrows
     void shouldStartRideAndEndRide() {
-        Integer driverId1 = 2;
-        Integer driverId = driverId1;
+        Integer driverId = 2;
         waitingRide = rideTestClient.bookRide(passengerId, from, to);
-        String rideId = waitingRide.getId();
+        String rideId = waitingRide.id();
         driverTestClient.updateDriverStatus(driverId, "AVAILABLE");
 
         ResponseEntity<RideDto> startResponse = rideTestClient.startRide(rideId, driverId, RideDto.class);

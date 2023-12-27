@@ -35,6 +35,4 @@ public class DriverTestClient {
                 new HttpEntity<>(new DriverStatusUpdate(status)), RideDto.class, driverId);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
-
-
 }
