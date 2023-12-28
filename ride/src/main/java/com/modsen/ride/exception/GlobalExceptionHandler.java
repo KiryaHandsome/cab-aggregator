@@ -5,7 +5,6 @@ import com.modsen.ride.dto.response.ValidationErrorResponse;
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.Call;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -15,7 +14,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.List;
 
@@ -63,7 +61,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CallNotPermittedException.class)
     public ResponseEntity<ErrorResponse> handleCallNotPermittedException(CallNotPermittedException ex) {
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE.value())
-                .build();
+        ErrorResponse response = new ErrorResponse(HttpStatus.SERVICE_UNAVAILABLE.value(), ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.SERVICE_UNAVAILABLE.value())
+                .body(response);
     }
 }

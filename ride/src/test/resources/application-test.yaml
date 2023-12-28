@@ -6,3 +6,9 @@ eureka:
 logging:
   level:
     web: debug
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      driver:
+        waitDurationInOpenState: 15s

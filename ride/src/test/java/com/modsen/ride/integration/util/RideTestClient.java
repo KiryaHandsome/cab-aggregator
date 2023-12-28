@@ -29,4 +29,8 @@ public class RideTestClient {
                 new RideStart(driverId), responseType);
     }
 
+    public <T> ResponseEntity<T> endRide(String rideId, Class<T> responseType) {
+        String urlTemplate = PATH_PREFIX + "/%s/end";
+        return restTemplate.postForEntity(String.format(urlTemplate, rideId), null, responseType);
+    }
 }
