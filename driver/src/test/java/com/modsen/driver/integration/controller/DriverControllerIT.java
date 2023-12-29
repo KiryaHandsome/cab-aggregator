@@ -5,10 +5,11 @@ import com.modsen.driver.dto.request.DriverUpdate;
 import com.modsen.driver.dto.response.DriverResponse;
 import com.modsen.driver.dto.response.ErrorResponse;
 import com.modsen.driver.dto.response.ValidationErrorResponse;
-import com.modsen.driver.integration.BaseIntegrationTest;
+import com.modsen.driver.integration.PostgresContainer;
 import com.modsen.driver.integration.testclient.DriverTestClient;
 import com.modsen.driver.mapper.DriverMapper;
 import com.modsen.driver.repository.DriverRepository;
+import com.modsen.driver.util.TestConstants;
 import com.modsen.driver.util.TestData;
 import com.modsen.driver.util.TestEntities;
 import jakarta.annotation.PostConstruct;
@@ -27,13 +28,13 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Sql(
-        scripts = {"classpath:sql/delete-all.sql", "classpath:sql/create-data.sql"},
+        scripts = {"classpath:" + TestConstants.DELETE_SCRIPT_PATH, "classpath:" + TestConstants.CREATE_SCRIPT_PATH},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
 )
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
-class DriverControllerIT extends BaseIntegrationTest {
+class DriverControllerIT extends PostgresContainer {
 
     @LocalServerPort
     private Integer port;

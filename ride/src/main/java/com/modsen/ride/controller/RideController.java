@@ -2,9 +2,9 @@ package com.modsen.ride.controller;
 
 import com.modsen.ride.controller.openapi.RideControllerOpenApi;
 import com.modsen.ride.dto.RideDto;
-import com.modsen.ride.dto.RideStart;
-import com.modsen.ride.dto.SharedRideResponse;
 import com.modsen.ride.dto.request.RideRequest;
+import com.modsen.ride.dto.request.RideStart;
+import com.modsen.ride.dto.response.SharedRideResponse;
 import com.modsen.ride.dto.response.WaitingRideResponse;
 import com.modsen.ride.service.KafkaChannelGateway;
 import com.modsen.ride.service.RideService;

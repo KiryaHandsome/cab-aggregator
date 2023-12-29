@@ -46,26 +46,26 @@ public class DriverRatingTestClient {
                 .as(ErrorResponse.class);
     }
 
-    public void addScoreToDriverForCreated(ScoreRequest request) {
+    public void addScoreToDriverForCreated(Integer driverId, ScoreRequest request) {
         RestAssured
                 .given()
                 .body(request)
                 .contentType(ContentType.JSON)
                 .when()
-                .post(BASE_URL)
+                .post(BASE_URL + "/" + driverId)
                 .then()
                 .log().all()
                 .assertThat()
                 .statusCode(HttpStatus.CREATED.value());
     }
 
-    public ValidationErrorResponse addScoreToDriverForBadRequest(ScoreRequest request) {
+    public ValidationErrorResponse addScoreToDriverForBadRequest(Integer driverId, ScoreRequest request) {
         return RestAssured
                 .given()
                 .body(request)
                 .contentType(ContentType.JSON)
                 .when()
-                .post(BASE_URL)
+                .post(BASE_URL + "/" + driverId)
                 .then()
                 .log().all()
                 .assertThat()

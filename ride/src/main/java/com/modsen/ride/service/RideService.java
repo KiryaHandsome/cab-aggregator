@@ -1,9 +1,9 @@
 package com.modsen.ride.service;
 
-import com.modsen.ride.dto.PaymentEvent;
 import com.modsen.ride.dto.RideDto;
-import com.modsen.ride.dto.SharedRideResponse;
+import com.modsen.ride.dto.request.PaymentEvent;
 import com.modsen.ride.dto.request.RideRequest;
+import com.modsen.ride.dto.response.SharedRideResponse;
 import com.modsen.ride.dto.response.WaitingRideResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

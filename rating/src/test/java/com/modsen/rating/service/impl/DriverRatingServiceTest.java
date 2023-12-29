@@ -36,14 +36,14 @@ class DriverRatingServiceTest {
 
     @Test
     void addScore_shouldCallRepositorySaveWithExpectedArg() {
-        ScoreRequest request = new ScoreRequest(TestData.DRIVER_ID, TestData.SCORE, TestData.COMMENT);
+        ScoreRequest request = new ScoreRequest(TestData.SCORE, TestData.COMMENT);
         DriverRating expectedArg = DriverRating.builder()
                 .driverId(TestData.DRIVER_ID)
                 .score(TestData.SCORE)
                 .comment(TestData.COMMENT)
                 .build();
 
-        driverRatingService.addScore(request);
+        driverRatingService.addScore(TestData.DRIVER_ID, request);
 
         verify(driverRatingRepository).save(eq(expectedArg));
     }

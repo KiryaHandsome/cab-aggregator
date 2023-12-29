@@ -28,9 +28,7 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
   eureka-server:
-    build:
-      context: eureka-server
-      dockerfile: Dockerfile
+    image: kiryahandsome/eureka-server:latest
     container_name: eureka-server
     ports:
       - 8761:8761
@@ -39,9 +37,7 @@ services:
       - discovery
 
   gateway:
-    build:
-      context: gateway
-      dockerfile: Dockerfile
+    image: kiryahandsome/gateway:latest
     container_name: gateway
     ports:
       - 8888:8888
@@ -68,9 +64,7 @@ services:
           memory: 512M
 
   passenger:
-    build:
-      context: passenger
-      dockerfile: Dockerfile
+    image: kiryahandsome/passenger:latest
     container_name: passenger
     depends_on:
       - eureka-server
@@ -101,9 +95,7 @@ services:
       - POSTGRES_DB=passenger
 
   driver:
-    build:
-      context: driver
-      dockerfile: Dockerfile
+    image: kiryahandsome/driver:latest
     container_name: driver
     depends_on:
       - driver_db
@@ -133,9 +125,7 @@ services:
       - POSTGRES_DB=driver
 
   ride:
-    build:
-      context: ride
-      dockerfile: Dockerfile
+    image: kiryahandsome/ride:latest
     container_name: ride
     depends_on:
       - ride_db
@@ -164,9 +154,7 @@ services:
       - MONGO_INITDB_DATABASE=ride
 
   payment:
-    build:
-      context: payment
-      dockerfile: Dockerfile
+    image: kiryahandsome/payment:latest
     container_name: payment
     depends_on:
       - payment_db
@@ -196,9 +184,7 @@ services:
       - POSTGRES_DB=payment
 
   rating:
-    build:
-      context: rating
-      dockerfile: Dockerfile
+    image: kiryahandsome/rating:latest
     container_name: rating
     depends_on:
       - rating_db

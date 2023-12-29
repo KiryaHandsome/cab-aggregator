@@ -1,6 +1,6 @@
 package com.modsen.ride.config;
 
-import com.modsen.ride.dto.PaymentEvent;
+import com.modsen.ride.dto.request.PaymentEvent;
 import com.modsen.ride.service.RideService;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;

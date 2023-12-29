@@ -4,7 +4,7 @@ on:
   push:
 
 jobs:
-  build_and_test:
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout project sources
