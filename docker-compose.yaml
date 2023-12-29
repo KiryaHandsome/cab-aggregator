@@ -251,8 +251,8 @@ services:
       - ./elk/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro,Z
     ports:
       - 5400:5400
-      - 50000:50000/tcp
-      - 50000:50000/udp
+      - 5000:5000/tcp
+      - 5000:5000/udp
       - 9600:9600
     networks:
       - elk
