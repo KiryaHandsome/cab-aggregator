@@ -4,10 +4,11 @@ import com.modsen.rating.dto.AvgRatingResponse;
 import com.modsen.rating.dto.ScoreRequest;
 import com.modsen.rating.exception.ErrorResponse;
 import com.modsen.rating.exception.ValidationErrorResponse;
-import com.modsen.rating.integration.BaseIntegrationTest;
+import com.modsen.rating.integration.PostgresContainer;
 import com.modsen.rating.integration.testclient.DriverRatingTestClient;
 import com.modsen.rating.model.DriverRating;
 import com.modsen.rating.repository.DriverRatingRepository;
+import com.modsen.rating.util.TestConstants;
 import com.modsen.rating.util.TestData;
 import jakarta.annotation.PostConstruct;
 import org.assertj.core.data.Offset;
@@ -26,11 +27,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 
 @Sql(
-        scripts = {"classpath:sql/delete-data.sql", "classpath:sql/create-data.sql"},
+        scripts = {"classpath:" + TestConstants.DELETE_SCRIPT_PATH, "classpath:" + TestConstants.CREATE_SCRIPT_PATH},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
 )
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class DriverControllerIT extends BaseIntegrationTest {
+public class DriverControllerIT extends PostgresContainer {
 
     @LocalServerPort
     private Integer port;
@@ -67,9 +68,9 @@ public class DriverControllerIT extends BaseIntegrationTest {
     void addScoreToDriver_shouldReturnCreatedStatusAndSaveRatingToDb() {
         int expectedId = 4;
         DriverRating expected = new DriverRating(expectedId, TestData.DRIVER_ID, TestData.SCORE, TestData.COMMENT);
-        ScoreRequest requestBody = new ScoreRequest(TestData.DRIVER_ID, TestData.SCORE, TestData.COMMENT);
+        ScoreRequest requestBody = new ScoreRequest(TestData.SCORE, TestData.COMMENT);
 
-        testClient.addScoreToDriverForCreated(requestBody);
+        testClient.addScoreToDriverForCreated(TestData.DRIVER_ID, requestBody);
 
         DriverRating actual = driverRatingRepository.findById(expectedId)
                 .orElseThrow();
@@ -80,7 +81,7 @@ public class DriverControllerIT extends BaseIntegrationTest {
     @ParameterizedTest
     @MethodSource("badScoreRequests")
     void addScoreToDriver_shouldReturnBadRequestStatus(ScoreRequest requestBody) {
-        ValidationErrorResponse actual = testClient.addScoreToDriverForBadRequest(requestBody);
+        ValidationErrorResponse actual = testClient.addScoreToDriverForBadRequest(TestData.DRIVER_ID, requestBody);
 
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -96,11 +97,8 @@ public class DriverControllerIT extends BaseIntegrationTest {
 
     private static Stream<ScoreRequest> badScoreRequests() {
         return Stream.of(
-                new ScoreRequest(null, 2, null), // null userId
-                new ScoreRequest(1, -1, null), // score less than 0
-                new ScoreRequest(null, -1, null), // null userId and score less than 0
-                new ScoreRequest(1, 7, null), // score more than 5
-                new ScoreRequest(null, -1, null) // null userId and score more than 5
+                new ScoreRequest(-1, null), // score less than 0
+                new ScoreRequest(7, null) // score more than 5
         );
     }
 }

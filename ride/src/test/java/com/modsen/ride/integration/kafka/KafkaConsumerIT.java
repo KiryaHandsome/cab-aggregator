@@ -1,6 +1,6 @@
 package com.modsen.ride.integration.kafka;
 
-import com.modsen.ride.dto.PaymentEvent;
+import com.modsen.ride.dto.request.PaymentEvent;
 import com.modsen.ride.integration.BaseIntegrationTest;
 import com.modsen.ride.model.PaymentStatus;
 import com.modsen.ride.model.Ride;

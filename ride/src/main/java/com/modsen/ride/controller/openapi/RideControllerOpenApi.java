@@ -1,8 +1,8 @@
 package com.modsen.ride.controller.openapi;
 
 import com.modsen.ride.dto.RideDto;
-import com.modsen.ride.dto.RideStart;
 import com.modsen.ride.dto.request.RideRequest;
+import com.modsen.ride.dto.request.RideStart;
 import com.modsen.ride.dto.response.WaitingRideResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

@@ -28,6 +28,7 @@
         <module>gateway</module>
         <module>kt-passenger</module>
         <module>jacoco-report</module>
+        <module>e2e-tests</module>
     </modules>
     <build>
         <plugins>

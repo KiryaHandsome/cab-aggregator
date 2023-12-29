@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface RatingService {
 
-    void addScore(ScoreRequest request);
+    void addScore(Integer userId, ScoreRequest request);
 
     AvgRatingResponse getAverageRating(int userId);
 

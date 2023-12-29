@@ -2,7 +2,7 @@ package com.modsen.ride.component.glue;
 
 
 import com.modsen.ride.dto.DriverStatus;
-import com.modsen.ride.dto.StatusUpdate;
+import com.modsen.ride.dto.request.StatusUpdate;
 import com.modsen.ride.dto.response.DriverResponse;
 import com.modsen.ride.exception.RideAlreadyEndedException;
 import com.modsen.ride.exception.WaitingRideNotFoundException;

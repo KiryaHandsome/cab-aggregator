@@ -5,10 +5,11 @@ import com.modsen.passenger.dto.request.PassengerUpdate;
 import com.modsen.passenger.dto.response.ErrorResponse;
 import com.modsen.passenger.dto.response.PassengerResponse;
 import com.modsen.passenger.dto.response.ValidationErrorResponse;
-import com.modsen.passenger.integration.BaseIntegrationTest;
+import com.modsen.passenger.integration.PostgresContainer;
 import com.modsen.passenger.integration.testclient.PassengerTestClient;
 import com.modsen.passenger.mapper.PassengerMapper;
 import com.modsen.passenger.repository.PassengerRepository;
+import com.modsen.passenger.util.TestConstants;
 import com.modsen.passenger.util.TestData;
 import com.modsen.passenger.util.TestEntities;
 import jakarta.annotation.PostConstruct;
@@ -28,13 +29,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 
 @Sql(
-        scripts = {"classpath:sql/delete-all.sql", "classpath:sql/create-data.sql"},
+        scripts = {"classpath:" + TestConstants.DELETE_SCRIPT_PATH, "classpath:" + TestConstants.CREATE_SCRIPT_PATH},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
 )
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
-class PassengerControllerIT extends BaseIntegrationTest {
+class PassengerControllerIT extends PostgresContainer {
 
     @LocalServerPort
     private Integer port;
