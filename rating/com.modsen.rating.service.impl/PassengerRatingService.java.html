@@ -21,8 +21,8 @@ public class PassengerRatingService implements RatingService {
     private final PassengerRatingRepository passengerRatingRepository;
 
     @Override
-    public void addScore(ScoreRequest request) {
-<span class="fc" id="L25">        PassengerRating passengerRating = mapToPassengerRating(request);</span>
+    public void addScore(Integer passengerId, ScoreRequest request) {
+<span class="fc" id="L25">        PassengerRating passengerRating = mapToPassengerRating(passengerId, request);</span>
 <span class="fc" id="L26">        passengerRatingRepository.save(passengerRating);</span>
 <span class="fc" id="L27">    }</span>
 
@@ -48,9 +48,9 @@ public class PassengerRatingService implements RatingService {
 <span class="fc" id="L48">                .build();</span>
     }
 
-    private PassengerRating mapToPassengerRating(ScoreRequest request) {
+    private PassengerRating mapToPassengerRating(Integer passengerId, ScoreRequest request) {
 <span class="fc" id="L52">        return PassengerRating.builder()</span>
-<span class="fc" id="L53">                .passengerId(request.getUserId())</span>
+<span class="fc" id="L53">                .passengerId(passengerId)</span>
 <span class="fc" id="L54">                .score(request.getScore())</span>
 <span class="fc" id="L55">                .comment(request.getComment())</span>
 <span class="fc" id="L56">                .build();</span>

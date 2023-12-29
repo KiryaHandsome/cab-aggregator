@@ -21,8 +21,8 @@ public class DriverRatingService implements RatingService {
     private final DriverRatingRepository driverRatingRepository;
 
     @Override
-    public void addScore(ScoreRequest request) {
-<span class="fc" id="L25">        DriverRating driverRating = mapToDriverRating(request);</span>
+    public void addScore(Integer driverId, ScoreRequest request) {
+<span class="fc" id="L25">        DriverRating driverRating = mapToDriverRating(driverId, request);</span>
 <span class="fc" id="L26">        driverRatingRepository.save(driverRating);</span>
 <span class="fc" id="L27">    }</span>
 
@@ -48,9 +48,9 @@ public class DriverRatingService implements RatingService {
 <span class="fc" id="L48">                .build();</span>
     }
 
-    private DriverRating mapToDriverRating(ScoreRequest request) {
+    private DriverRating mapToDriverRating(Integer driverId, ScoreRequest request) {
 <span class="fc" id="L52">        return DriverRating.builder()</span>
-<span class="fc" id="L53">                .driverId(request.getUserId())</span>
+<span class="fc" id="L53">                .driverId(driverId)</span>
 <span class="fc" id="L54">                .score(request.getScore())</span>
 <span class="fc" id="L55">                .comment(request.getComment())</span>
 <span class="fc" id="L56">                .build();</span>

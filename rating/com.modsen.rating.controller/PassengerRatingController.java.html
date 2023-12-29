@@ -33,17 +33,16 @@ public class PassengerRatingController {
 <span class="fc" id="L33">        return passengerRatingService.getAverageRating(passengerId);</span>
     }
 
-    @PostMapping
+    @PostMapping(&quot;/{passengerId}&quot;)
     @ResponseStatus(HttpStatus.CREATED)
-    public void addScoreToPassenger(@Valid @RequestBody ScoreRequest scoreRequest) {
-<span class="fc" id="L39">        passengerRatingService.addScore(scoreRequest);</span>
+    public void addScoreToPassenger(@PathVariable Integer passengerId, @Valid @RequestBody ScoreRequest scoreRequest) {
+<span class="fc" id="L39">        passengerRatingService.addScore(passengerId, scoreRequest);</span>
 <span class="fc" id="L40">    }</span>
 
-    // make it available only for admins
     @GetMapping(&quot;/{passengerId}&quot;)
     @ResponseStatus(HttpStatus.OK)
     public Page&lt;RatingResponse&gt; addScoreToPassenger(@PathVariable Integer passengerId, Pageable pageable) {
-<span class="fc" id="L46">        return passengerRatingService.getRatingsWithCommentsByUserId(passengerId, pageable);</span>
+<span class="fc" id="L45">        return passengerRatingService.getRatingsWithCommentsByUserId(passengerId, pageable);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

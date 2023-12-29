@@ -33,17 +33,16 @@ public class DriverRatingController {
 <span class="fc" id="L33">        return driverRatingService.getAverageRating(driverId);</span>
     }
 
-    @PostMapping
+    @PostMapping(&quot;/{driverId}&quot;)
     @ResponseStatus(HttpStatus.CREATED)
-    public void addScoreToDriver(@Valid @RequestBody ScoreRequest scoreRequest) {
-<span class="fc" id="L39">        driverRatingService.addScore(scoreRequest);</span>
+    public void addScoreToDriver(@PathVariable Integer driverId, @Valid @RequestBody ScoreRequest scoreRequest) {
+<span class="fc" id="L39">        driverRatingService.addScore(driverId, scoreRequest);</span>
 <span class="fc" id="L40">    }</span>
 
-    // make it available only for admins
     @GetMapping(&quot;/{driverId}&quot;)
     @ResponseStatus(HttpStatus.OK)
     public Page&lt;RatingResponse&gt; getDriverRatingsWithComments(@PathVariable Integer driverId, Pageable pageable) {
-<span class="fc" id="L46">        return driverRatingService.getRatingsWithCommentsByUserId(driverId, pageable);</span>
+<span class="fc" id="L45">        return driverRatingService.getRatingsWithCommentsByUserId(driverId, pageable);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

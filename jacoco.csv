@@ -60,5 +60,5 @@ jacoco-coverage-aggregate-report/rating,com.modsen.rating.exception,BaseExceptio
 jacoco-coverage-aggregate-report/rating,com.modsen.rating.exception,RatingNotFoundException,0,13,0,0,0,2,0,1,0,1
 jacoco-coverage-aggregate-report/rating,com.modsen.rating.service.impl,DriverRatingService,0,79,0,0,0,20,0,7,0,7
 jacoco-coverage-aggregate-report/rating,com.modsen.rating.service.impl,PassengerRatingService,0,79,0,0,0,20,0,7,0,7
-jacoco-coverage-aggregate-report/rating,com.modsen.rating.controller,PassengerRatingController,0,24,0,0,0,7,0,4,0,4
-jacoco-coverage-aggregate-report/rating,com.modsen.rating.controller,DriverRatingController,0,24,0,0,0,7,0,4,0,4
+jacoco-coverage-aggregate-report/rating,com.modsen.rating.controller,PassengerRatingController,0,25,0,0,0,7,0,4,0,4
+jacoco-coverage-aggregate-report/rating,com.modsen.rating.controller,DriverRatingController,0,25,0,0,0,7,0,4,0,4
