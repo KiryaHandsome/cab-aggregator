@@ -29,8 +29,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.stream.IntStream;
-
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.patchRequestedFor;
@@ -78,61 +76,79 @@ public class RideControllerIT extends BaseIntegrationTest {
     @Test
     public void check_startRide_circuitBreaker() {
         Integer driverId = 1;
-        String driverPath = this.driverPath + "/" + driverId;
-        DRIVER_SERVICE.stubFor(WireMock.get(driverPath)
-                .willReturn(serverError()));
+        String getDriverByIdPath = this.driverPath + "/" + driverId;
+        mockGetDriverByIdForError(getDriverByIdPath);
         WaitingRideResponse waitingRide = rideTestClient.bookRide(TestData.PASSENGER_ID, TestData.FROM, TestData.TO);
 
-        IntStream.rangeClosed(1, minimumNumberOfCalls).forEach(i -> {
-            ResponseEntity<Void> response = rideTestClient.startRide(waitingRide.getId(),
-                    driverId, Void.class);
-            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-        });
+        for (int i = 1; i <= minimumNumberOfCalls; i++) {
+            startRideForStatus(waitingRide.getId(), driverId, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        for (int i = 1; i <= minimumNumberOfCalls; i++) {
+            startRideForStatus(waitingRide.getId(), driverId, HttpStatus.SERVICE_UNAVAILABLE);
+        }
 
-        IntStream.rangeClosed(1, minimumNumberOfCalls).forEach(i -> {
-            ResponseEntity<Void> response = rideTestClient.startRide(waitingRide.getId(),
-                    driverId, Void.class);
-            log.info("CB state: {}", driverCircuitBreaker.getState());
-            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
-        });
+        DRIVER_SERVICE.verify(minimumNumberOfCalls, getRequestedFor(urlEqualTo(getDriverByIdPath)));
+    }
 
-        DRIVER_SERVICE.verify(minimumNumberOfCalls, getRequestedFor(urlEqualTo(driverPath)));
+    private void mockGetDriverByIdForError(String path) {
+        DRIVER_SERVICE.stubFor(WireMock.get(path)
+                .willReturn(serverError()));
     }
 
     @Test
-    @SneakyThrows
     public void check_endRide_circuitBreaker() {
         Integer driverId = 2;
         String driverPath = this.driverPath + "/" + driverId;
         DriverResponse driverResponseStub = new DriverResponse(driverId, "name", "surname", "email", "phone", DriverStatus.AVAILABLE);
-        DRIVER_SERVICE.stubFor(WireMock.get(driverPath)
-                .willReturn(aResponse()
-                        .withResponseBody(Body.fromJsonBytes(objectMapper.writeValueAsBytes(driverResponseStub)))
-                        .withStatus(HttpStatus.OK.value())
-                        .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON.toString())));
-        DRIVER_SERVICE.stubFor(WireMock.patch(driverPath)
-                .willReturn(aResponse()
-                        .withStatus(HttpStatus.OK.value())));
-        WaitingRideResponse waitingRide = rideTestClient.bookRide(TestData.PASSENGER_ID, TestData.FROM, TestData.TO);
-        ResponseEntity<RideDto> startResponse = rideTestClient.startRide(waitingRide.getId(), driverId, RideDto.class);
-        assertThat(startResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-        RideDto ride = startResponse.getBody();
+        mockGetDriverByIdForOk(driverPath, driverResponseStub);
+        mockUpdateDriverForStatus(driverPath, HttpStatus.OK);
 
-        DRIVER_SERVICE.stubFor(WireMock.patch(driverPath)
-                .willReturn(serverError()));
+        String startedRideId = startRide(driverId);
 
-        IntStream.rangeClosed(1, minimumNumberOfCalls - 1).forEach(i -> {
-            ResponseEntity<Void> response = rideTestClient.endRide(ride.getId(), Void.class);
-            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-        });
+        mockUpdateDriverForStatus(driverPath, HttpStatus.INTERNAL_SERVER_ERROR);
 
-        IntStream.rangeClosed(1, minimumNumberOfCalls).forEach(i -> {
-            ResponseEntity<Void> response = rideTestClient.endRide(ride.getId(), Void.class);
-            assertThat(response.getStatusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
-        });
+        for (int i = 1; i <= minimumNumberOfCalls - 1; i++) {
+            endRideForStatus(startedRideId, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        for (int i = 1; i <= minimumNumberOfCalls; i++) {
+            endRideForStatus(startedRideId, HttpStatus.SERVICE_UNAVAILABLE);
+        }
 
         // minimumNumberOfCalls = 1 call when starting ride + (minimumNumberOfCalls - 1) calls in cycle
         DRIVER_SERVICE.verify(minimumNumberOfCalls, patchRequestedFor(urlEqualTo(driverPath)));
         DRIVER_SERVICE.verify(1, getRequestedFor(urlEqualTo(driverPath)));
+    }
+
+    @SneakyThrows
+    private void mockGetDriverByIdForOk(String path, DriverResponse driverResponse) {
+        DRIVER_SERVICE.stubFor(WireMock.get(path)
+                .willReturn(aResponse()
+                        .withResponseBody(Body.fromJsonBytes(objectMapper.writeValueAsBytes(driverResponse)))
+                        .withStatus(HttpStatus.OK.value())
+                        .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON.toString())));
+    }
+
+    private void mockUpdateDriverForStatus(String path, HttpStatus status) {
+        DRIVER_SERVICE.stubFor(WireMock.patch(path)
+                .willReturn(aResponse()
+                        .withStatus(status.value())));
+    }
+
+    private String startRide(Integer driverId) {
+        WaitingRideResponse waitingRide = rideTestClient.bookRide(TestData.PASSENGER_ID, TestData.FROM, TestData.TO);
+        ResponseEntity<RideDto> startResponse = rideTestClient.startRide(waitingRide.getId(), driverId, RideDto.class);
+        assertThat(startResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+        return startResponse.getBody().getId();
+    }
+
+    private void endRideForStatus(String rideId, HttpStatus status) {
+        ResponseEntity<Void> response = rideTestClient.endRide(rideId, Void.class);
+        assertThat(response.getStatusCode()).isEqualTo(status);
+    }
+
+    private void startRideForStatus(String waitingRideId, Integer driverId, HttpStatus status) {
+        ResponseEntity<Void> response = rideTestClient.startRide(waitingRideId,
+                driverId, Void.class);
+        assertThat(response.getStatusCode()).isEqualTo(status);
     }
 }
