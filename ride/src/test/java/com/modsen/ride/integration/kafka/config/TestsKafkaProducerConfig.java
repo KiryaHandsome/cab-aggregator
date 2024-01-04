@@ -1,6 +1,6 @@
 package com.modsen.ride.integration.kafka.config;
 
-import com.modsen.ride.dto.PaymentEvent;
+import com.modsen.ride.dto.request.PaymentEvent;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;

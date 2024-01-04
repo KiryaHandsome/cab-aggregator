@@ -36,14 +36,14 @@ class PassengerRatingServiceTest {
 
     @Test
     void addScore_shouldCallRepositorySaveWithExpectedArg() {
-        ScoreRequest request = new ScoreRequest(TestData.DRIVER_ID, TestData.SCORE, TestData.COMMENT);
+        ScoreRequest request = new ScoreRequest(TestData.SCORE, TestData.COMMENT);
         PassengerRating expectedArg = PassengerRating.builder()
                 .passengerId(TestData.DRIVER_ID)
                 .score(TestData.SCORE)
                 .comment(TestData.COMMENT)
                 .build();
 
-        passengerRatingService.addScore(request);
+        passengerRatingService.addScore(TestData.DRIVER_ID, request);
 
         verify(passengerRatingRepository).save(eq(expectedArg));
     }

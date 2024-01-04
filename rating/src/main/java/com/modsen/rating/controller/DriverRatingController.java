@@ -33,13 +33,12 @@ public class DriverRatingController {
         return driverRatingService.getAverageRating(driverId);
     }
 
-    @PostMapping
+    @PostMapping("/{driverId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public void addScoreToDriver(@Valid @RequestBody ScoreRequest scoreRequest) {
-        driverRatingService.addScore(scoreRequest);
+    public void addScoreToDriver(@PathVariable Integer driverId, @Valid @RequestBody ScoreRequest scoreRequest) {
+        driverRatingService.addScore(driverId, scoreRequest);
     }
 
-    // make it available only for admins
     @GetMapping("/{driverId}")
     @ResponseStatus(HttpStatus.OK)
     public Page<RatingResponse> getDriverRatingsWithComments(@PathVariable Integer driverId, Pageable pageable) {

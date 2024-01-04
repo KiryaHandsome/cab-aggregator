@@ -4,7 +4,7 @@ import com.modsen.rating.dto.AvgRatingResponse;
 import com.modsen.rating.dto.ScoreRequest;
 import com.modsen.rating.exception.ErrorResponse;
 import com.modsen.rating.exception.ValidationErrorResponse;
-import com.modsen.rating.integration.BaseIntegrationTest;
+import com.modsen.rating.integration.PostgresContainer;
 import com.modsen.rating.integration.testclient.PassengerRatingTestClient;
 import com.modsen.rating.model.PassengerRating;
 import com.modsen.rating.repository.PassengerRatingRepository;
@@ -30,7 +30,7 @@ import static org.hamcrest.CoreMatchers.is;
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
 )
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class PassengerControllerIT extends BaseIntegrationTest {
+public class PassengerControllerIT extends PostgresContainer {
 
     @LocalServerPort
     private Integer port;
@@ -67,9 +67,9 @@ public class PassengerControllerIT extends BaseIntegrationTest {
     void addScoreToPassenger_shouldReturnCreatedStatusAndSaveRatingToDb() {
         int expectedId = 4;
         PassengerRating expected = new PassengerRating(expectedId, TestData.DRIVER_ID, TestData.SCORE, TestData.COMMENT);
-        ScoreRequest requestBody = new ScoreRequest(TestData.DRIVER_ID, TestData.SCORE, TestData.COMMENT);
+        ScoreRequest requestBody = new ScoreRequest(TestData.SCORE, TestData.COMMENT);
 
-        testClient.addScoreToPassengerForCreated(requestBody);
+        testClient.addScoreToPassengerForCreated(TestData.PASSENGER_ID, requestBody);
 
         PassengerRating actual = passengerRatingRepository.findById(expectedId)
                 .orElseThrow();
@@ -80,7 +80,7 @@ public class PassengerControllerIT extends BaseIntegrationTest {
     @ParameterizedTest
     @MethodSource("badScoreRequests")
     void addScoreToPassenger_shouldReturnBadRequestStatus(ScoreRequest requestBody) {
-        ValidationErrorResponse actual = testClient.addScoreToPassengerForBadRequest(requestBody);
+        ValidationErrorResponse actual = testClient.addScoreToPassengerForBadRequest(TestData.PASSENGER_ID, requestBody);
 
         assertThat(actual.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -96,11 +96,8 @@ public class PassengerControllerIT extends BaseIntegrationTest {
 
     private static Stream<ScoreRequest> badScoreRequests() {
         return Stream.of(
-                new ScoreRequest(null, 2, null), // null userId
-                new ScoreRequest(1, -1, null), // score less than 0
-                new ScoreRequest(null, -1, null), // null userId and score less than 0
-                new ScoreRequest(1, 7, null), // score more than 5
-                new ScoreRequest(null, -1, null) // null userId and score more than 5
+                new ScoreRequest(-1, null), // score less than 0
+                new ScoreRequest(7, null) // score more than 5
         );
     }
 }

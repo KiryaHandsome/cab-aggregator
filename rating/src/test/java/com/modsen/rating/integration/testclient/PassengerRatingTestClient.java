@@ -46,26 +46,26 @@ public class PassengerRatingTestClient {
                 .as(ErrorResponse.class);
     }
 
-    public void addScoreToPassengerForCreated(ScoreRequest request) {
+    public void addScoreToPassengerForCreated(Integer passengerId, ScoreRequest request) {
         RestAssured
                 .given()
                 .body(request)
                 .contentType(ContentType.JSON)
                 .when()
-                .post(BASE_URL)
+                .post(BASE_URL + "/" + passengerId)
                 .then()
                 .log().all()
                 .assertThat()
                 .statusCode(HttpStatus.CREATED.value());
     }
 
-    public ValidationErrorResponse addScoreToPassengerForBadRequest(ScoreRequest request) {
+    public ValidationErrorResponse addScoreToPassengerForBadRequest(Integer passengerId, ScoreRequest request) {
         return RestAssured
                 .given()
                 .body(request)
                 .contentType(ContentType.JSON)
                 .when()
-                .post(BASE_URL)
+                .post(BASE_URL + "/" + passengerId)
                 .then()
                 .log().all()
                 .assertThat()

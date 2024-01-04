@@ -6,7 +6,6 @@ import com.modsen.driver.dto.response.DriverResponse;
 import com.modsen.driver.dto.response.ErrorResponse;
 import com.modsen.driver.dto.response.ValidationErrorResponse;
 import com.modsen.driver.util.HostUtil;
-import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
 import org.apache.http.HttpHeaders;
@@ -76,8 +75,7 @@ public class DriverTestClient {
                 .contentType(ContentType.JSON)
                 .statusCode(HttpStatus.OK.value())
                 .extract()
-                .as(new TypeRef<>() {
-                });
+                .as(DriverResponse.class);
     }
 
     public ErrorResponse updateDriverForConflict(Integer driverId, DriverUpdate requestBody) {

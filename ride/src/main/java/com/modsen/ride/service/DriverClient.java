@@ -1,6 +1,6 @@
 package com.modsen.ride.service;
 
-import com.modsen.ride.dto.StatusUpdate;
+import com.modsen.ride.dto.request.StatusUpdate;
 import com.modsen.ride.dto.response.DriverResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;

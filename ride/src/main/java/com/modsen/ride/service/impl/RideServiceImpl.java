@@ -2,12 +2,12 @@ package com.modsen.ride.service.impl;
 
 
 import com.modsen.ride.dto.DriverStatus;
-import com.modsen.ride.dto.PaymentEvent;
 import com.modsen.ride.dto.RideDto;
-import com.modsen.ride.dto.SharedRideResponse;
-import com.modsen.ride.dto.StatusUpdate;
+import com.modsen.ride.dto.request.PaymentEvent;
 import com.modsen.ride.dto.request.RideRequest;
+import com.modsen.ride.dto.request.StatusUpdate;
 import com.modsen.ride.dto.response.DriverResponse;
+import com.modsen.ride.dto.response.SharedRideResponse;
 import com.modsen.ride.dto.response.WaitingRideResponse;
 import com.modsen.ride.exception.DriverNotAvailableException;
 import com.modsen.ride.exception.RideAlreadyEndedException;
@@ -34,6 +34,8 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 public class RideServiceImpl implements RideService {
+
+    private static final String DRIVER_CIRCUIT_BREAKER_NAME = "driver";
 
     private final RideMapper rideMapper;
     private final DriverClient driverClient;

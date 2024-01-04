@@ -33,13 +33,12 @@ public class PassengerRatingController {
         return passengerRatingService.getAverageRating(passengerId);
     }
 
-    @PostMapping
+    @PostMapping("/{passengerId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public void addScoreToPassenger(@Valid @RequestBody ScoreRequest scoreRequest) {
-        passengerRatingService.addScore(scoreRequest);
+    public void addScoreToPassenger(@PathVariable Integer passengerId, @Valid @RequestBody ScoreRequest scoreRequest) {
+        passengerRatingService.addScore(passengerId, scoreRequest);
     }
 
-    // make it available only for admins
     @GetMapping("/{passengerId}")
     @ResponseStatus(HttpStatus.OK)
     public Page<RatingResponse> addScoreToPassenger(@PathVariable Integer passengerId, Pageable pageable) {
