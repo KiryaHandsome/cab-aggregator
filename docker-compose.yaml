@@ -7,12 +7,10 @@ volumes:
     driver: local
   metricbeatdata:
     driver: local
-#  filebeatdata01:
-#    driver: local
+  filebeatdata:
+    driver: local
   logstashdata:
     driver: local
-#  fleetserverdata:
-#    driver: local
 
 services:
   zookeeper:
@@ -50,6 +48,7 @@ services:
       - 8761:8761
     restart: always
     networks:
+      - elk
       - discovery
 
   gateway:
@@ -61,6 +60,7 @@ services:
       - eureka-server
     restart: always
     networks:
+      - elk
       - discovery
       - gateway
     environment:
@@ -87,6 +87,7 @@ services:
       - passenger_db
       - kafka
     networks:
+      - elk
       - passenger
       - kafka
       - discovery
@@ -116,7 +117,9 @@ services:
     depends_on:
       - driver_db
       - eureka-server
+      - logstash
     networks:
+      - elk
       - driver
       - kafka
       - discovery
@@ -126,6 +129,7 @@ services:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
       - SPRING_DATASOURCE_URL=jdbc:postgresql://driver_db:5432/driver
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - LOGSTASH_URL=logstash:5000
 
   driver_db:
     image: postgres:15-alpine
@@ -148,6 +152,7 @@ services:
       - kafka
       - eureka-server
     networks:
+      - elk
       - ride
       - kafka
       - discovery
@@ -176,6 +181,7 @@ services:
       - payment_db
       - eureka-server
     networks:
+      - elk
       - payment
       - kafka
       - discovery
@@ -206,6 +212,7 @@ services:
       - rating_db
       - eureka-server
     networks:
+      - elk
       - rating
       - kafka
       - discovery
@@ -231,6 +238,7 @@ services:
 
   setup:
     image: elasticsearch:${STACK_VERSION}
+    container_name: setup
     volumes:
       - certs:/usr/share/elasticsearch/config/certs
     user: "0"
@@ -264,12 +272,6 @@ services:
           "      - localhost\n"\
           "    ip:\n"\
           "      - 127.0.0.1\n"\
-          "  - name: fleet-server\n"\
-          "    dns:\n"\
-          "      - fleet-server\n"\
-          "      - localhost\n"\
-          "    ip:\n"\
-          "      - 127.0.0.1\n"\
           > config/certs/instances.yml;
           bin/elasticsearch-certutil cert --silent --pem -out config/certs/certs.zip --in config/certs/instances.yml --ca-cert config/certs/ca/ca.crt --ca-key config/certs/ca/ca.key;
           unzip config/certs/certs.zip -d config/certs;
@@ -297,6 +299,7 @@ services:
       setup:
         condition: service_healthy
     image: elasticsearch:${STACK_VERSION}
+    container_name: elasticsearch
     labels:
       co.elastic.logs/module: elasticsearch
     volumes:
@@ -345,6 +348,7 @@ services:
       kibana:
         condition: service_healthy
     image: logstash:${STACK_VERSION}
+    container_name: logstash
     ports:
       - 5400:5400
       - 5000:5000/tcp
@@ -371,11 +375,15 @@ services:
       elasticsearch:
         condition: service_healthy
     image: kibana:${STACK_VERSION}
+    container_name: kibana
     labels:
       co.elastic.logs/module: kibana
     volumes:
       - certs:/usr/share/kibana/config/certs
       - kibanadata:/usr/share/kibana/data
+      # - ./elk/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
+    networks:
+      - elk
     ports:
       - ${KIBANA_PORT}:5601
     environment:
@@ -387,10 +395,15 @@ services:
       - XPACK_SECURITY_ENCRYPTIONKEY=${ENCRYPTION_KEY}
       - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${ENCRYPTION_KEY}
       - XPACK_REPORTING_ENCRYPTIONKEY=${ENCRYPTION_KEY}
+      - XPACK_REPORTING_KIBANASERVER_HOSTNAME=localhost
+      # - SERVER_SSL_ENABLED=true
+      - SERVER_SSL_CERTIFICATE=config/certs/kibana/kibana.crt
+      - SERVER_SSL_KEY=config/certs/kibana/kibana.key
+      - SERVER_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt
+      - ELASTIC_APM_SECRET_TOKEN=${ELASTIC_APM_SECRET_TOKEN}
+      - NODE_EXTRA_CA_CERTS="/etc/kibana/root_ca_chain.pem" 
       - xpack.screenshotting.browser.chromium.disableSandbox=true
     mem_limit: ${KB_MEM_LIMIT}
-    networks:
-      - elk
     healthcheck:
       test:
         [
@@ -408,11 +421,10 @@ services:
       kibana:
         condition: service_healthy
     image: elastic/metricbeat:${STACK_VERSION}
+    container_name: metricbeat
     user: root
-#    command: >
-#      /bin/bash -c "chmod go-w /usr/share/metricbeat/metricbeat.yml && exec metricbeat -c /usr/share/metricbeat/metricbeat.yml"
     networks:
-          - elk
+      - elk
     volumes:
       - certs:/usr/share/metricbeat/certs
       - metricbeatdata:/usr/share/metricbeat/data
@@ -427,29 +439,66 @@ services:
       - ELASTIC_HOSTS=https://elasticsearch:9200
       - KIBANA_HOSTS=http://kibana:5601
       - LOGSTASH_HOSTS=http://logstash:9600
+      - CA_CERT=certs/ca/ca.crt
+      - ES_CERT=certs/elasticsearch/elasticsearch.crt
+      - ES_KEY=certs/elasticsearch/elasticsearch.key
+      - KB_CERT=certs/kibana/kibana.crt
+      - KB_KEY=certs/kibana/kibana.key
+    command:
+      -strict.perms=false
 
-  apm-server:
-    image: elastic/apm-server:${STACK_VERSION}
+  filebeat:
     depends_on:
-      - kibana
-    cap_add: [ "CHOWN", "DAC_OVERRIDE", "SETGID", "SETUID" ]
-    cap_drop: [ "ALL" ]
-    ports:
-      - 8200:8200
+      elasticsearch:
+        condition: service_healthy
+    image: elastic/filebeat:${STACK_VERSION}
+    container_name: filebeat
+    user: root
     networks:
       - elk
-    command: >
-      apm-server -e
-        -E apm-server.rum.enabled=true
-        -E setup.kibana.host=kibana:5601
-        -E setup.template.settings.index.number_of_replicas=0
-        -E apm-server.kibana.enabled=true
-        -E apm-server.kibana.host=kibana:5601
-        -E output.elasticsearch.hosts=["elasticsearch:9200"]
-    healthcheck:
-      interval: 10s
-      retries: 12
-      test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:8200/
+    volumes:
+      - certs:/usr/share/filebeat/certs
+      - filebeatdata:/usr/share/filebeat/data
+      - ./filebeat_ingest_data/:/usr/share/filebeat/ingest_data/
+      - ./elk/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - ELASTIC_USER=elastic
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - ELASTIC_HOSTS=https://elasticsearch:9200
+      - KIBANA_HOSTS=http://kibana:5601
+      - LOGSTASH_HOSTS=http://logstash:9600
+      - CA_CERT=certs/ca/ca.crt
+    command:
+      -strict.perms=false
+
+  prometheus:
+    image: prom/prometheus:v2.37.1
+    container_name: prometheus
+    restart: always
+    networks:
+      - discovery
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana-oss:8.5.2
+    container_name: grafana
+    restart: always
+    networks:
+      - discovery
+    ports:
+      - 3000:3000
+    links:
+      - prometheus:prometheus
+    volumes:
+      - ./grafana:/etc/grafana/provisioning/datasources
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=password
 
 networks:
   elk:

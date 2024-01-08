@@ -1,0 +1,48 @@
+global:
+  scrape_interval:     5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  - job_name: 'passenger_service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['passenger:8080']
+        labels:
+          application: 'Passenger Service'
+  - job_name: 'driver_service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['driver:8081']
+        labels:
+          application: 'Driver Service'
+  - job_name: 'ride_service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['ride:8082']
+        labels:
+          application: 'Ride Service'
+  - job_name: 'payment_service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['payment:8083']
+        labels:
+          application: 'Payment Service'
+  - job_name: 'rating_service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['rating:8084']
+        labels:
+          application: 'Rating Service'
+  - job_name: 'eureka_server'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['eureka-server:8761']
+        labels:
+          application: 'Eureka Server'
+  - job_name: 'api_gateway'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['gateway:8084']
+        labels:
+          application: 'Gateway Service'
+  
