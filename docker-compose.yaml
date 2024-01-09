@@ -22,10 +22,13 @@ services:
     networks:
       - kafka
     ports:
-      - 22181:2181
+      - 2181:2181
 
   kafka:
-    image: confluentinc/cp-kafka:7.5.1
+    # image: confluentinc/cp-kafka:7.5.1
+    build:
+      context: observability
+      dockerfile: Dockerfile_Kafka
     container_name: kafka
     depends_on:
       - zookeeper
@@ -33,13 +36,21 @@ services:
       - 9092:9092
     networks:
       - kafka
+      - discovery
+    user: root
     environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      # KAFKA_LISTENERS: INTERNAL://:9092,EXTERNAL://:9093
+      # KAFKA_ADVERTISED_LISTENERS: INTERNAL://:9092,EXTERNAL://:9093
+      # KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      # KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      EXTRA_ARGS: "-javaagent:/usr/app/jmx_prometheus_javaagent.jar=7071:/usr/app/prom-jmx-agent-config.yml"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
 
   eureka-server:
     image: kiryahandsome/eureka-server:latest
@@ -50,6 +61,8 @@ services:
     networks:
       - elk
       - discovery
+    environment:
+      - LOGSTASH_HOST=logstash
 
   gateway:
     image: kiryahandsome/gateway:latest
@@ -65,6 +78,7 @@ services:
       - gateway
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - LOGSTASH_HOST=logstash
 
   gateway-cache:
     image: redis:7-alpine
@@ -96,7 +110,7 @@ services:
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
       - SPRING_DATASOURCE_URL=jdbc:postgresql://passenger_db:5432/passenger
-      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - LOGSTASH_HOST=logstash
 
   passenger_db:
     image: postgres:15-alpine
@@ -129,7 +143,7 @@ services:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
       - SPRING_DATASOURCE_URL=jdbc:postgresql://driver_db:5432/driver
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - LOGSTASH_URL=logstash:5000
+      - LOGSTASH_HOST=logstash
 
   driver_db:
     image: postgres:15-alpine
@@ -163,6 +177,7 @@ services:
       - SPRING_DATA_MONGODB_HOST=ride_db
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
       - DRIVER_URL=driver:8081
+      - LOGSTASH_HOST=logstash
 
   ride_db:
     image: mongo:7.0
@@ -191,6 +206,7 @@ services:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
       - SPRING_DATASOURCE_URL=jdbc:postgresql://payment_db:5432/payment
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - LOGSTASH_HOST=logstash
 
   payment_db:
     image: postgres:15-alpine
@@ -221,7 +237,7 @@ services:
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
       - SPRING_DATASOURCE_URL=jdbc:postgresql://rating_db:5432/rating
-      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - LOGSTASH_HOST=logstash
 
   rating_db:
     image: postgres:15-alpine
@@ -359,6 +375,7 @@ services:
     user: root
     networks:
       - elk
+      - discovery
     volumes:
       - certs:/usr/share/logstash/certs
       - logstashdata:/usr/share/logstash/data
@@ -482,7 +499,7 @@ services:
     ports:
       - 9090:9090
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml
 
   grafana:
     image: grafana/grafana-oss:8.5.2
@@ -499,6 +516,20 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=password
+
+  # jmx-kafka:
+  #   image: "sscaling/jmx-prometheus-exporter"
+  #   ports:
+  #     - "5556:5556"
+  #   environment:
+  #     CONFIG_YML : "/etc/jmx_exporter/config.yml"
+  #   volumes:
+  #     - ./observability/jmx-kafka-config.yml:/etc/jmx_exporter/config.yml
+  #   container_name: jmx-kafka
+  #   networks:
+  #     - discovery
+  #   depends_on:
+  #    - kafka
 
 networks:
   elk:

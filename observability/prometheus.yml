@@ -3,12 +3,12 @@ global:
   evaluation_interval: 5s
 
 scrape_configs:
-  - job_name: 'passenger_service'
-    metrics_path: '/actuator/prometheus'
-    static_configs:
-      - targets: ['passenger:8080']
-        labels:
-          application: 'Passenger Service'
+  # - job_name: 'passenger_service'
+  #   metrics_path: '/actuator/prometheus'
+  #   static_configs:
+  #     - targets: ['passenger:8080']
+  #       labels:
+  #         application: 'Passenger Service'
   - job_name: 'driver_service'
     metrics_path: '/actuator/prometheus'
     static_configs:
@@ -42,7 +42,11 @@ scrape_configs:
   - job_name: 'api_gateway'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['gateway:8084']
+      - targets: ['gateway:8888']
         labels:
           application: 'Gateway Service'
+  - job_name: 'kafka'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['kafka:7071']
   
