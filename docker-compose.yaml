@@ -131,7 +131,6 @@ services:
     depends_on:
       - driver_db
       - eureka-server
-      - logstash
     networks:
       - elk
       - driver
@@ -511,25 +510,9 @@ services:
       - 3000:3000
     links:
       - prometheus:prometheus
-    volumes:
-      - ./grafana:/etc/grafana/provisioning/datasources
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=password
-
-  # jmx-kafka:
-  #   image: "sscaling/jmx-prometheus-exporter"
-  #   ports:
-  #     - "5556:5556"
-  #   environment:
-  #     CONFIG_YML : "/etc/jmx_exporter/config.yml"
-  #   volumes:
-  #     - ./observability/jmx-kafka-config.yml:/etc/jmx_exporter/config.yml
-  #   container_name: jmx-kafka
-  #   networks:
-  #     - discovery
-  #   depends_on:
-  #    - kafka
 
 networks:
   elk:

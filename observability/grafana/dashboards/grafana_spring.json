@@ -57,7 +57,7 @@
         "target": {
           "limit": 100,
           "matchAny": false,
-          "tags": [], 
+          "tags": [],
           "type": "dashboard"
         },
         "type": "dashboard"
