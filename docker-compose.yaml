@@ -25,7 +25,6 @@ services:
       - 2181:2181
 
   kafka:
-    # image: confluentinc/cp-kafka:7.5.1
     build:
       context: observability
       dockerfile: Dockerfile_Kafka
@@ -44,10 +43,6 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      # KAFKA_LISTENERS: INTERNAL://:9092,EXTERNAL://:9093
-      # KAFKA_ADVERTISED_LISTENERS: INTERNAL://:9092,EXTERNAL://:9093
-      # KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
-      # KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       EXTRA_ARGS: "-javaagent:/usr/app/jmx_prometheus_javaagent.jar=7071:/usr/app/prom-jmx-agent-config.yml"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -113,7 +108,7 @@ services:
       - LOGSTASH_HOST=logstash
 
   passenger_db:
-    image: postgres:15-alpine
+    image: postgres:${POSTGRES_VERSION}
     container_name: passenger_db
     restart: always
     networks:
@@ -121,8 +116,8 @@ services:
     ports:
       - 5433:5432
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=${POSTGRES_USERNAME}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=passenger
 
   driver:
@@ -145,7 +140,7 @@ services:
       - LOGSTASH_HOST=logstash
 
   driver_db:
-    image: postgres:15-alpine
+    image: postgres:${POSTGRES_VERSION}
     container_name: driver_db
     restart: always
     networks:
@@ -153,8 +148,8 @@ services:
     ports:
       - 5434:5432
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=${POSTGRES_USERNAME}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=driver
 
   ride:
@@ -179,7 +174,7 @@ services:
       - LOGSTASH_HOST=logstash
 
   ride_db:
-    image: mongo:7.0
+    image: mongo:${MONGO_VERSION}
     container_name: ride_db
     ports:
       - 27018:27017
@@ -208,7 +203,7 @@ services:
       - LOGSTASH_HOST=logstash
 
   payment_db:
-    image: postgres:15-alpine
+    image: postgres:${POSTGRES_VERSION}
     container_name: payment_db
     restart: always
     networks:
@@ -216,8 +211,8 @@ services:
     ports:
       - 5435:5432
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=${POSTGRES_USERNAME}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=payment
 
   rating:
@@ -239,7 +234,7 @@ services:
       - LOGSTASH_HOST=logstash
 
   rating_db:
-    image: postgres:15-alpine
+    image: postgres:${POSTGRES_VERSION}
     container_name: rating_db
     restart: always
     networks:
@@ -247,8 +242,8 @@ services:
     ports:
       - 5436:5432
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=${POSTGRES_USERNAME}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=rating
 
   setup:
@@ -397,11 +392,10 @@ services:
     volumes:
       - certs:/usr/share/kibana/config/certs
       - kibanadata:/usr/share/kibana/data
-      # - ./elk/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
     networks:
       - elk
     ports:
-      - ${KIBANA_PORT}:5601
+      - 5601:5601
     environment:
       - SERVERNAME=kibana
       - ELASTICSEARCH_HOSTS=https://elasticsearch:9200
@@ -412,12 +406,11 @@ services:
       - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${ENCRYPTION_KEY}
       - XPACK_REPORTING_ENCRYPTIONKEY=${ENCRYPTION_KEY}
       - XPACK_REPORTING_KIBANASERVER_HOSTNAME=localhost
-      # - SERVER_SSL_ENABLED=true
       - SERVER_SSL_CERTIFICATE=config/certs/kibana/kibana.crt
       - SERVER_SSL_KEY=config/certs/kibana/kibana.key
       - SERVER_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt
       - ELASTIC_APM_SECRET_TOKEN=${ELASTIC_APM_SECRET_TOKEN}
-      - NODE_EXTRA_CA_CERTS="/etc/kibana/root_ca_chain.pem" 
+      - NODE_EXTRA_CA_CERTS="/etc/kibana/root_ca_chain.pem"
       - xpack.screenshotting.browser.chromium.disableSandbox=true
     mem_limit: ${KB_MEM_LIMIT}
     healthcheck:
@@ -490,7 +483,7 @@ services:
       -strict.perms=false
 
   prometheus:
-    image: prom/prometheus:v2.37.1
+    image: prom/prometheus:${PROMETHEUS_VERSION}
     container_name: prometheus
     restart: always
     networks:
@@ -501,7 +494,7 @@ services:
       - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml
 
   grafana:
-    image: grafana/grafana-oss:8.5.2
+    image: grafana/grafana-oss:${GRAFANA_VERSION}
     container_name: grafana
     restart: always
     networks:

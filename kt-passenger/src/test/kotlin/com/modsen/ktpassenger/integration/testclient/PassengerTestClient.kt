@@ -1,10 +1,6 @@
 package com.modsen.ktpassenger.integration.testclient
 
-import com.modsen.ktpassenger.dto.ErrorResponse
-import com.modsen.ktpassenger.dto.PassengerCreate
-import com.modsen.ktpassenger.dto.PassengerResponse
-import com.modsen.ktpassenger.dto.PassengerUpdate
-import com.modsen.ktpassenger.dto.ValidationErrorResponse
+import com.modsen.ktpassenger.dto.*
 import com.modsen.ktpassenger.util.HostUtil
 import io.restassured.RestAssured
 import io.restassured.common.mapper.TypeRef

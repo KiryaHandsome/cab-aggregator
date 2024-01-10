@@ -21,7 +21,8 @@ public class TraceFeignInterceptor implements RequestInterceptor {
             RequestTrace.setId(traceId);
             MDC.put(RequestTrace.TRACE_ID_HEADER, traceId);
             template.header(RequestTrace.TRACE_ID_HEADER, traceId);
-            log.trace("traceId={}", traceId);;
+            log.trace("traceId={}", traceId);
+            ;
         }
     }
 

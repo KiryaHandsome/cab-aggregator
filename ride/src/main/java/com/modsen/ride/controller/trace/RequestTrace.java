@@ -8,7 +8,6 @@ public class RequestTrace {
 
     private static final ThreadLocal<String> id = new ThreadLocal<>();
 
-
     public static Optional<String> getId() {
         return Optional.ofNullable(id.get());
     }

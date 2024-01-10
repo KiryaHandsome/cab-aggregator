@@ -1,18 +1,12 @@
 package com.modsen.ktpassenger.integration.controller
 
-import com.modsen.ktpassenger.dto.ErrorResponse
-import com.modsen.ktpassenger.dto.PassengerCreate
-import com.modsen.ktpassenger.dto.PassengerResponse
-import com.modsen.ktpassenger.dto.PassengerUpdate
-import com.modsen.ktpassenger.dto.ValidationErrorResponse
-import com.modsen.ktpassenger.dto.toResponse
+import com.modsen.ktpassenger.dto.*
 import com.modsen.ktpassenger.integration.BaseIntegrationTest
 import com.modsen.ktpassenger.integration.testclient.PassengerTestClient
 import com.modsen.ktpassenger.repository.PassengerRepository
 import com.modsen.ktpassenger.util.TestData
 import com.modsen.ktpassenger.util.TestEntities
 import jakarta.annotation.PostConstruct
-import java.util.stream.Stream
 import lombok.SneakyThrows
 import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.CoreMatchers
@@ -24,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.jdbc.Sql
+import java.util.stream.Stream
 
 
 @Sql(
