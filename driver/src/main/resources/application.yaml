@@ -21,3 +21,6 @@ management:
     web:
       exposure:
         include: prometheus
+logging:
+  level:
+    com.modsen.driver.controller: trace

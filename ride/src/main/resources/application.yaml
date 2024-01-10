@@ -49,4 +49,4 @@ resilience4j:
 
 logging:
   level:
-    com.modsen.ride: debug
+    com.modsen.ride.controller: trace

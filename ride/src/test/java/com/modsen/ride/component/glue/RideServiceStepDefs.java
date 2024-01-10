@@ -10,7 +10,7 @@ import com.modsen.ride.model.Ride;
 import com.modsen.ride.model.WaitingRide;
 import com.modsen.ride.repository.RideRepository;
 import com.modsen.ride.repository.WaitingRideRepository;
-import com.modsen.ride.service.DriverClient;
+import com.modsen.ride.service.client.DriverClient;
 import com.modsen.ride.service.RideService;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
