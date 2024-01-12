@@ -4,9 +4,7 @@ import com.modsen.ride.service.client.DriverClientErrorDecoder;
 import feign.codec.ErrorDecoder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 
-@Profile("trace")
 @Configuration
 public class DriverClientConfig {
 
