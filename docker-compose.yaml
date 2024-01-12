@@ -74,6 +74,7 @@ services:
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
       - LOGSTASH_HOST=logstash
+      - ZIPKIN_HOST=zipkin
 
   gateway-cache:
     image: redis:7-alpine
@@ -138,6 +139,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://driver_db:5432/driver
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
       - LOGSTASH_HOST=logstash
+      - ZIPKIN_HOST=zipkin
 
   driver_db:
     image: postgres:${POSTGRES_VERSION}
@@ -172,6 +174,7 @@ services:
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
       - DRIVER_URL=driver:8081
       - LOGSTASH_HOST=logstash
+      - ZIPKIN_HOST=zipkin
 
   ride_db:
     image: mongo:${MONGO_VERSION}
@@ -506,6 +509,16 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=password
+
+  zipkin:
+    image: openzipkin/zipkin:${ZIPKIN_VERSION}
+    container_name: zipkin
+    ports:
+      - 9411:9411
+    environment:
+      - STORAGE_TYPE=mem
+    networks:
+      - discovery
 
 networks:
   elk:
