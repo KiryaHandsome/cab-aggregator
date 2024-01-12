@@ -50,3 +50,5 @@ resilience4j:
 logging:
   level:
     com.modsen.ride.controller: trace
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
