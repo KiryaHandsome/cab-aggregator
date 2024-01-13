@@ -38,6 +38,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BaseException.class)
     public ResponseEntity<ErrorResponse> handleBaseException(BaseException ex) {
         String errorMessage = messageSource.getMessage(ex.getMessage(), ex.getParams(), LocaleContextHolder.getLocale());
+        log.warn("{} caught with message: {}", ex.getClass().getName(), errorMessage);
         ErrorResponse response = new ErrorResponse(ex.getResponseCode(), errorMessage);
         return ResponseEntity
                 .status(response.getStatusCode())
@@ -61,6 +62,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CallNotPermittedException.class)
     public ResponseEntity<ErrorResponse> handleCallNotPermittedException(CallNotPermittedException ex) {
+        log.warn("Caught CallNotPermittedException with message: {}", ex.getMessage());
         ErrorResponse response = new ErrorResponse(HttpStatus.SERVICE_UNAVAILABLE.value(), ex.getMessage());
         return ResponseEntity
                 .status(HttpStatus.SERVICE_UNAVAILABLE.value())

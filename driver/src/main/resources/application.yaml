@@ -27,6 +27,7 @@ management:
   tracing:
     sampling:
       probability: 1.0
+
 logging:
   level:
     com.modsen.driver.controller: trace
