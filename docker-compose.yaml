@@ -107,6 +107,7 @@ services:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
       - SPRING_DATASOURCE_URL=jdbc:postgresql://passenger_db:5432/passenger
       - LOGSTASH_HOST=logstash
+      - ZIPKIN_HOST=zipkin
 
   passenger_db:
     image: postgres:${POSTGRES_VERSION}
@@ -204,6 +205,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://payment_db:5432/payment
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
       - LOGSTASH_HOST=logstash
+      - ZIPKIN_HOST=zipkin
 
   payment_db:
     image: postgres:${POSTGRES_VERSION}
@@ -235,6 +237,7 @@ services:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
       - SPRING_DATASOURCE_URL=jdbc:postgresql://rating_db:5432/rating
       - LOGSTASH_HOST=logstash
+      - ZIPKIN_HOST=zipkin
 
   rating_db:
     image: postgres:${POSTGRES_VERSION}
