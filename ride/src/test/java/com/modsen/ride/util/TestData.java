@@ -54,6 +54,7 @@ public class TestData {
                 RIDE_ID,
                 DRIVER_ID,
                 PASSENGER_ID,
+                PaymentStatus.WAITING,
                 FROM,
                 TO,
                 COST,
