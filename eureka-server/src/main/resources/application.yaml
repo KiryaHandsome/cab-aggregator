@@ -10,3 +10,21 @@ logging:
   level:
     com.netflix.eureka: OFF
     com.netflix.discovery: OFF
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+  zipkin:
+    tracing:
+      endpoint: http://${ZIPKIN_HOST:localhost}:9411/api/v2/spans
+  tracing:
+    sampling:
+      probability: 1.0
+
+spring:
+  application:
+    name: eureka-server

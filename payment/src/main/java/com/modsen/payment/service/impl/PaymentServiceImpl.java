@@ -35,7 +35,7 @@ public class PaymentServiceImpl implements PaymentService {
                         String.format("Balance of passenger with id=%d doesn't exist.", ride.getPassengerId())
                 ));
         if (balance.getAmount() < ride.getCost()) {
-            log.info("Payment for ride with id={} failed. Not enough money.", ride.getId());
+            log.warn("Payment for ride with id={} failed. Not enough money.", ride.getId());
             return PaymentEvent.builder()
                     .rideId(ride.getId())
                     .status(PaymentStatus.FAILED)

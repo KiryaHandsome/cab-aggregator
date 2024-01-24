@@ -20,8 +20,8 @@ import com.modsen.ride.model.WaitingRide;
 import com.modsen.ride.repository.RideRepository;
 import com.modsen.ride.repository.WaitingRideRepository;
 import com.modsen.ride.service.CostCalculator;
-import com.modsen.ride.service.DriverClient;
 import com.modsen.ride.service.RideService;
+import com.modsen.ride.service.client.DriverClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -68,6 +68,7 @@ public class RideServiceImpl implements RideService {
 
     @Override
     public RideDto startRide(String waitingRideId, Integer driverId) {
+        log.info("Starting ride with params waitingRideId={}, driverId={}", waitingRideId, driverId);
         WaitingRide waitingRide = waitingRideRepository.findById(waitingRideId)
                 .orElseThrow(() -> new WaitingRideNotFoundException("exception.waiting_ride_not_found", waitingRideId));
         DriverResponse driverResponse = driverClient.getDriverById(driverId);

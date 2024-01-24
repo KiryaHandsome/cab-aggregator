@@ -2,8 +2,8 @@ package com.modsen.rating.integration.controller;
 
 import com.modsen.rating.dto.AvgRatingResponse;
 import com.modsen.rating.dto.ScoreRequest;
-import com.modsen.rating.exception.ErrorResponse;
-import com.modsen.rating.exception.ValidationErrorResponse;
+import com.modsen.rating.dto.ErrorResponse;
+import com.modsen.rating.dto.ValidationErrorResponse;
 import com.modsen.rating.integration.PostgresContainer;
 import com.modsen.rating.integration.testclient.DriverRatingTestClient;
 import com.modsen.rating.model.DriverRating;

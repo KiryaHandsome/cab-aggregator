@@ -2,6 +2,8 @@ package com.modsen.ride.config;
 
 import com.modsen.ride.dto.request.PaymentEvent;
 import com.modsen.ride.service.RideService;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.kafka.dsl.Kafka;
+import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.ConsumerProperties;
@@ -17,10 +20,17 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 import java.util.Map;
 
 @Configuration
+@RequiredArgsConstructor
 public class KafkaConsumerConfig {
 
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
+    private final ConcurrentKafkaListenerContainerFactory<?, ?> listenerContainerFactory;
+
+    @PostConstruct
+    public void postConstruct() {
+        listenerContainerFactory.getContainerProperties().setObservationEnabled(true);
+    }
 
     @Bean
     public IntegrationFlow flow(ConsumerFactory<String, PaymentEvent> cf, RideService rideService) {

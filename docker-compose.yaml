@@ -1,3 +1,18 @@
+volumes:
+  certs:
+    driver: local
+  elasticsearchdata:
+    driver: local
+  kibanadata:
+    driver: local
+  metricbeatdata:
+    driver: local
+  filebeatdata:
+    driver: local
+  logstashdata:
+    driver: local
+  grafana-storage: { }
+
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.1
@@ -8,10 +23,12 @@ services:
     networks:
       - kafka
     ports:
-      - 22181:2181
+      - 2181:2181
 
   kafka:
-    image: confluentinc/cp-kafka:7.5.1
+    build:
+      context: observability
+      dockerfile: Dockerfile_Kafka
     container_name: kafka
     depends_on:
       - zookeeper
@@ -19,13 +36,17 @@ services:
       - 9092:9092
     networks:
       - kafka
+      - discovery
+    user: root
     environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      EXTRA_ARGS: "-javaagent:/usr/app/jmx_prometheus_javaagent.jar=7071:/usr/app/prom-jmx-agent-config.yml"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
 
   eureka-server:
     image: kiryahandsome/eureka-server:latest
@@ -34,7 +55,10 @@ services:
       - 8761:8761
     restart: always
     networks:
+      - elk
       - discovery
+    environment:
+      - LOGSTASH_HOST=logstash
 
   gateway:
     image: kiryahandsome/gateway:latest
@@ -45,10 +69,13 @@ services:
       - eureka-server
     restart: always
     networks:
+      - elk
       - discovery
       - gateway
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - LOGSTASH_HOST=logstash
+      - ZIPKIN_HOST=zipkin
 
   gateway-cache:
     image: redis:7-alpine
@@ -71,6 +98,7 @@ services:
       - passenger_db
       - kafka
     networks:
+      - elk
       - passenger
       - kafka
       - discovery
@@ -79,10 +107,11 @@ services:
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
       - SPRING_DATASOURCE_URL=jdbc:postgresql://passenger_db:5432/passenger
-      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - LOGSTASH_HOST=logstash
+      - ZIPKIN_HOST=zipkin
 
   passenger_db:
-    image: postgres:15-alpine
+    image: postgres:${POSTGRES_VERSION}
     container_name: passenger_db
     restart: always
     networks:
@@ -90,8 +119,8 @@ services:
     ports:
       - 5433:5432
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=${POSTGRES_USERNAME}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=passenger
 
   driver:
@@ -101,8 +130,8 @@ services:
       - driver_db
       - eureka-server
     networks:
+      - elk
       - driver
-      - kafka
       - discovery
     ports:
       - 8081:8081
@@ -110,9 +139,11 @@ services:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
       - SPRING_DATASOURCE_URL=jdbc:postgresql://driver_db:5432/driver
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - LOGSTASH_HOST=logstash
+      - ZIPKIN_HOST=zipkin
 
   driver_db:
-    image: postgres:15-alpine
+    image: postgres:${POSTGRES_VERSION}
     container_name: driver_db
     restart: always
     networks:
@@ -120,8 +151,8 @@ services:
     ports:
       - 5434:5432
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=${POSTGRES_USERNAME}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=driver
 
   ride:
@@ -132,6 +163,7 @@ services:
       - kafka
       - eureka-server
     networks:
+      - elk
       - ride
       - kafka
       - discovery
@@ -142,9 +174,11 @@ services:
       - SPRING_DATA_MONGODB_HOST=ride_db
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
       - DRIVER_URL=driver:8081
+      - LOGSTASH_HOST=logstash
+      - ZIPKIN_HOST=zipkin
 
   ride_db:
-    image: mongo:7.0
+    image: mongo:${MONGO_VERSION}
     container_name: ride_db
     ports:
       - 27018:27017
@@ -160,6 +194,7 @@ services:
       - payment_db
       - eureka-server
     networks:
+      - elk
       - payment
       - kafka
       - discovery
@@ -169,9 +204,11 @@ services:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
       - SPRING_DATASOURCE_URL=jdbc:postgresql://payment_db:5432/payment
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - LOGSTASH_HOST=logstash
+      - ZIPKIN_HOST=zipkin
 
   payment_db:
-    image: postgres:15-alpine
+    image: postgres:${POSTGRES_VERSION}
     container_name: payment_db
     restart: always
     networks:
@@ -179,8 +216,8 @@ services:
     ports:
       - 5435:5432
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=${POSTGRES_USERNAME}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=payment
 
   rating:
@@ -190,6 +227,7 @@ services:
       - rating_db
       - eureka-server
     networks:
+      - elk
       - rating
       - kafka
       - discovery
@@ -198,10 +236,11 @@ services:
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
       - SPRING_DATASOURCE_URL=jdbc:postgresql://rating_db:5432/rating
-      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - LOGSTASH_HOST=logstash
+      - ZIPKIN_HOST=zipkin
 
   rating_db:
-    image: postgres:15-alpine
+    image: postgres:${POSTGRES_VERSION}
     container_name: rating_db
     restart: always
     networks:
@@ -209,11 +248,285 @@ services:
     ports:
       - 5436:5432
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=${POSTGRES_USERNAME}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=rating
 
+  setup:
+    image: elasticsearch:${STACK_VERSION}
+    container_name: setup
+    volumes:
+      - certs:/usr/share/elasticsearch/config/certs
+    user: "0"
+    command: >
+      bash -c '
+        if [ x${ELASTIC_PASSWORD} == x ]; then
+          echo "Set the ELASTIC_PASSWORD environment variable in the .env file";
+          exit 1;
+        elif [ x${KIBANA_PASSWORD} == x ]; then
+          echo "Set the KIBANA_PASSWORD environment variable in the .env file";
+          exit 1;
+        fi;
+        if [ ! -f config/certs/ca.zip ]; then
+          echo "Creating CA";
+          bin/elasticsearch-certutil ca --silent --pem -out config/certs/ca.zip;
+          unzip config/certs/ca.zip -d config/certs;
+        fi;
+        if [ ! -f config/certs/certs.zip ]; then
+          echo "Creating certs";
+          echo -ne \
+          "instances:\n"\
+          "  - name: elasticsearch\n"\
+          "    dns:\n"\
+          "      - elasticsearch\n"\
+          "      - localhost\n"\
+          "    ip:\n"\
+          "      - 127.0.0.1\n"\
+          "  - name: kibana\n"\
+          "    dns:\n"\
+          "      - kibana\n"\
+          "      - localhost\n"\
+          "    ip:\n"\
+          "      - 127.0.0.1\n"\
+          > config/certs/instances.yml;
+          bin/elasticsearch-certutil cert --silent --pem -out config/certs/certs.zip --in config/certs/instances.yml --ca-cert config/certs/ca/ca.crt --ca-key config/certs/ca/ca.key;
+          unzip config/certs/certs.zip -d config/certs;
+        fi;
+        echo "Setting file permissions"
+        chown -R root:root config/certs;
+        find . -type d -exec chmod 750 \{\} \;;
+        find . -type f -exec chmod 640 \{\} \;;
+        echo "Waiting for Elasticsearch availability";
+        until curl -s --cacert config/certs/ca/ca.crt https://elasticsearch:9200 | grep -q "missing authentication credentials"; do sleep 30; done;
+        echo "Setting kibana_system password";
+        until curl -s -X POST --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" https://elasticsearch:9200/_security/user/kibana_system/_password -d "{\"password\":\"${KIBANA_PASSWORD}\"}" | grep -q "^{}"; do sleep 10; done;
+        echo "All done!";
+      '
+    networks:
+      - elk
+    healthcheck:
+      test: [ "CMD-SHELL", "[ -f config/certs/elasticsearch/elasticsearch.crt ]" ]
+      interval: 1s
+      timeout: 5s
+      retries: 120
+
+  elasticsearch:
+    depends_on:
+      setup:
+        condition: service_healthy
+    image: elasticsearch:${STACK_VERSION}
+    container_name: elasticsearch
+    labels:
+      co.elastic.logs/module: elasticsearch
+    volumes:
+      - certs:/usr/share/elasticsearch/config/certs
+      - elasticsearchdata:/usr/share/elasticsearch/data
+    ports:
+      - ${ES_PORT}:9200
+    environment:
+      - node.name=elasticsearch
+      - cluster.name=${CLUSTER_NAME}
+      - discovery.type=single-node
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.key=certs/elasticsearch/elasticsearch.key
+      - xpack.security.http.ssl.certificate=certs/elasticsearch/elasticsearch.crt
+      - xpack.security.http.ssl.certificate_authorities=certs/ca/ca.crt
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.key=certs/elasticsearch/elasticsearch.key
+      - xpack.security.transport.ssl.certificate=certs/elasticsearch/elasticsearch.crt
+      - xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.license.self_generated.type=${LICENSE}
+    mem_limit: ${ES_MEM_LIMIT}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    networks:
+      - elk
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -s --cacert config/certs/ca/ca.crt https://localhost:9200 | grep -q 'missing authentication credentials'",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 120
+
+  logstash:
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      kibana:
+        condition: service_healthy
+    image: logstash:${STACK_VERSION}
+    container_name: logstash
+    ports:
+      - 5400:5400
+      - 5000:5000/tcp
+      - 5000:5000/udp
+      - 9600:9600
+    labels:
+      co.elastic.logs/module: logstash
+    user: root
+    networks:
+      - elk
+      - discovery
+    volumes:
+      - certs:/usr/share/logstash/certs
+      - logstashdata:/usr/share/logstash/data
+      - ./logstash_ingest_data/:/usr/share/logstash/ingest_data/
+      - ./elk/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
+    environment:
+      - xpack.monitoring.enabled=false
+      - ELASTIC_USER=elastic
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - ELASTIC_HOSTS=https://elasticsearch:9200
+
+  kibana:
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    image: kibana:${STACK_VERSION}
+    container_name: kibana
+    labels:
+      co.elastic.logs/module: kibana
+    volumes:
+      - certs:/usr/share/kibana/config/certs
+      - kibanadata:/usr/share/kibana/data
+    networks:
+      - elk
+    ports:
+      - 5601:5601
+    environment:
+      - SERVERNAME=kibana
+      - ELASTICSEARCH_HOSTS=https://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
+      - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt
+      - XPACK_SECURITY_ENCRYPTIONKEY=${ENCRYPTION_KEY}
+      - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${ENCRYPTION_KEY}
+      - XPACK_REPORTING_ENCRYPTIONKEY=${ENCRYPTION_KEY}
+      - XPACK_REPORTING_KIBANASERVER_HOSTNAME=localhost
+      - SERVER_SSL_CERTIFICATE=config/certs/kibana/kibana.crt
+      - SERVER_SSL_KEY=config/certs/kibana/kibana.key
+      - SERVER_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt
+      - ELASTIC_APM_SECRET_TOKEN=${ELASTIC_APM_SECRET_TOKEN}
+      - NODE_EXTRA_CA_CERTS="/etc/kibana/root_ca_chain.pem"
+      - xpack.screenshotting.browser.chromium.disableSandbox=true
+    mem_limit: ${KB_MEM_LIMIT}
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -s -I http://localhost:5601 | grep -q 'HTTP/1.1 302 Found'",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 120
+
+  metricbeat:
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      kibana:
+        condition: service_healthy
+    image: elastic/metricbeat:${STACK_VERSION}
+    container_name: metricbeat
+    user: root
+    networks:
+      - elk
+    volumes:
+      - certs:/usr/share/metricbeat/certs
+      - metricbeatdata:/usr/share/metricbeat/data
+      - ./elk/metricbeat/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
+      - /proc:/hostfs/proc:ro
+      - /:/hostfs:ro
+    environment:
+      - ELASTIC_USER=elastic
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - ELASTIC_HOSTS=https://elasticsearch:9200
+      - KIBANA_HOSTS=http://kibana:5601
+      - LOGSTASH_HOSTS=http://logstash:9600
+      - CA_CERT=certs/ca/ca.crt
+      - ES_CERT=certs/elasticsearch/elasticsearch.crt
+      - ES_KEY=certs/elasticsearch/elasticsearch.key
+      - KB_CERT=certs/kibana/kibana.crt
+      - KB_KEY=certs/kibana/kibana.key
+    command:
+      -strict.perms=false
+
+  filebeat:
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    image: elastic/filebeat:${STACK_VERSION}
+    container_name: filebeat
+    user: root
+    networks:
+      - elk
+    volumes:
+      - certs:/usr/share/filebeat/certs
+      - filebeatdata:/usr/share/filebeat/data
+      - ./filebeat_ingest_data/:/usr/share/filebeat/ingest_data/
+      - ./elk/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - ELASTIC_USER=elastic
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - ELASTIC_HOSTS=https://elasticsearch:9200
+      - KIBANA_HOSTS=http://kibana:5601
+      - LOGSTASH_HOSTS=http://logstash:9600
+      - CA_CERT=certs/ca/ca.crt
+    command:
+      -strict.perms=false
+
+  prometheus:
+    image: prom/prometheus:${PROMETHEUS_VERSION}
+    container_name: prometheus
+    restart: always
+    networks:
+      - discovery
+    ports:
+      - 9090:9090
+    volumes:
+      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana-oss:${GRAFANA_VERSION}
+    container_name: grafana
+    restart: always
+    networks:
+      - discovery
+    ports:
+      - 3000:3000
+    depends_on:
+      - prometheus
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+    volumes:
+      - grafana-storage:/var/lib/grafana
+
+  zipkin:
+    image: openzipkin/zipkin:${ZIPKIN_VERSION}
+    container_name: zipkin
+    ports:
+      - 9411:9411
+    environment:
+      - STORAGE_TYPE=mem
+    networks:
+      - discovery
+
 networks:
+  elk:
   ride:
   kafka:
   driver:

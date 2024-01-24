@@ -9,7 +9,7 @@ import com.modsen.ride.model.Ride;
 import com.modsen.ride.repository.RideRepository;
 import com.modsen.ride.repository.WaitingRideRepository;
 import com.modsen.ride.service.CostCalculator;
-import com.modsen.ride.service.DriverClient;
+import com.modsen.ride.service.client.DriverClient;
 import com.modsen.ride.util.TestData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

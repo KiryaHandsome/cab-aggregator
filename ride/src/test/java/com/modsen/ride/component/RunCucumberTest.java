@@ -4,7 +4,7 @@ package com.modsen.ride.component;
 import com.modsen.ride.integration.BaseIntegrationTest;
 import com.modsen.ride.repository.RideRepository;
 import com.modsen.ride.repository.WaitingRideRepository;
-import com.modsen.ride.service.DriverClient;
+import com.modsen.ride.service.client.DriverClient;
 import io.cucumber.junit.Cucumber;
 import io.cucumber.junit.CucumberOptions;
 import io.cucumber.spring.CucumberContextConfiguration;
