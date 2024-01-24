@@ -35,7 +35,7 @@ public class PaymentServiceImpl implements PaymentService {
 <span class="nc" id="L35">                        String.format(&quot;Balance of passenger with id=%d doesn't exist.&quot;, ride.getPassengerId())</span>
                 ));
 <span class="pc bpc" id="L37" title="1 of 2 branches missed.">        if (balance.getAmount() &lt; ride.getCost()) {</span>
-<span class="nc" id="L38">            log.info(&quot;Payment for ride with id={} failed. Not enough money.&quot;, ride.getId());</span>
+<span class="nc" id="L38">            log.warn(&quot;Payment for ride with id={} failed. Not enough money.&quot;, ride.getId());</span>
 <span class="nc" id="L39">            return PaymentEvent.builder()</span>
 <span class="nc" id="L40">                    .rideId(ride.getId())</span>
 <span class="nc" id="L41">                    .status(PaymentStatus.FAILED)</span>

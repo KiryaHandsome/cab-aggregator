@@ -2,6 +2,8 @@
 
 import com.modsen.ride.dto.request.PaymentEvent;
 import com.modsen.ride.service.RideService;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.kafka.dsl.Kafka;
+import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.ConsumerProperties;
@@ -17,29 +20,36 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 import java.util.Map;
 
 @Configuration
-<span class="fc" id="L20">public class KafkaConsumerConfig {</span>
+<span class="fc" id="L23">@RequiredArgsConstructor</span>
+public class KafkaConsumerConfig {
 
     @Value(&quot;${spring.kafka.bootstrap-servers}&quot;)
     private String bootstrapServers;
+    private final ConcurrentKafkaListenerContainerFactory&lt;?, ?&gt; listenerContainerFactory;
+
+    @PostConstruct
+    public void postConstruct() {
+<span class="fc" id="L32">        listenerContainerFactory.getContainerProperties().setObservationEnabled(true);</span>
+<span class="fc" id="L33">    }</span>
 
     @Bean
     public IntegrationFlow flow(ConsumerFactory&lt;String, PaymentEvent&gt; cf, RideService rideService) {
-<span class="fc" id="L27">        return IntegrationFlow.from(</span>
-<span class="fc" id="L28">                        Kafka.inboundChannelAdapter(cf, new ConsumerProperties(&quot;payment-result&quot;))</span>
+<span class="fc" id="L37">        return IntegrationFlow.from(</span>
+<span class="fc" id="L38">                        Kafka.inboundChannelAdapter(cf, new ConsumerProperties(&quot;payment-result&quot;))</span>
                 )
-<span class="fc" id="L30">                .handle(rideService, &quot;handlePaymentResult&quot;)</span>
-<span class="fc" id="L31">                .get();</span>
+<span class="fc" id="L40">                .handle(rideService, &quot;handlePaymentResult&quot;)</span>
+<span class="fc" id="L41">                .get();</span>
     }
 
     @Bean
     public ConsumerFactory&lt;String, PaymentEvent&gt; consumerFactory() {
-<span class="fc" id="L36">        return new DefaultKafkaConsumerFactory&lt;&gt;(consumerConfigs(),</span>
+<span class="fc" id="L46">        return new DefaultKafkaConsumerFactory&lt;&gt;(consumerConfigs(),</span>
                 new StringDeserializer(), new JsonDeserializer&lt;&gt;(PaymentEvent.class, false));
     }
 
     @Bean
     public Map&lt;String, Object&gt; consumerConfigs() {
-<span class="fc" id="L42">        return Map.of(</span>
+<span class="fc" id="L52">        return Map.of(</span>
                 ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers,
                 ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class,
                 ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class,

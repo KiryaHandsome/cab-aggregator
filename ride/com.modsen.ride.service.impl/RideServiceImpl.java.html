@@ -20,8 +20,8 @@ import com.modsen.ride.model.WaitingRide;
 import com.modsen.ride.repository.RideRepository;
 import com.modsen.ride.repository.WaitingRideRepository;
 import com.modsen.ride.service.CostCalculator;
-import com.modsen.ride.service.DriverClient;
 import com.modsen.ride.service.RideService;
+import com.modsen.ride.service.client.DriverClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -68,67 +68,68 @@ public class RideServiceImpl implements RideService {
 
     @Override
     public RideDto startRide(String waitingRideId, Integer driverId) {
-<span class="fc" id="L71">        WaitingRide waitingRide = waitingRideRepository.findById(waitingRideId)</span>
-<span class="fc" id="L72">                .orElseThrow(() -&gt; new WaitingRideNotFoundException(&quot;exception.waiting_ride_not_found&quot;, waitingRideId));</span>
-<span class="fc" id="L73">        DriverResponse driverResponse = driverClient.getDriverById(driverId);</span>
-<span class="fc" id="L74">        checkDriverAvailable(driverResponse, driverId);</span>
-<span class="fc" id="L75">        driverClient.updateDriver(driverId, new StatusUpdate(DriverStatus.BUSY));</span>
-<span class="fc" id="L76">        return saveNewRide(waitingRide, driverId);</span>
+<span class="fc" id="L71">        log.info(&quot;Starting ride with params waitingRideId={}, driverId={}&quot;, waitingRideId, driverId);</span>
+<span class="fc" id="L72">        WaitingRide waitingRide = waitingRideRepository.findById(waitingRideId)</span>
+<span class="fc" id="L73">                .orElseThrow(() -&gt; new WaitingRideNotFoundException(&quot;exception.waiting_ride_not_found&quot;, waitingRideId));</span>
+<span class="fc" id="L74">        DriverResponse driverResponse = driverClient.getDriverById(driverId);</span>
+<span class="fc" id="L75">        checkDriverAvailable(driverResponse, driverId);</span>
+<span class="fc" id="L76">        driverClient.updateDriver(driverId, new StatusUpdate(DriverStatus.BUSY));</span>
+<span class="fc" id="L77">        return saveNewRide(waitingRide, driverId);</span>
     }
 
     private void checkDriverAvailable(DriverResponse response, Integer driverId) {
-<span class="fc" id="L80">        boolean driverAvailable = DriverStatus.AVAILABLE.equals(response.getStatus());</span>
-<span class="pc bpc" id="L81" title="1 of 2 branches missed.">        if (!driverAvailable) {</span>
-<span class="nc" id="L82">            log.warn(&quot;Driver service returned bad driver status={}&quot;, response.getStatus());</span>
-<span class="nc" id="L83">            throw new DriverNotAvailableException(&quot;exception.driver_not_available&quot;,</span>
-<span class="nc" id="L84">                    driverId, response.getStatus());</span>
+<span class="fc" id="L81">        boolean driverAvailable = DriverStatus.AVAILABLE.equals(response.getStatus());</span>
+<span class="pc bpc" id="L82" title="1 of 2 branches missed.">        if (!driverAvailable) {</span>
+<span class="nc" id="L83">            log.warn(&quot;Driver service returned bad driver status={}&quot;, response.getStatus());</span>
+<span class="nc" id="L84">            throw new DriverNotAvailableException(&quot;exception.driver_not_available&quot;,</span>
+<span class="nc" id="L85">                    driverId, response.getStatus());</span>
         }
-<span class="fc" id="L86">    }</span>
+<span class="fc" id="L87">    }</span>
 
     private RideDto saveNewRide(WaitingRide waitingRide, Integer driverId) {
-<span class="fc" id="L89">        Ride ride = rideMapper.toRide(waitingRide);</span>
-<span class="fc" id="L90">        setupRide(ride, driverId);</span>
-<span class="fc" id="L91">        rideRepository.save(ride);</span>
-<span class="fc" id="L92">        waitingRideRepository.deleteById(waitingRide.getId());</span>
-<span class="fc" id="L93">        return rideMapper.toDto(ride);</span>
+<span class="fc" id="L90">        Ride ride = rideMapper.toRide(waitingRide);</span>
+<span class="fc" id="L91">        setupRide(ride, driverId);</span>
+<span class="fc" id="L92">        rideRepository.save(ride);</span>
+<span class="fc" id="L93">        waitingRideRepository.deleteById(waitingRide.getId());</span>
+<span class="fc" id="L94">        return rideMapper.toDto(ride);</span>
     }
 
     private void setupRide(Ride ride, Integer driverId) {
-<span class="fc" id="L97">        ride.setDriverId(driverId);</span>
-<span class="fc" id="L98">        ride.setStartTime(LocalDateTime.now());</span>
-<span class="fc" id="L99">        Float cost = costCalculator.calculate(ride.getFrom(), ride.getTo());</span>
-<span class="fc" id="L100">        ride.setCost(cost);</span>
-<span class="fc" id="L101">        ride.setPaymentStatus(PaymentStatus.WAITING);</span>
-<span class="fc" id="L102">    }</span>
+<span class="fc" id="L98">        ride.setDriverId(driverId);</span>
+<span class="fc" id="L99">        ride.setStartTime(LocalDateTime.now());</span>
+<span class="fc" id="L100">        Float cost = costCalculator.calculate(ride.getFrom(), ride.getTo());</span>
+<span class="fc" id="L101">        ride.setCost(cost);</span>
+<span class="fc" id="L102">        ride.setPaymentStatus(PaymentStatus.WAITING);</span>
+<span class="fc" id="L103">    }</span>
 
     @Override
     public RideDto endRide(String rideId) {
-<span class="fc" id="L106">        Ride ride = rideRepository.findById(rideId)</span>
-<span class="fc" id="L107">                .orElseThrow(() -&gt; new RideNotFoundException(&quot;exception.ride_not_found&quot;, rideId));</span>
-<span class="fc bfc" id="L108" title="All 2 branches covered.">        if (ride.getFinishTime() != null) {</span>
-<span class="fc" id="L109">            throw new RideAlreadyEndedException(&quot;exception.ride_already_ended&quot;, rideId);</span>
+<span class="fc" id="L107">        Ride ride = rideRepository.findById(rideId)</span>
+<span class="fc" id="L108">                .orElseThrow(() -&gt; new RideNotFoundException(&quot;exception.ride_not_found&quot;, rideId));</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">        if (ride.getFinishTime() != null) {</span>
+<span class="fc" id="L110">            throw new RideAlreadyEndedException(&quot;exception.ride_already_ended&quot;, rideId);</span>
         }
-<span class="fc" id="L111">        driverClient.updateDriver(ride.getDriverId(), new StatusUpdate(DriverStatus.AVAILABLE));</span>
-<span class="fc" id="L112">        ride.setFinishTime(LocalDateTime.now());</span>
-<span class="fc" id="L113">        rideRepository.save(ride);</span>
-<span class="fc" id="L114">        return rideMapper.toDto(ride);</span>
+<span class="fc" id="L112">        driverClient.updateDriver(ride.getDriverId(), new StatusUpdate(DriverStatus.AVAILABLE));</span>
+<span class="fc" id="L113">        ride.setFinishTime(LocalDateTime.now());</span>
+<span class="fc" id="L114">        rideRepository.save(ride);</span>
+<span class="fc" id="L115">        return rideMapper.toDto(ride);</span>
     }
 
     @Override
     public void handlePaymentResult(PaymentEvent paymentEvent) {
-<span class="fc" id="L119">        log.debug(&quot;HandlePaymentResult: {}&quot;, paymentEvent);</span>
-<span class="fc" id="L120">        Ride ride = rideRepository.findById(paymentEvent.getRideId())</span>
-<span class="pc" id="L121">                .orElseThrow(() -&gt; new RideNotFoundException(&quot;exception.ride_not_found&quot;, paymentEvent.getRideId()));</span>
-<span class="fc" id="L122">        ride.setPaymentStatus(paymentEvent.getStatus());</span>
-<span class="fc" id="L123">        rideRepository.save(ride);</span>
-<span class="fc" id="L124">    }</span>
+<span class="fc" id="L120">        log.debug(&quot;HandlePaymentResult: {}&quot;, paymentEvent);</span>
+<span class="fc" id="L121">        Ride ride = rideRepository.findById(paymentEvent.getRideId())</span>
+<span class="pc" id="L122">                .orElseThrow(() -&gt; new RideNotFoundException(&quot;exception.ride_not_found&quot;, paymentEvent.getRideId()));</span>
+<span class="fc" id="L123">        ride.setPaymentStatus(paymentEvent.getStatus());</span>
+<span class="fc" id="L124">        rideRepository.save(ride);</span>
+<span class="fc" id="L125">    }</span>
 
     @Override
     public SharedRideResponse haveSharedRide(Integer driverId, Integer passengerId) {
-<span class="nc" id="L128">        boolean haveSharedRide = rideRepository</span>
-<span class="nc" id="L129">                .findFirstByDriverIdAndPassengerId(driverId, passengerId)</span>
-<span class="nc" id="L130">                .isPresent();</span>
-<span class="nc" id="L131">        return new SharedRideResponse(haveSharedRide);</span>
+<span class="nc" id="L129">        boolean haveSharedRide = rideRepository</span>
+<span class="nc" id="L130">                .findFirstByDriverIdAndPassengerId(driverId, passengerId)</span>
+<span class="nc" id="L131">                .isPresent();</span>
+<span class="nc" id="L132">        return new SharedRideResponse(haveSharedRide);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

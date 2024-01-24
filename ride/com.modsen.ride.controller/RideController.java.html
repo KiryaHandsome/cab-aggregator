@@ -8,6 +8,7 @@ import com.modsen.ride.dto.response.SharedRideResponse;
 import com.modsen.ride.dto.response.WaitingRideResponse;
 import com.modsen.ride.service.KafkaChannelGateway;
 import com.modsen.ride.service.RideService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,17 +24,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping(&quot;/api/v1/rides&quot;)
-<span class="fc" id="L26">@RequiredArgsConstructor</span>
+<span class="fc" id="L27">@RequiredArgsConstructor</span>
 public class RideController implements RideControllerOpenApi {
 
+    private static final String DRIVER_CIRCUIT_BREAKER_NAME = &quot;driver&quot;;
     private final RideService rideService;
     private final KafkaChannelGateway kafkaChannelGateway;
 
     @PostMapping(&quot;/book&quot;)
     public ResponseEntity&lt;WaitingRideResponse&gt; bookRide(@RequestBody @Valid RideRequest rideRequest) {
-<span class="nc" id="L34">        WaitingRideResponse response = rideService.bookRide(rideRequest);</span>
-<span class="nc" id="L35">        kafkaChannelGateway.sendToRideOrdered(rideRequest);</span>
-<span class="nc" id="L36">        return ResponseEntity.ok(response);</span>
+<span class="fc" id="L36">        WaitingRideResponse response = rideService.bookRide(rideRequest);</span>
+<span class="fc" id="L37">        kafkaChannelGateway.sendToRideOrdered(rideRequest);</span>
+<span class="fc" id="L38">        return ResponseEntity.ok(response);</span>
     }
 
     @GetMapping(&quot;/check-shared-ride&quot;)
@@ -41,39 +43,41 @@ public class RideController implements RideControllerOpenApi {
             @RequestParam(&quot;driver-id&quot;) Integer driverId,
             @RequestParam(&quot;passenger-id&quot;) Integer passengerId
     ) {
-<span class="nc" id="L44">        SharedRideResponse response = rideService.haveSharedRide(driverId, passengerId);</span>
-<span class="nc" id="L45">        return ResponseEntity.ok(response);</span>
+<span class="nc" id="L46">        SharedRideResponse response = rideService.haveSharedRide(driverId, passengerId);</span>
+<span class="nc" id="L47">        return ResponseEntity.ok(response);</span>
     }
 
     @GetMapping(&quot;/waiting&quot;)
     public ResponseEntity&lt;Page&lt;WaitingRideResponse&gt;&gt; getWaitingRides(Pageable pageable) {
-<span class="nc" id="L50">        Page&lt;WaitingRideResponse&gt; response = rideService.findWaitingRides(pageable);</span>
-<span class="nc" id="L51">        return ResponseEntity.ok(response);</span>
+<span class="nc" id="L52">        Page&lt;WaitingRideResponse&gt; response = rideService.findWaitingRides(pageable);</span>
+<span class="nc" id="L53">        return ResponseEntity.ok(response);</span>
     }
 
     @GetMapping(&quot;/passengers/{passengerId}&quot;)
     public ResponseEntity&lt;Page&lt;RideDto&gt;&gt; getPassengerRides(@PathVariable Integer passengerId, Pageable pageable) {
-<span class="nc" id="L56">        Page&lt;RideDto&gt; response = rideService.findByPassengerId(passengerId, pageable);</span>
-<span class="nc" id="L57">        return ResponseEntity.ok(response);</span>
+<span class="nc" id="L58">        Page&lt;RideDto&gt; response = rideService.findByPassengerId(passengerId, pageable);</span>
+<span class="nc" id="L59">        return ResponseEntity.ok(response);</span>
     }
 
     @GetMapping(&quot;/drivers/{driverId}&quot;)
     public ResponseEntity&lt;Page&lt;RideDto&gt;&gt; getDriverRides(@PathVariable Integer driverId, Pageable pageable) {
-<span class="nc" id="L62">        Page&lt;RideDto&gt; response = rideService.findByDriverId(driverId, pageable);</span>
-<span class="nc" id="L63">        return ResponseEntity.ok(response);</span>
+<span class="nc" id="L64">        Page&lt;RideDto&gt; response = rideService.findByDriverId(driverId, pageable);</span>
+<span class="nc" id="L65">        return ResponseEntity.ok(response);</span>
     }
 
     @PostMapping(&quot;/{waitingRideId}/start&quot;)
+    @CircuitBreaker(name = DRIVER_CIRCUIT_BREAKER_NAME)
     public ResponseEntity&lt;RideDto&gt; startRide(@PathVariable String waitingRideId, @RequestBody RideStart request) {
-<span class="nc" id="L68">        RideDto rideDto = rideService.startRide(waitingRideId, request.getDriverId());</span>
-<span class="nc" id="L69">        return ResponseEntity.ok(rideDto);</span>
+<span class="fc" id="L71">        RideDto rideDto = rideService.startRide(waitingRideId, request.getDriverId());</span>
+<span class="fc" id="L72">        return ResponseEntity.ok(rideDto);</span>
     }
 
     @PostMapping(&quot;/{rideId}/end&quot;)
+    @CircuitBreaker(name = DRIVER_CIRCUIT_BREAKER_NAME)
     public ResponseEntity&lt;RideDto&gt; endRide(@PathVariable String rideId) {
-<span class="nc" id="L74">        RideDto rideDto = rideService.endRide(rideId);</span>
-<span class="nc" id="L75">        kafkaChannelGateway.sendToRidePayment(rideDto);</span>
-<span class="nc" id="L76">        return ResponseEntity.ok(rideDto);</span>
+<span class="nc" id="L78">        RideDto rideDto = rideService.endRide(rideId);</span>
+<span class="nc" id="L79">        kafkaChannelGateway.sendToRidePayment(rideDto);</span>
+<span class="nc" id="L80">        return ResponseEntity.ok(rideDto);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -43,31 +43,33 @@ import java.util.Map;
 
     @Bean
     public KafkaTemplate&lt;String, String&gt; kafkaTemplate() {
-<span class="fc" id="L46">        return new KafkaTemplate&lt;&gt;(producerFactory());</span>
+<span class="fc" id="L46">        KafkaTemplate&lt;String, String&gt; kafkaTemplate = new KafkaTemplate&lt;&gt;(producerFactory());</span>
+<span class="fc" id="L47">        kafkaTemplate.setObservationEnabled(true);</span>
+<span class="fc" id="L48">        return kafkaTemplate;</span>
     }
 
     @Bean
     public ProducerFactory&lt;String, String&gt; producerFactory() {
-<span class="fc" id="L51">        return new DefaultKafkaProducerFactory&lt;&gt;(kafkaConfigs());</span>
+<span class="fc" id="L53">        return new DefaultKafkaProducerFactory&lt;&gt;(kafkaConfigs());</span>
     }
 
     @Bean
     public MessageChannel sendToRidePaymentChannel() {
-<span class="fc" id="L56">        return new DirectChannel();</span>
+<span class="fc" id="L58">        return new DirectChannel();</span>
     }
 
     @Bean
     public MessageChannel sendToRideOrderedChannel() {
-<span class="fc" id="L61">        return new DirectChannel();</span>
+<span class="fc" id="L63">        return new DirectChannel();</span>
     }
 
     @Bean
     public Map&lt;String, Object&gt; kafkaConfigs() {
-<span class="fc" id="L66">        return Map.of(</span>
+<span class="fc" id="L68">        return Map.of(</span>
                 ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers,
                 ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class,
                 ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class,
-<span class="fc" id="L70">                JsonDeserializer.TYPE_MAPPINGS, &quot;paymentEvent:&quot; + PaymentEvent.class.getName()</span>
+<span class="fc" id="L72">                JsonDeserializer.TYPE_MAPPINGS, &quot;paymentEvent:&quot; + PaymentEvent.class.getName()</span>
         );
     }
 }

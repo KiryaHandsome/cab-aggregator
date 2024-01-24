@@ -2,6 +2,7 @@
 
 import com.modsen.ride.dto.response.ErrorResponse;
 import com.modsen.ride.dto.response.ValidationErrorResponse;
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
@@ -16,46 +17,56 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.List;
 
-<span class="fc" id="L19">@Slf4j</span>
+<span class="fc" id="L20">@Slf4j</span>
 @ControllerAdvice
-<span class="fc" id="L21">@RequiredArgsConstructor</span>
+<span class="fc" id="L22">@RequiredArgsConstructor</span>
 public class GlobalExceptionHandler {
 
     private final MessageSource messageSource;
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity&lt;ErrorResponse&gt; handleRuntime(RuntimeException ex) {
-<span class="nc" id="L28">        log.warn(&quot;Caught runtime exception: {}&quot;, ex.getMessage());</span>
-<span class="nc" id="L29">        ErrorResponse errorResponse = new ErrorResponse(</span>
-<span class="nc" id="L30">                HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage()</span>
+    public ResponseEntity&lt;ErrorResponse&gt; handleRuntimeException(RuntimeException ex) {
+<span class="fc" id="L29">        log.warn(&quot;Caught runtime exception: {}&quot;, ex.getMessage());</span>
+<span class="fc" id="L30">        ErrorResponse errorResponse = new ErrorResponse(</span>
+<span class="fc" id="L31">                HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage()</span>
         );
-<span class="nc" id="L32">        return ResponseEntity</span>
-<span class="nc" id="L33">                .internalServerError()</span>
-<span class="nc" id="L34">                .body(errorResponse);</span>
+<span class="fc" id="L33">        return ResponseEntity</span>
+<span class="fc" id="L34">                .internalServerError()</span>
+<span class="fc" id="L35">                .body(errorResponse);</span>
     }
 
     @ExceptionHandler(BaseException.class)
-    public ResponseEntity&lt;ErrorResponse&gt; handleBase(BaseException ex) {
-<span class="nc" id="L39">        String errorMessage = messageSource.getMessage(ex.getMessage(), ex.getParams(), LocaleContextHolder.getLocale());</span>
-<span class="nc" id="L40">        ErrorResponse response = new ErrorResponse(ex.getResponseCode(), errorMessage);</span>
-<span class="nc" id="L41">        return ResponseEntity</span>
-<span class="nc" id="L42">                .status(response.getStatusCode())</span>
-<span class="nc" id="L43">                .body(response);</span>
+    public ResponseEntity&lt;ErrorResponse&gt; handleBaseException(BaseException ex) {
+<span class="nc" id="L40">        String errorMessage = messageSource.getMessage(ex.getMessage(), ex.getParams(), LocaleContextHolder.getLocale());</span>
+<span class="nc" id="L41">        log.warn(&quot;{} caught with message: {}&quot;, ex.getClass().getName(), errorMessage);</span>
+<span class="nc" id="L42">        ErrorResponse response = new ErrorResponse(ex.getResponseCode(), errorMessage);</span>
+<span class="nc" id="L43">        return ResponseEntity</span>
+<span class="nc" id="L44">                .status(response.getStatusCode())</span>
+<span class="nc" id="L45">                .body(response);</span>
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity&lt;ValidationErrorResponse&gt; handleValidationException(MethodArgumentNotValidException ex) {
-<span class="nc" id="L48">        log.warn(&quot;Caught validation exception: {}&quot;, ex.getMessage());</span>
-<span class="nc" id="L49">        BindingResult bindingResult = ex.getBindingResult();</span>
-<span class="nc" id="L50">        List&lt;String&gt; errorsMessages = bindingResult.getAllErrors()</span>
-<span class="nc" id="L51">                .stream()</span>
-<span class="nc" id="L52">                .map(DefaultMessageSourceResolvable::getDefaultMessage)</span>
-<span class="nc" id="L53">                .map(m -&gt; messageSource.getMessage(m, null, LocaleContextHolder.getLocale()))</span>
-<span class="nc" id="L54">                .toList();</span>
-<span class="nc" id="L55">        ValidationErrorResponse response = new ValidationErrorResponse(HttpStatus.BAD_REQUEST.value(), errorsMessages);</span>
-<span class="nc" id="L56">        return ResponseEntity</span>
-<span class="nc" id="L57">                .badRequest()</span>
-<span class="nc" id="L58">                .body(response);</span>
+<span class="nc" id="L50">        log.warn(&quot;Caught validation exception: {}&quot;, ex.getMessage());</span>
+<span class="nc" id="L51">        BindingResult bindingResult = ex.getBindingResult();</span>
+<span class="nc" id="L52">        List&lt;String&gt; errorsMessages = bindingResult.getAllErrors()</span>
+<span class="nc" id="L53">                .stream()</span>
+<span class="nc" id="L54">                .map(DefaultMessageSourceResolvable::getDefaultMessage)</span>
+<span class="nc" id="L55">                .map(m -&gt; messageSource.getMessage(m, null, LocaleContextHolder.getLocale()))</span>
+<span class="nc" id="L56">                .toList();</span>
+<span class="nc" id="L57">        ValidationErrorResponse response = new ValidationErrorResponse(HttpStatus.BAD_REQUEST.value(), errorsMessages);</span>
+<span class="nc" id="L58">        return ResponseEntity</span>
+<span class="nc" id="L59">                .badRequest()</span>
+<span class="nc" id="L60">                .body(response);</span>
+    }
+
+    @ExceptionHandler(CallNotPermittedException.class)
+    public ResponseEntity&lt;ErrorResponse&gt; handleCallNotPermittedException(CallNotPermittedException ex) {
+<span class="fc" id="L65">        log.warn(&quot;Caught CallNotPermittedException with message: {}&quot;, ex.getMessage());</span>
+<span class="fc" id="L66">        ErrorResponse response = new ErrorResponse(HttpStatus.SERVICE_UNAVAILABLE.value(), ex.getMessage());</span>
+<span class="fc" id="L67">        return ResponseEntity</span>
+<span class="fc" id="L68">                .status(HttpStatus.SERVICE_UNAVAILABLE.value())</span>
+<span class="fc" id="L69">                .body(response);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

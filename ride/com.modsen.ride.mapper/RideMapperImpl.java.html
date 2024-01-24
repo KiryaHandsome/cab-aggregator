@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = &quot;org.mapstruct.ap.MappingProcessor&quot;,
-    date = &quot;2023-12-29T14:10:27+0000&quot;,
+    date = &quot;2024-01-24T11:37:08+0000&quot;,
     comments = &quot;version: 1.5.5.Final, compiler: javac, environment: Java 17.0.9 (Eclipse Adoptium)&quot;
 )
 @Component
@@ -27,60 +27,61 @@ import org.springframework.stereotype.Component;
 <span class="fc" id="L27">        rideDto.setId( ride.getId() );</span>
 <span class="fc" id="L28">        rideDto.setDriverId( ride.getDriverId() );</span>
 <span class="fc" id="L29">        rideDto.setPassengerId( ride.getPassengerId() );</span>
-<span class="fc" id="L30">        rideDto.setFrom( ride.getFrom() );</span>
-<span class="fc" id="L31">        rideDto.setTo( ride.getTo() );</span>
-<span class="fc" id="L32">        rideDto.setCost( ride.getCost() );</span>
-<span class="fc" id="L33">        rideDto.setStartTime( ride.getStartTime() );</span>
-<span class="fc" id="L34">        rideDto.setFinishTime( ride.getFinishTime() );</span>
+<span class="fc" id="L30">        rideDto.setPaymentStatus( ride.getPaymentStatus() );</span>
+<span class="fc" id="L31">        rideDto.setFrom( ride.getFrom() );</span>
+<span class="fc" id="L32">        rideDto.setTo( ride.getTo() );</span>
+<span class="fc" id="L33">        rideDto.setCost( ride.getCost() );</span>
+<span class="fc" id="L34">        rideDto.setStartTime( ride.getStartTime() );</span>
+<span class="fc" id="L35">        rideDto.setFinishTime( ride.getFinishTime() );</span>
 
-<span class="fc" id="L36">        return rideDto;</span>
+<span class="fc" id="L37">        return rideDto;</span>
     }
 
     @Override
     public WaitingRide toWaitingRide(RideRequest request) {
-<span class="nc bnc" id="L41" title="All 2 branches missed.">        if ( request == null ) {</span>
-<span class="nc" id="L42">            return null;</span>
+<span class="pc bpc" id="L42" title="1 of 2 branches missed.">        if ( request == null ) {</span>
+<span class="nc" id="L43">            return null;</span>
         }
 
-<span class="nc" id="L45">        WaitingRide waitingRide = new WaitingRide();</span>
+<span class="fc" id="L46">        WaitingRide waitingRide = new WaitingRide();</span>
 
-<span class="nc" id="L47">        waitingRide.setPassengerId( request.getPassengerId() );</span>
-<span class="nc" id="L48">        waitingRide.setFrom( request.getFrom() );</span>
-<span class="nc" id="L49">        waitingRide.setTo( request.getTo() );</span>
+<span class="fc" id="L48">        waitingRide.setPassengerId( request.getPassengerId() );</span>
+<span class="fc" id="L49">        waitingRide.setFrom( request.getFrom() );</span>
+<span class="fc" id="L50">        waitingRide.setTo( request.getTo() );</span>
 
-<span class="nc" id="L51">        return waitingRide;</span>
+<span class="fc" id="L52">        return waitingRide;</span>
     }
 
     @Override
     public WaitingRideResponse toWaitingResponse(WaitingRide ride) {
-<span class="nc bnc" id="L56" title="All 2 branches missed.">        if ( ride == null ) {</span>
-<span class="nc" id="L57">            return null;</span>
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">        if ( ride == null ) {</span>
+<span class="nc" id="L58">            return null;</span>
         }
 
-<span class="nc" id="L60">        WaitingRideResponse waitingRideResponse = new WaitingRideResponse();</span>
+<span class="fc" id="L61">        WaitingRideResponse waitingRideResponse = new WaitingRideResponse();</span>
 
-<span class="nc" id="L62">        waitingRideResponse.setId( ride.getId() );</span>
-<span class="nc" id="L63">        waitingRideResponse.setPassengerId( ride.getPassengerId() );</span>
-<span class="nc" id="L64">        waitingRideResponse.setFrom( ride.getFrom() );</span>
-<span class="nc" id="L65">        waitingRideResponse.setTo( ride.getTo() );</span>
+<span class="fc" id="L63">        waitingRideResponse.setId( ride.getId() );</span>
+<span class="fc" id="L64">        waitingRideResponse.setPassengerId( ride.getPassengerId() );</span>
+<span class="fc" id="L65">        waitingRideResponse.setFrom( ride.getFrom() );</span>
+<span class="fc" id="L66">        waitingRideResponse.setTo( ride.getTo() );</span>
 
-<span class="nc" id="L67">        return waitingRideResponse;</span>
+<span class="fc" id="L68">        return waitingRideResponse;</span>
     }
 
     @Override
     public Ride toRide(WaitingRide ride) {
-<span class="pc bpc" id="L72" title="1 of 2 branches missed.">        if ( ride == null ) {</span>
-<span class="nc" id="L73">            return null;</span>
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">        if ( ride == null ) {</span>
+<span class="nc" id="L74">            return null;</span>
         }
 
-<span class="fc" id="L76">        Ride ride1 = new Ride();</span>
+<span class="fc" id="L77">        Ride ride1 = new Ride();</span>
 
-<span class="fc" id="L78">        ride1.setId( ride.getId() );</span>
-<span class="fc" id="L79">        ride1.setPassengerId( ride.getPassengerId() );</span>
-<span class="fc" id="L80">        ride1.setFrom( ride.getFrom() );</span>
-<span class="fc" id="L81">        ride1.setTo( ride.getTo() );</span>
+<span class="fc" id="L79">        ride1.setId( ride.getId() );</span>
+<span class="fc" id="L80">        ride1.setPassengerId( ride.getPassengerId() );</span>
+<span class="fc" id="L81">        ride1.setFrom( ride.getFrom() );</span>
+<span class="fc" id="L82">        ride1.setTo( ride.getTo() );</span>
 
-<span class="fc" id="L83">        return ride1;</span>
+<span class="fc" id="L84">        return ride1;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

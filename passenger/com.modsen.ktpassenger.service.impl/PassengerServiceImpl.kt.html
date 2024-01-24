@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>PassengerServiceImpl.kt</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">jacoco-coverage-aggregate-report</a> &gt; <a href="../index.html" class="el_bundle">passenger</a> &gt; <a href="index.source.html" class="el_package">com.modsen.ktpassenger.service.impl</a> &gt; <span class="el_source">PassengerServiceImpl.kt</span></div><h1>PassengerServiceImpl.kt</h1><pre class="source lang-java linenums">package com.modsen.ktpassenger.service.impl
+
+import com.modsen.ktpassenger.dto.*
+import com.modsen.ktpassenger.exception.EmailAlreadyExistsException
+import com.modsen.ktpassenger.exception.PassengerNotFoundException
+import com.modsen.ktpassenger.exception.PhoneNumberAlreadyExistsException
+import com.modsen.ktpassenger.repository.PassengerRepository
+import com.modsen.ktpassenger.service.PassengerService
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+
+<span class="fc" id="L14">@Service</span>
+@Transactional
+<span class="fc" id="L16">class PassengerServiceImpl(</span>
+<span class="fc" id="L17">    private val passengerRepository: PassengerRepository</span>
+) : PassengerService {
+
+    @Transactional(readOnly = true)
+    override fun findById(id: Int): PassengerResponse {
+<span class="fc" id="L22">        return passengerRepository.findById(id)</span>
+<span class="fc" id="L23">            .map { p -&gt; p.toResponse() }</span>
+<span class="fc" id="L24">            .orElseThrow { PassengerNotFoundException(&quot;exception.passenger_not_found&quot;, id) }</span>
+    }
+
+    @Transactional(readOnly = true)
+    override fun findAll(pageable: Pageable): Page&lt;PassengerResponse&gt; {
+<span class="fc" id="L29">        return passengerRepository.findAll(pageable)</span>
+<span class="fc" id="L30">            .map { p -&gt; p.toResponse() }</span>
+    }
+
+    override fun update(id: Int, request: PassengerUpdate): PassengerResponse {
+<span class="fc" id="L34">        val entity = passengerRepository.findById(id)</span>
+<span class="fc" id="L35">            .orElseThrow { PassengerNotFoundException(&quot;exception.passenger_not_found&quot;, id) }</span>
+<span class="pc bpc" id="L36" title="1 of 4 branches missed.">        throwIfEmailOrPhoneAlreadyExist(request.email ?: &quot;&quot;, request.phoneNumber ?: &quot;&quot;)</span>
+<span class="fc" id="L37">        entity.mapIfNotNull(request)</span>
+<span class="fc" id="L38">        passengerRepository.save(entity)</span>
+<span class="fc" id="L39">        return entity.toResponse()</span>
+    }
+
+    override fun deleteById(id: Int) {
+<span class="fc" id="L43">        return passengerRepository.deleteById(id)</span>
+    }
+
+    override fun create(request: PassengerCreate): PassengerResponse {
+<span class="fc" id="L47">        val entity = request.toEntity()</span>
+<span class="fc" id="L48">        throwIfEmailOrPhoneAlreadyExist(entity.email, entity.phoneNumber)</span>
+<span class="fc" id="L49">        passengerRepository.save(entity)</span>
+<span class="fc" id="L50">        return entity.toResponse()</span>
+    }
+
+    private fun throwIfEmailOrPhoneAlreadyExist(email: String, phoneNumber: String) {
+<span class="fc" id="L54">        passengerRepository.findByEmail(email)</span>
+<span class="pc" id="L55">            .ifPresent { throw EmailAlreadyExistsException(&quot;exception.email_already_exists&quot;, email) }</span>
+<span class="fc" id="L56">        passengerRepository.findByPhoneNumber(phoneNumber)</span>
+<span class="pc" id="L57">            .ifPresent { throw PhoneNumberAlreadyExistsException(&quot;exception.phone_already_exists&quot;, phoneNumber) }</span>
+<span class="fc" id="L58">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
