@@ -11,6 +11,7 @@ volumes:
     driver: local
   logstashdata:
     driver: local
+  grafana-storage: { }
 
 services:
   zookeeper:
@@ -131,7 +132,6 @@ services:
     networks:
       - elk
       - driver
-      - kafka
       - discovery
     ports:
       - 8081:8081
@@ -507,11 +507,13 @@ services:
       - discovery
     ports:
       - 3000:3000
-    links:
-      - prometheus:prometheus
+    depends_on:
+      - prometheus
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=password
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+    volumes:
+      - grafana-storage:/var/lib/grafana
 
   zipkin:
     image: openzipkin/zipkin:${ZIPKIN_VERSION}

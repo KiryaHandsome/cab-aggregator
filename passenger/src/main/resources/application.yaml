@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: passenger
+    name: kt_passenger
   datasource:
     url: jdbc:postgresql://localhost:5432/passenger
     username: postgres
@@ -13,3 +13,19 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+  zipkin:
+    tracing:
+      endpoint: http://${ZIPKIN_HOST:localhost}:9411/api/v2/spans
+  tracing:
+    sampling:
+      probability: 1.0
+
+logging:
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"

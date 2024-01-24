@@ -1,4 +1,4 @@
-package com.modsen.passenger.dto.response;
+package com.modsen.rating.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ErrorResponse {
 
-    private Integer statusCode;
-    private String errorMessage;
+    private int statusCode;
+    private String message;
 }

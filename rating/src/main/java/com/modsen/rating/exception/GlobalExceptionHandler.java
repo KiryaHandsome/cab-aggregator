@@ -1,5 +1,7 @@
 package com.modsen.rating.exception;
 
+import com.modsen.rating.dto.ErrorResponse;
+import com.modsen.rating.dto.ValidationErrorResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;

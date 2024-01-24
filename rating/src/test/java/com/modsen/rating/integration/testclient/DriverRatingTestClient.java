@@ -2,8 +2,8 @@ package com.modsen.rating.integration.testclient;
 
 import com.modsen.rating.dto.AvgRatingResponse;
 import com.modsen.rating.dto.ScoreRequest;
-import com.modsen.rating.exception.ErrorResponse;
-import com.modsen.rating.exception.ValidationErrorResponse;
+import com.modsen.rating.dto.ErrorResponse;
+import com.modsen.rating.dto.ValidationErrorResponse;
 import com.modsen.rating.integration.util.HostUtil;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;

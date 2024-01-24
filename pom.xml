@@ -19,14 +19,13 @@
     <version>1.0</version>
 
     <modules>
-        <module>passenger</module>
         <module>driver</module>
         <module>ride</module>
         <module>rating</module>
         <module>payment</module>
         <module>eureka-server</module>
         <module>gateway</module>
-        <module>kt-passenger</module>
+        <module>passenger</module>
         <module>jacoco-report</module>
         <module>e2e-tests</module>
     </modules>
@@ -35,7 +34,7 @@
         <dependency>
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
-            <version>7.2</version>
+            <version>${logstash-logback-encoder.version}</version>
         </dependency>
     </dependencies>
 
@@ -64,6 +63,7 @@
 
     <properties>
         <jacoco-maven-plugin.version>0.8.11</jacoco-maven-plugin.version>
+        <logstash-logback-encoder.version>7.2</logstash-logback-encoder.version>
     </properties>
 
 </project>

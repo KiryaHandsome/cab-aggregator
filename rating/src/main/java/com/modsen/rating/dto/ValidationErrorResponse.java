@@ -1,4 +1,4 @@
-package com.modsen.rating.exception;
+package com.modsen.rating.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

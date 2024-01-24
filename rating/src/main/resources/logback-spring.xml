@@ -24,6 +24,8 @@
         </encoder>
     </appender>
     <root level="info">
-        <appender-ref ref="logstash"/>
+        <springProfile name="!test">
+            <appender-ref ref="logstash"/>
+        </springProfile>
     </root>
 </configuration>

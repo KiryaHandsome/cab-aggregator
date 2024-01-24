@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
     <appender name="logstash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-        <destination>${LOGSTASH_URL:-localhost:5000}</destination>
+        <destination>${LOGSTASH_HOST:-localhost}:5000</destination>
         <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
             <providers>
                 <mdc/>
@@ -11,7 +12,7 @@
                 <pattern>
                     <pattern>
                         {
-                        "appName": "passenger"
+                        "appName": "kt-passenger"
                         }
                     </pattern>
                 </pattern>
@@ -23,6 +24,8 @@
         </encoder>
     </appender>
     <root level="info">
-        <appender-ref ref="logstash"/>
+        <springProfile name="!test">
+            <appender-ref ref="logstash"/>
+        </springProfile>
     </root>
 </configuration>
